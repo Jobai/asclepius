@@ -550,5 +550,14 @@
     "en": "English",
     "de": "German",
     "save": "Save display names"
+  },
+  "matchingLanguages": {
+    "title": "Languages for synonym matching",
+    "help": "Choose which synonym languages are used to match lab tests, diagnoses, medication ingredients and specialties. Synonyms in other languages stay stored and visible and can be enabled again later. This setting is independent of the UI language.",
+    "includeUnlabeled": "Also use synonyms without a language",
+    "unlabeledCount": "Stored synonyms without a language: {{total}}.",
+    "existingAssignments": "Applies to future matching. Existing assignments are not changed automatically.",
+    "adminOnly": "Only administrators can change this setting.",
+    "saved": "Matching languages saved."
   }
 }

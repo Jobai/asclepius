@@ -5,6 +5,7 @@ import LinkedDocumentsModal from "./normalization/LinkedDocumentsModal";
 import BatchMergeBar from "./normalization/BatchMergeBar";
 import NormalizationTable from "./normalization/NormalizationTable";
 import { useNormalization } from "./normalization/useNormalization";
+import MatchingLanguagesSettings from "./normalization/MatchingLanguagesSettings";
 
 export default function NormalizationTab() {
   const { t: tx } = useFeatureTranslation([
@@ -21,6 +22,7 @@ export default function NormalizationTab() {
 
   return (
     <div className="space-y-4">
+      <MatchingLanguagesSettings />
       <div className="text-sm text-muted-foreground">
         {tx(
           "settings:features.normalizationTab.normalizationMapsDifferentNamesForTheSameMedical",

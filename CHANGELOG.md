@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Configurable synonym matching languages under Document Analysis → Normalization.
+  German and English are selected by default; Dutch and other stored languages
+  can be enabled. Disabled-language synonyms remain stored and visible. The
+  setting applies to exact/fuzzy matching, extraction fallbacks and merge
+  suggestions. Synonyms without a language remain enabled by default and have
+  a separate switch. Existing assignments and the encounter model are unchanged.
+
 - Preferred English/German names for all 518 bundled lab tests, specialties,
   diagnoses and medication ingredients. Names follow the UI language in
   normalization, clinical views, charts, pickers and doctor shares. Existing

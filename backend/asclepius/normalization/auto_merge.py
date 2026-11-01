@@ -300,13 +300,15 @@ async def _fetch_entries(
 ) -> list[dict]:
     """Fetch id/canonical fields + aliases for every row in the norm table."""
     from .alias_lookup import load_aliases_by_parent
+    from .languages import matching_policy
 
     cursor = await db.execute(
         f"SELECT id, canonical_code, canonical_display FROM {main_table} ORDER BY canonical_display"
     )
     rows = [dict(r) for r in await cursor.fetchall()]
 
-    alias_map = await load_aliases_by_parent(db, alias_table, fk_col)
+    policy = matching_policy() if main_table.startswith("norm_") else None
+    alias_map = await load_aliases_by_parent(db, alias_table, fk_col, policy=policy)
 
     for row in rows:
         row["aliases"] = alias_map.get(row["id"], [])

@@ -550,5 +550,14 @@
     "en": "Englisch",
     "de": "Deutsch",
     "save": "Anzeigenamen speichern"
+  },
+  "matchingLanguages": {
+    "title": "Sprachen für den Synonymabgleich",
+    "help": "Wähle die Synonymsprachen für den Abgleich von Labortests, Diagnosen, Wirkstoffen und Fachrichtungen. Synonyme anderer Sprachen bleiben gespeichert und sichtbar und können später wieder aktiviert werden. Diese Einstellung ist unabhängig von der Oberflächensprache.",
+    "includeUnlabeled": "Synonyme ohne Sprachangabe ebenfalls verwenden",
+    "unlabeledCount": "Gespeicherte Synonyme ohne Sprachangabe: {{total}}.",
+    "existingAssignments": "Gilt für künftige Abgleiche. Bereits gespeicherte Zuordnungen werden nicht automatisch geändert.",
+    "adminOnly": "Nur Administratoren können diese Einstellung ändern.",
+    "saved": "Abgleichsprachen gespeichert."
   }
 }

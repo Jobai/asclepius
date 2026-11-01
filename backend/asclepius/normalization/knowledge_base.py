@@ -35,6 +35,8 @@ import re
 from pathlib import Path
 from typing import Literal
 
+from .languages import alias_is_enabled, matching_policy
+
 logger = logging.getLogger(__name__)
 
 # Mirrors db/init.py's SEEDS_DIR / BUNDLED_SEEDS_DIR pattern: the per-install
@@ -108,6 +110,7 @@ class KnowledgeBase:
         self._lookup: dict[str, str] = {}
         self._entry_count = 0
         self._loaded_from: Path | None = None
+        self.policy = matching_policy()
 
     def resolve(self, text: str) -> str | None:
         """Return the external code (ATC / LOINC / ICD-10) for a name, or None."""
@@ -168,12 +171,16 @@ class KnowledgeBase:
                 continue
             self._entry_count += 1
             names: list[str] = []
-            if entry.get("canonical_display"):
+            if entry.get("canonical_display") and self.policy[1]:
                 names.append(entry["canonical_display"])
             for a in entry.get("aliases", []) or []:
-                if isinstance(a, dict) and a.get("alias"):
+                if (
+                    isinstance(a, dict)
+                    and a.get("alias")
+                    and alias_is_enabled(a.get("language"), self.policy)
+                ):
                     names.append(a["alias"])
-                elif isinstance(a, str):
+                elif isinstance(a, str) and self.policy[1]:
                     names.append(a)
             for n in names:
                 key = _normalize(n)
@@ -191,7 +198,7 @@ class KnowledgeBase:
         self._lookup = seen
         self._loaded_from = path
         logger.info(
-            "knowledge_base[%s] loaded from %s: %d entries, %d unique aliases" "%s",
+            "knowledge_base[%s] loaded from %s: %d entries, %d unique aliases%s",
             self.kind,
             path,
             self._entry_count,
@@ -226,7 +233,7 @@ def get_knowledge_base(kind_or_table: str) -> KnowledgeBase | None:
     if kind not in _CODE_LABEL:
         return None  # doctors / facilities / specialties — no public KB applies
     cached = _CACHE.get(kind)  # type: ignore[arg-type]
-    if cached is not None:
+    if cached is not None and cached.policy == matching_policy():
         return cached
     kb = KnowledgeBase(kind)  # type: ignore[arg-type]
     kb._load()

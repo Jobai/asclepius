@@ -23,6 +23,7 @@ import aiosqlite
 from asclepius.audit.service import audit_log, get_client_ip
 from asclepius.auth.session import get_current_user, require_role
 from asclepius.config import get_config
+from asclepius.config.models import MatchingLanguages
 from asclepius.db.connection import get_db
 
 from .backup_routes import _backup_state_block
@@ -56,6 +57,7 @@ router.include_router(view_prefs_router)
 async def get_settings(current_user: dict = Depends(get_current_user)):
     config = get_config()
     return {
+        "normalization": config.normalization.model_dump(),
         "llm": {
             "extraction_timeout": config.llm.extraction_timeout,
             "max_concurrent_requests": config.llm.max_concurrent_requests,
@@ -146,6 +148,8 @@ async def get_settings(current_user: dict = Depends(get_current_user)):
 
 
 class SettingsUpdate(BaseModel):
+    normalization_matching_languages: MatchingLanguages | None = None
+    normalization_include_unlabeled_aliases: bool | None = None
     # LLM
     extraction_timeout: int | None = None
     llm_max_concurrent_requests: int | None = None
@@ -240,6 +244,16 @@ KNOWN_TRANSLATION_LANGUAGES = (
 
 # Mapping: API field -> (yaml_section, yaml_key, config_dotpath)
 _SETTINGS_MAP = {
+    "normalization_matching_languages": (
+        "normalization",
+        "matching_languages",
+        "normalization.matching_languages",
+    ),
+    "normalization_include_unlabeled_aliases": (
+        "normalization",
+        "include_unlabeled_aliases",
+        "normalization.include_unlabeled_aliases",
+    ),
     "extraction_timeout": ("llm", "extraction_timeout", "llm.extraction_timeout"),
     "llm_max_concurrent_requests": (
         "llm",

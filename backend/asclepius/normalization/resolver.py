@@ -34,13 +34,14 @@ from typing import Any
 import aiosqlite
 
 from .alias_lookup import load_aliases_flat
+from .languages import matching_policy
 
 logger = logging.getLogger(__name__)
 
 
 # rapidfuzz score threshold for accepting a fuzzy match. The library's
-# ``WRatio`` returns 0-100; 85 is strict enough to avoid "Glucose" ↔
-# "Glucagon" collisions while catching real typos/language drift.
+# ``WRatio`` returns a textual similarity score from 0-100, not clinical
+# confidence. Candidates are restricted by the configured matching languages.
 FUZZY_THRESHOLD = 85
 
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
@@ -107,6 +108,7 @@ class AliasCache:
 
     _by_entity: dict[str, list[tuple[str, int]]] = field(default_factory=dict)
     _exact_by_entity: dict[str, dict[str, int]] = field(default_factory=dict)
+    policy: tuple[frozenset[str], bool] = field(default_factory=matching_policy)
 
     async def ensure_loaded(
         self,
@@ -116,7 +118,7 @@ class AliasCache:
         if entity in self._by_entity:
             return
         tables = _ENTITIES[entity]
-        lowered = await load_aliases_flat(db, tables.aliases, tables.alias_fk)
+        lowered = await load_aliases_flat(db, tables.aliases, tables.alias_fk, policy=self.policy)
         self._by_entity[entity] = lowered
         self._exact_by_entity[entity] = dict(lowered)  # last wins on dup; fine
 
@@ -129,6 +131,10 @@ class AliasCache:
         return self._by_entity.get(entity, [])
 
     def remember(self, entity: str, alias: str, norm_id: int) -> None:
+        if not self.policy[1]:
+            # Learned aliases have no known language. With that option off,
+            # they must not bypass the policy through the in-memory cache.
+            return
         key = (alias or "").strip().lower()
         if not key:
             return

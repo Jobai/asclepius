@@ -9,6 +9,7 @@ lab-results / diagnoses / medications machinery.
 
 import aiosqlite
 
+from asclepius.normalization.alias_lookup import find_matching_alias
 from asclepius.pipeline.entity_matching import canonicalize_code
 
 
@@ -52,13 +53,9 @@ async def _resolve_norm(
         if row:
             return row[0]
 
-    cursor = await db.execute(
-        f"SELECT {fk_col} FROM {alias_table} WHERE alias = ? COLLATE NOCASE",
-        (original,),
-    )
-    row = await cursor.fetchone()
-    if row:
-        return row[0]
+    alias_id = await find_matching_alias(db, alias_table, fk_col, original)
+    if alias_id is not None:
+        return alias_id
 
     if canonical:
         display = canonical.replace("-", " ").replace("_", " ").title()
@@ -67,8 +64,7 @@ async def _resolve_norm(
         placeholders = ", ".join(["?"] * len(col_names))
         params = [canonical, display, *extra_cols.values()]
         cursor = await db.execute(
-            f"INSERT OR IGNORE INTO {main_table} "
-            f"({', '.join(col_names)}) VALUES ({placeholders})",
+            f"INSERT OR IGNORE INTO {main_table} ({', '.join(col_names)}) VALUES ({placeholders})",
             params,
         )
         if cursor.lastrowid:

@@ -1791,6 +1791,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/normalization/matching-languages": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get Matching Languages
+     * @description Expose matching policy and languages present in the medical alias tables.
+     */
+    get: operations["get_matching_languages_api_normalization_matching_languages_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/normalization/{norm_type}": {
     parameters: {
       query?: never;
@@ -3628,6 +3648,10 @@ export interface components {
     };
     /** SettingsUpdate */
     SettingsUpdate: {
+      /** Normalization Matching Languages */
+      normalization_matching_languages?: string[] | null;
+      /** Normalization Include Unlabeled Aliases */
+      normalization_include_unlabeled_aliases?: boolean | null;
       /** Extraction Timeout */
       extraction_timeout?: number | null;
       /** Llm Max Concurrent Requests */
@@ -7771,6 +7795,44 @@ export interface operations {
       query?: {
         patient_id?: number | null;
       };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+      /** @description API error (code and params are additive when available) */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApiErrorResponse"];
+        };
+      };
+    };
+  };
+  get_matching_languages_api_normalization_matching_languages_get: {
+    parameters: {
+      query?: never;
       header?: never;
       path?: never;
       cookie?: never;

@@ -12,6 +12,7 @@ from asclepius.config import get_config
 from asclepius.db.connection import get_db
 from asclepius.normalization.auto_merge import suggest_merges
 from asclepius.normalization.service import NormService
+from asclepius.normalization.languages import selectable_language
 
 logger = logging.getLogger(__name__)
 
@@ -134,6 +135,31 @@ def _validate_type(norm_type: str) -> dict:
     if norm_type not in NORM_TABLES:
         raise HTTPException(status_code=400, detail=f"Invalid type: {norm_type}")
     return NORM_TABLES[norm_type]
+
+
+@router.get("/matching-languages")
+async def get_matching_languages(
+    current_user: dict = Depends(get_current_user),
+    db: aiosqlite.Connection = Depends(get_db),
+):
+    """Expose matching policy and languages present in the medical alias tables."""
+    config = get_config().normalization
+    available = {"de", "en", "nl", "fr", "it", "es", *config.matching_languages}
+    untagged_count = 0
+    for norm_type in ("lab_tests", "specialties", "diagnoses", "medications"):
+        table = NORM_TABLES[norm_type]["aliases"]
+        cursor = await db.execute(f"SELECT language, COUNT(*) FROM {table} GROUP BY language")
+        for language, count in await cursor.fetchall():
+            if language is None or not language.strip():
+                untagged_count += count
+            elif code := selectable_language(language):
+                available.add(code)
+    return {
+        **config.model_dump(),
+        "available_languages": sorted(available),
+        "unlabeled_alias_count": untagged_count,
+        "can_edit": current_user.get("role") == "admin",
+    }
 
 
 @router.get("/{norm_type}")

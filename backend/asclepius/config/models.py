@@ -4,7 +4,19 @@ Pure data definitions — no I/O, no globals, no env reading. All of that
 lives in :mod:`asclepius.config.resolver`.
 """
 
-from pydantic import BaseModel
+from typing import Annotated
+
+from pydantic import AfterValidator, BaseModel, Field, StringConstraints
+
+MatchingLanguages = Annotated[
+    list[
+        Annotated[
+            str, StringConstraints(strip_whitespace=True, to_lower=True, pattern=r"^[A-Za-z]{2,3}$")
+        ]
+    ],
+    Field(min_length=1, max_length=32),
+    AfterValidator(lambda values: list(dict.fromkeys(values))),
+]
 
 # Well-known placeholder that MUST NOT ship to production. We reject it at
 # startup when running in production mode.
@@ -459,6 +471,12 @@ class BackupConfig(BaseModel):
     retention_value: int = 7
 
 
+class NormalizationConfig(BaseModel):
+    # Matching policy is independent of UI, OCR and translation languages.
+    matching_languages: MatchingLanguages = Field(default_factory=lambda: ["de", "en"])
+    include_unlabeled_aliases: bool = True
+
+
 class AppConfig(BaseModel):
     server: ServerConfig = ServerConfig()
     database: DatabaseConfig = DatabaseConfig()
@@ -469,6 +487,7 @@ class AppConfig(BaseModel):
     llm: LlmConfig = LlmConfig()
     vision: VisionConfig = VisionConfig()
     pipeline: PipelineConfig = PipelineConfig()
+    normalization: NormalizationConfig = NormalizationConfig()
     backup: BackupConfig = BackupConfig()
     share: ShareConfig = ShareConfig()
     smtp: SmtpConfig = SmtpConfig()

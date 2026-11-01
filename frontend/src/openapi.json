@@ -5370,6 +5370,44 @@
         }
       }
     },
+    "/api/normalization/matching-languages": {
+      "get": {
+        "tags": ["normalization"],
+        "summary": "Get Matching Languages",
+        "description": "Expose matching policy and languages present in the medical alias tables.",
+        "operationId": "get_matching_languages_api_normalization_matching_languages_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "default": {
+            "description": "API error (code and params are additive when available)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/normalization/{norm_type}": {
       "get": {
         "tags": ["normalization"],
@@ -11288,6 +11326,34 @@
       },
       "SettingsUpdate": {
         "properties": {
+          "normalization_matching_languages": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z]{2,3}$"
+                },
+                "type": "array",
+                "maxItems": 32,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Normalization Matching Languages"
+          },
+          "normalization_include_unlabeled_aliases": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Normalization Include Unlabeled Aliases"
+          },
           "extraction_timeout": {
             "anyOf": [
               {

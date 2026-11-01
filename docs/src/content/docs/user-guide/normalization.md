@@ -74,6 +74,50 @@ and `de` are accepted, with at most 250 characters per name. Optional
 `display_names` objects in configured seed JSON files override bundled defaults
 per canonical code during the initial backfill.
 
+### Languages used for synonym matching
+
+Administrators can choose **Languages for synonym matching** in
+**Settings → Document Analysis → Normalization**. German (`de`) and English
+(`en`) are selected by default. Dutch (`nl`), French, Italian, Spanish and other
+language codes present in the stored aliases are also selectable. At least one
+language must remain selected. This global setting applies to lab tests,
+diagnoses, medication ingredients and specialties. Doctor and facility proper
+names retain their existing matching behavior.
+
+The selection filters both exact and fuzzy alias matching, the legacy extraction
+fallback and aliases used by merge suggestions, including the knowledge-base
+lookup. Excluded aliases remain stored and visible in the normalization editor;
+searching and reviewing them still works. Re-enabling their language makes them
+available to future matching again. No document reprocessing is triggered.
+
+**Also use synonyms without a language** is enabled by default. Automatically
+learned aliases currently have no language tag and follow this separate switch.
+An existing incorrect untagged alias therefore remains eligible while this
+switch is enabled, even if the language of the alias that originally caused
+the fuzzy match has been disabled. Changing the language selection does not
+repair existing aliases or assignments.
+
+Stored language tags use their base code: `de-DE`, `DE_de` and `de` all count
+as German. The setting is independent of UI language, OCR languages and the
+language selected for translating document content. Changes take effect on the
+next matching operation without restarting the application. An extraction
+already in progress retains its alias-cache policy for that operation.
+
+The corresponding YAML settings are:
+
+```yaml
+normalization:
+  matching_languages: [de, en, nl]
+  include_unlabeled_aliases: true
+```
+
+`GET /api/settings` exposes the `normalization` block. Administrators update it
+with `PATCH /api/settings`, using `normalization_matching_languages` and
+`normalization_include_unlabeled_aliases`. Language selections use two- or
+three-letter base codes and are trimmed, lowercased and deduplicated.
+`GET /api/normalization/matching-languages` returns the policy, available codes,
+the number of untagged medical aliases, and whether the caller can edit it.
+
 ### Doctors and facilities
 
 Doctors and facilities use the same normalization system as medical concepts. The existing `doctors` and `facilities` tables have been extended with `canonical_code` and `canonical_display` columns, and new alias tables (`doctor_aliases`, `facility_aliases`) enable the same alias management, merge, and review workflows.

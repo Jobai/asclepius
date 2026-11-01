@@ -60,6 +60,12 @@ ocr:
   # Ollama. Default 1 = one page at a time (safest for self-hosted Ollama).
   max_concurrent_vision_requests: 1
 
+# Languages used by medical-term synonym matching (independent of UI/OCR).
+# Disabled-language aliases remain in the database and can be enabled later.
+normalization:
+  matching_languages: [de, en] # add nl, fr, it, es, ... as needed
+  include_unlabeled_aliases: true
+
 llm:
   extraction_timeout: 120 # seconds — overall extraction call timeout
   max_concurrent_requests: 2 # how many LLM calls may run in parallel (1 = serialized)
