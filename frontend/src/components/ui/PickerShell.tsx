@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   cloneElement,
   isValidElement,
@@ -10,7 +11,11 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import Sheet from "@/components/ui/Sheet";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/Popover";
 
 export interface PickerShellProps {
   open: boolean;
@@ -46,11 +51,13 @@ export default function PickerShell({
   searchable = true,
   search = "",
   onSearchChange,
-  searchPlaceholder = "Search...",
+  searchPlaceholder: searchPlaceholderProp,
   header,
   children,
   panelClassName,
 }: PickerShellProps) {
+  const { t: ui } = useTranslation("common");
+  const searchPlaceholder = searchPlaceholderProp ?? ui("ui.searchPlaceholder");
   const isPhone = !useMediaQuery("(min-width: 640px)");
   const searchRef = useRef<HTMLInputElement>(null);
 

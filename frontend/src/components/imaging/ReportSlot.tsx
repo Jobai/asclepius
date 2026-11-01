@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useRef, useState } from "react";
 import api from "@/api/client";
 import { getErrorMessage } from "@/lib/errors";
@@ -87,12 +88,18 @@ export default function ReportSlot({
       setPickerSearch("");
       onChanged?.();
       toast({
-        title: pickerMode === "replace" ? "Report replaced" : "Report attached",
+        title:
+          pickerMode === "replace"
+            ? message("feedback.reportReplaced")
+            : message("feedback.reportAttached"),
         variant: "success",
       });
     } catch (e: any) {
       toast({
-        title: pickerMode === "replace" ? "Replace failed" : "Attach failed",
+        title:
+          pickerMode === "replace"
+            ? message("feedback.replaceFailed")
+            : message("feedback.attachFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -101,20 +108,20 @@ export default function ReportSlot({
 
   const handleDetach = async () => {
     const ok = await confirm({
-      title: "Detach this report?",
+      title: message("feedback.detachThisReport"),
       description:
         "The PDF document stays in the patient's documents list — only its link to this imaging study is removed. You can re-attach it (or a different one) anytime.",
       variant: "destructive",
-      confirmText: "Detach",
+      confirmText: message("feedback.detach"),
     });
     if (!ok) return;
     try {
       await api.delete(`/imaging/${studyId}/report`);
       onChanged?.();
-      toast({ title: "Report detached", variant: "success" });
+      toast({ title: message("feedback.reportDetached"), variant: "success" });
     } catch (e: any) {
       toast({
-        title: "Detach failed",
+        title: message("feedback.detachFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -124,7 +131,7 @@ export default function ReportSlot({
   const handleUpload = async (file: File) => {
     if (!file) return;
     if (!file.name.toLowerCase().endsWith(".pdf")) {
-      toast({ title: "Reports must be PDF", variant: "error" });
+      toast({ title: message("feedback.reportsMustBePdf"), variant: "error" });
       return;
     }
     setUploadBusy(true);
@@ -136,18 +143,19 @@ export default function ReportSlot({
       });
       if (res.data?.duplicate) {
         toast({
-          title: "Already in the system",
+          title: message("feedback.alreadyInTheSystem"),
           description:
             res.data?.message ||
-            "This PDF was already uploaded; it has been linked to this imaging study.",
+            message("feedback.thisPdfWasAlreadyUploadedItHasBeenLinkedTo"),
           variant: "success",
         });
         onChanged?.();
       } else {
         toast({
-          title: "Report queued",
-          description:
-            "The PDF is being processed; it will appear here when extraction finishes.",
+          title: message("feedback.reportQueued"),
+          description: message(
+            "feedback.thePdfIsBeingProcessedItWillAppearHereWhen",
+          ),
           variant: "success",
         });
         // Pipeline runs OCR + LLM; reload after a short delay so the user
@@ -156,7 +164,7 @@ export default function ReportSlot({
       }
     } catch (e: any) {
       toast({
-        title: "Upload failed",
+        title: message("feedback.uploadFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -219,7 +227,7 @@ export default function ReportSlot({
                 onChanged?.();
               } catch (e: any) {
                 toast({
-                  title: "Rotate failed",
+                  title: message("feedback.rotateFailed"),
                   description: getErrorMessage(e),
                   variant: "error",
                 });

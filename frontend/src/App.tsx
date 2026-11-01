@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
@@ -72,11 +73,12 @@ function useAppMode(): AppMode | null {
 }
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { t: ui } = useTranslation("common");
   const { user, loading, needsSetup } = useAuth();
   if (loading) {
     return (
       <div className="flex h-dvh items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="text-muted-foreground">{ui("ui.loading")}</div>
       </div>
     );
   }
@@ -92,11 +94,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
  * route can never reveal the install form a second time.
  */
 function SetupRoute() {
+  const { t: ui } = useTranslation("common");
   const { user, loading, needsSetup } = useAuth();
   if (loading) {
     return (
       <div className="flex h-dvh items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="text-muted-foreground">{ui("ui.loading")}</div>
       </div>
     );
   }
@@ -105,7 +108,7 @@ function SetupRoute() {
     <Suspense
       fallback={
         <div className="flex h-dvh items-center justify-center">
-          <div className="text-muted-foreground">Loading...</div>
+          <div className="text-muted-foreground">{ui("ui.loading")}</div>
         </div>
       }
     >

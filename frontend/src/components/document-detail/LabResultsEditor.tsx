@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useEffect, useMemo, useRef, useState } from "react";
 import api from "@/api/client";
 import { getErrorMessage } from "@/lib/errors";
@@ -183,7 +184,10 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
   const save = async () => {
     const name = (draft.test_name_original || "").trim();
     if (!name) {
-      toast({ title: "Test name is required", variant: "error" });
+      toast({
+        title: message("feedback.testNameIsRequired"),
+        variant: "error",
+      });
       return;
     }
     setSaving(true);
@@ -210,7 +214,7 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
     } catch (err: any) {
       const d = getErrorMessage(err, "Failed to save");
       toast({
-        title: typeof d === "string" ? d : "Failed to save",
+        title: typeof d === "string" ? d : message("feedback.failedToSave"),
         variant: "error",
       });
     } finally {
@@ -220,140 +224,132 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
 
   return (
     <div className="rounded border bg-muted/30 p-3 space-y-2">
-          <div className="grid gap-2 sm:grid-cols-2">
-            <label className="text-xs">
-              <span className="text-muted-foreground block mb-1">Test</span>
-              <TestPicker
-                value={draft.test_name_original || ""}
-                canonicalId={draft.norm_lab_test_id}
-                onPick={({ name, normId }) =>
-                  set({ test_name_original: name, norm_lab_test_id: normId })
-                }
-              />
-            </label>
-            <label className="text-xs">
-              <span className="text-muted-foreground block mb-1">Date</span>
-              <input
-                type="date"
-                value={draft.test_date || ""}
-                onChange={(e) => set({ test_date: e.target.value || null })}
-                className="w-full rounded border bg-background px-2 py-1 text-sm"
-              />
-            </label>
-            <label className="text-xs">
-              <span className="text-muted-foreground block mb-1">
-                Value (numeric)
-              </span>
-              <input
-                type="number"
-                step="any"
-                value={draft.value ?? ""}
-                onChange={(e) => set({ value: numOrNull(e.target.value) })}
-                className="w-full rounded border bg-background px-2 py-1 text-sm"
-              />
-            </label>
-            <label className="text-xs">
-              <span className="text-muted-foreground block mb-1">
-                Value (text)
-              </span>
-              <input
-                type="text"
-                value={draft.value_text || ""}
-                onChange={(e) => set({ value_text: e.target.value })}
-                placeholder="e.g. Positive, Negative"
-                className="w-full rounded border bg-background px-2 py-1 text-sm"
-              />
-            </label>
-            <label className="text-xs">
-              <span className="text-muted-foreground block mb-1">Unit</span>
-              <input
-                type="text"
-                value={draft.unit || ""}
-                onChange={(e) => set({ unit: e.target.value })}
-                className="w-full rounded border bg-background px-2 py-1 text-sm"
-              />
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              <label className="text-xs">
-                <span className="text-muted-foreground block mb-1">
-                  Ref low
-                </span>
-                <input
-                  type="number"
-                  step="any"
-                  value={draft.reference_range_low ?? ""}
-                  onChange={(e) =>
-                    set({ reference_range_low: numOrNull(e.target.value) })
-                  }
-                  className="w-full rounded border bg-background px-2 py-1 text-sm"
-                />
-              </label>
-              <label className="text-xs">
-                <span className="text-muted-foreground block mb-1">
-                  Ref high
-                </span>
-                <input
-                  type="number"
-                  step="any"
-                  value={draft.reference_range_high ?? ""}
-                  onChange={(e) =>
-                    set({ reference_range_high: numOrNull(e.target.value) })
-                  }
-                  className="w-full rounded border bg-background px-2 py-1 text-sm"
-                />
-              </label>
-            </div>
-            <label className="text-xs">
-              <span className="text-muted-foreground block mb-1">
-                Sample type
-              </span>
-              <input
-                type="text"
-                value={draft.sample_type || ""}
-                onChange={(e) => set({ sample_type: e.target.value })}
-                placeholder="e.g. serum, urine"
-                className="w-full rounded border bg-background px-2 py-1 text-sm"
-              />
-            </label>
-            <label className="text-xs">
-              <span className="text-muted-foreground block mb-1">Panel</span>
-              <input
-                type="text"
-                value={draft.panel_name || ""}
-                onChange={(e) => set({ panel_name: e.target.value })}
-                placeholder="e.g. CBC, Lipid"
-                className="w-full rounded border bg-background px-2 py-1 text-sm"
-              />
-            </label>
-          </div>
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 text-xs">
-              <input
-                type="checkbox"
-                checked={!!draft.is_abnormal}
-                onChange={(e) => set({ is_abnormal: e.target.checked })}
-              />
-              <span>Abnormal</span>
-            </label>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={onCancel}
-                disabled={saving}
-                className="rounded border px-3 py-1 text-xs coarse:min-h-11"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={save}
-                disabled={saving}
-                className="rounded bg-primary px-3 py-1 text-xs text-primary-foreground disabled:opacity-50 coarse:min-h-11"
-              >
-                {saving ? "Saving..." : draft.id ? "Save" : "Add"}
-              </button>
-            </div>
-          </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <label className="text-xs">
+          <span className="text-muted-foreground block mb-1">Test</span>
+          <TestPicker
+            value={draft.test_name_original || ""}
+            canonicalId={draft.norm_lab_test_id}
+            onPick={({ name, normId }) =>
+              set({ test_name_original: name, norm_lab_test_id: normId })
+            }
+          />
+        </label>
+        <label className="text-xs">
+          <span className="text-muted-foreground block mb-1">Date</span>
+          <input
+            type="date"
+            value={draft.test_date || ""}
+            onChange={(e) => set({ test_date: e.target.value || null })}
+            className="w-full rounded border bg-background px-2 py-1 text-sm"
+          />
+        </label>
+        <label className="text-xs">
+          <span className="text-muted-foreground block mb-1">
+            Value (numeric)
+          </span>
+          <input
+            type="number"
+            step="any"
+            value={draft.value ?? ""}
+            onChange={(e) => set({ value: numOrNull(e.target.value) })}
+            className="w-full rounded border bg-background px-2 py-1 text-sm"
+          />
+        </label>
+        <label className="text-xs">
+          <span className="text-muted-foreground block mb-1">Value (text)</span>
+          <input
+            type="text"
+            value={draft.value_text || ""}
+            onChange={(e) => set({ value_text: e.target.value })}
+            placeholder="e.g. Positive, Negative"
+            className="w-full rounded border bg-background px-2 py-1 text-sm"
+          />
+        </label>
+        <label className="text-xs">
+          <span className="text-muted-foreground block mb-1">Unit</span>
+          <input
+            type="text"
+            value={draft.unit || ""}
+            onChange={(e) => set({ unit: e.target.value })}
+            className="w-full rounded border bg-background px-2 py-1 text-sm"
+          />
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <label className="text-xs">
+            <span className="text-muted-foreground block mb-1">Ref low</span>
+            <input
+              type="number"
+              step="any"
+              value={draft.reference_range_low ?? ""}
+              onChange={(e) =>
+                set({ reference_range_low: numOrNull(e.target.value) })
+              }
+              className="w-full rounded border bg-background px-2 py-1 text-sm"
+            />
+          </label>
+          <label className="text-xs">
+            <span className="text-muted-foreground block mb-1">Ref high</span>
+            <input
+              type="number"
+              step="any"
+              value={draft.reference_range_high ?? ""}
+              onChange={(e) =>
+                set({ reference_range_high: numOrNull(e.target.value) })
+              }
+              className="w-full rounded border bg-background px-2 py-1 text-sm"
+            />
+          </label>
+        </div>
+        <label className="text-xs">
+          <span className="text-muted-foreground block mb-1">Sample type</span>
+          <input
+            type="text"
+            value={draft.sample_type || ""}
+            onChange={(e) => set({ sample_type: e.target.value })}
+            placeholder="e.g. serum, urine"
+            className="w-full rounded border bg-background px-2 py-1 text-sm"
+          />
+        </label>
+        <label className="text-xs">
+          <span className="text-muted-foreground block mb-1">Panel</span>
+          <input
+            type="text"
+            value={draft.panel_name || ""}
+            onChange={(e) => set({ panel_name: e.target.value })}
+            placeholder="e.g. CBC, Lipid"
+            className="w-full rounded border bg-background px-2 py-1 text-sm"
+          />
+        </label>
+      </div>
+      <div className="flex items-center justify-between">
+        <label className="flex items-center gap-2 text-xs">
+          <input
+            type="checkbox"
+            checked={!!draft.is_abnormal}
+            onChange={(e) => set({ is_abnormal: e.target.checked })}
+          />
+          <span>Abnormal</span>
+        </label>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={saving}
+            className="rounded border px-3 py-1 text-xs coarse:min-h-11"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={save}
+            disabled={saving}
+            className="rounded bg-primary px-3 py-1 text-xs text-primary-foreground disabled:opacity-50 coarse:min-h-11"
+          >
+            {saving ? "Saving..." : draft.id ? "Save" : "Add"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -396,7 +392,7 @@ export default function LabResultsEditor({
   const startAdd = () => {
     if (!patientId) {
       toast({
-        title: "Assign a patient to this document first",
+        title: message("feedback.assignAPatientToThisDocumentFirst"),
         variant: "error",
       });
       return;
@@ -411,7 +407,7 @@ export default function LabResultsEditor({
 
   const del = async (id: number) => {
     const ok = await confirm({
-      title: "Delete this lab result?",
+      title: message("feedback.deleteThisLabResult"),
       variant: "destructive",
     });
     if (!ok) return;
@@ -421,7 +417,7 @@ export default function LabResultsEditor({
     } catch (err: any) {
       const d = getErrorMessage(err, "Failed to delete");
       toast({
-        title: typeof d === "string" ? d : "Failed to delete",
+        title: typeof d === "string" ? d : message("feedback.failedToDelete"),
         variant: "error",
       });
     }

@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Shared UI labels and date/number formatting now follow the selected interface
+  language. Existing application notifications and confirmation dialogs update
+  their translations in place. Clinical text values and raw edit payloads retain
+  their original representation; stored timestamps keep their UTC semantics.
+
 - `POST /api/share/heartbeat` now answers 200 with `{"active": bool}`
   instead of an empty 204, so the doctor share page learns that its session
   ended without first collecting 401s.

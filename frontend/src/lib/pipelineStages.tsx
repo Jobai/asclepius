@@ -1,3 +1,5 @@
+import { i18n } from "@/i18n";
+import type { CommonKey, CommonTranslator } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import {
   ScanText,
@@ -24,23 +26,29 @@ import {
  * ``STAGE_*`` constants there.
  */
 export interface StageMeta {
-  label: string;
+  labelKey: CommonKey;
   icon?: LucideIcon;
 }
 
 export const STAGE_META: Record<string, StageMeta> = {
-  ocr: { label: "OCR", icon: ScanText },
-  vision_extraction: { label: "Vision extraction", icon: Eye },
-  llm_extraction: { label: "LLM extraction", icon: Brain },
-  page_classification: { label: "Page classification", icon: FileSearch },
-  section_extraction: { label: "Section extraction", icon: Layers },
-  organizing: { label: "Organizing", icon: FolderOutput },
-  thumbnail: { label: "Thumbnail", icon: FileImage },
-  cache_ocr: { label: "Cache OCR", icon: ScanText },
-  translation: { label: "Translation", icon: Languages },
-  region_ocr: { label: "Region OCR", icon: ScanText },
-  region_translation: { label: "Region translation", icon: Languages },
-  ai_edit: { label: "AI edit", icon: Brain },
+  ocr: { labelKey: "stages.ocr", icon: ScanText },
+  vision_extraction: { labelKey: "stages.vision_extraction", icon: Eye },
+  llm_extraction: { labelKey: "stages.llm_extraction", icon: Brain },
+  page_classification: {
+    labelKey: "stages.page_classification",
+    icon: FileSearch,
+  },
+  section_extraction: { labelKey: "stages.section_extraction", icon: Layers },
+  organizing: { labelKey: "stages.organizing", icon: FolderOutput },
+  thumbnail: { labelKey: "stages.thumbnail", icon: FileImage },
+  cache_ocr: { labelKey: "stages.cache_ocr", icon: ScanText },
+  translation: { labelKey: "stages.translation", icon: Languages },
+  region_ocr: { labelKey: "stages.region_ocr", icon: ScanText },
+  region_translation: {
+    labelKey: "stages.region_translation",
+    icon: Languages,
+  },
+  ai_edit: { labelKey: "stages.ai_edit", icon: Brain },
 };
 
 /**
@@ -49,9 +57,13 @@ export const STAGE_META: Record<string, StageMeta> = {
  * added backend stage still renders something sensible). Returns ``""`` for
  * empty input.
  */
-export function stageLabel(stage: string | null | undefined): string {
+export function stageLabel(
+  stage: string | null | undefined,
+  t: CommonTranslator = i18n.getFixedT(null, "common"),
+): string {
   if (!stage) return "";
-  return STAGE_META[stage]?.label ?? stage.replace(/_/g, " ");
+  const key = STAGE_META[stage]?.labelKey;
+  return key ? t(key) : stage.replace(/_/g, " ");
 }
 
 /**
@@ -93,16 +105,25 @@ export function flowBadge(
  * Format a coarse elapsed time (in ms) for the live "running" readouts:
  * ``0s`` · ``45s`` · ``3m 20s`` · ``1h 05m``.
  */
-export function formatElapsed(ms: number): string {
-  if (ms < 1000) return "0s";
+export function formatElapsed(ms: number, locale = "en-GB"): string {
+  const unit = (value: number, unit: string, pad = false) =>
+    new Intl.NumberFormat(locale, {
+      style: "unit",
+      unit,
+      unitDisplay: "narrow",
+      maximumFractionDigits: 0,
+      minimumIntegerDigits: pad ? 2 : 1,
+      useGrouping: false,
+    }).format(value);
+  if (ms < 1000) return unit(0, "second");
   const s = Math.floor(ms / 1000);
-  if (s < 60) return `${s}s`;
+  if (s < 60) return unit(s, "second");
   const m = Math.floor(s / 60);
   const rs = s % 60;
-  if (m < 60) return `${m}m ${rs.toString().padStart(2, "0")}s`;
+  if (m < 60) return `${unit(m, "minute")} ${unit(rs, "second", true)}`;
   const h = Math.floor(m / 60);
   const rm = m % 60;
-  return `${h}h ${rm}m`;
+  return `${unit(h, "hour")} ${unit(rm, "minute")}`;
 }
 
 /**

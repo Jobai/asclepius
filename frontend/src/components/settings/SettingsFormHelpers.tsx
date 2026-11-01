@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import React, { useState } from "react";
 import api from "@/api/client";
 import { getErrorMessage } from "@/lib/errors";
@@ -183,7 +184,7 @@ export function useSettingsSave() {
       }
     } catch (e: any) {
       toast({
-        title: "Failed to save settings",
+        title: message("feedback.failedToSaveSettings"),
         description: getErrorMessage(e),
         variant: "error",
       });

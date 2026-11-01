@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import { Send, Loader2 } from "lucide-react";
 import api from "@/api/client";
@@ -142,7 +143,7 @@ export default function SmtpTab() {
   const onTest = async () => {
     if (!testTo.trim()) {
       toast({
-        title: "Enter a recipient address first",
+        title: message("feedback.enterARecipientAddressFirst"),
         variant: "error",
       });
       return;
@@ -150,10 +151,13 @@ export default function SmtpTab() {
     setTesting(true);
     try {
       await api.post("/settings/smtp/test", { to: testTo.trim() });
-      toast({ title: `Test email sent to ${testTo}`, variant: "success" });
+      toast({
+        title: message("feedback.testEmailSentTo", { value0: String(testTo) }),
+        variant: "success",
+      });
     } catch (err: any) {
       toast({
-        title: "Test send failed",
+        title: message("feedback.testSendFailed"),
         description: getErrorMessage(err),
         variant: "error",
       });

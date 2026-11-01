@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import api from "@/api/client";
 import { Stethoscope } from "lucide-react";
@@ -37,7 +38,10 @@ export default function EventSelector({
       const res = await api.post(`/events/suggest-for-document/${docId}`);
       setSuggestion(res.data);
     } catch {
-      toast({ title: "Failed to get suggestion", variant: "error" });
+      toast({
+        title: message("feedback.failedToGetSuggestion"),
+        variant: "error",
+      });
     }
     setSuggesting(false);
   };

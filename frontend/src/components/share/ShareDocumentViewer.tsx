@@ -1,6 +1,15 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
-import { ChevronLeft, ChevronRight, FileText, X, ZoomIn, ZoomOut } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 
 import shareApi from "@/api/shareClient";
 import { cn } from "@/lib/utils";
@@ -76,9 +85,10 @@ export default function ShareDocumentViewer({
   onSelectionConfirm,
   onSelectionCancel,
 }: ShareDocumentViewerProps) {
+  const renderMessage = useMessage();
   const [pdfData, setPdfData] = useState<Uint8Array | null>(null);
   const [imageBlobUrl, setImageBlobUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<UiMessage | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [numPages, setNumPages] = useState(0);
@@ -185,9 +195,11 @@ export default function ShareDocumentViewer({
         if (!alive) return;
         const status = err?.response?.status;
         if (status === 415) {
-          setError("This file format is not viewable in the share view.");
+          setError(
+            message("feedback.thisFileFormatIsNotViewableInTheShareView"),
+          );
         } else {
-          setError("Failed to load file.");
+          setError(message("feedback.failedToLoadFile"));
         }
         setLoading(false);
       });
@@ -288,8 +300,7 @@ export default function ShareDocumentViewer({
       const ox = focalX + containerRect.left - wrapperRect.left;
       const oy = focalY + containerRect.top - wrapperRect.top;
       const clampedRatio =
-        clampScale(effectiveScale * ratio, ZOOM_MIN, ZOOM_MAX) /
-        effectiveScale;
+        clampScale(effectiveScale * ratio, ZOOM_MIN, ZOOM_MAX) / effectiveScale;
       wrapper.style.transformOrigin = `${ox}px ${oy}px`;
       wrapper.style.transform = `scale(${clampedRatio})`;
       wrapper.style.willChange = "transform";
@@ -397,7 +408,7 @@ export default function ShareDocumentViewer({
     return (
       <div className="rounded-lg border p-8 text-center text-muted-foreground space-y-2">
         <FileText className="h-10 w-10 mx-auto text-warning" />
-        <p className="text-sm">{error}</p>
+        <p className="text-sm">{renderMessage(error ?? undefined)}</p>
       </div>
     );
   }
@@ -511,7 +522,7 @@ export default function ShareDocumentViewer({
               setNumPages(numPages);
               setPageNumber((p) => (p > numPages ? 1 : p));
             }}
-            onLoadError={() => setError("Failed to render PDF.")}
+            onLoadError={() => setError(message("feedback.failedToRenderPdf"))}
             loading={
               <div className="py-8 text-sm text-muted-foreground">
                 Loading PDF...
@@ -558,8 +569,7 @@ export default function ShareDocumentViewer({
                   onCancel={selection.cancel}
                   position={{
                     left: selection.lockedRect.x,
-                    top:
-                      selection.lockedRect.y + selection.lockedRect.h + 4,
+                    top: selection.lockedRect.y + selection.lockedRect.h + 4,
                   }}
                 />
               )}

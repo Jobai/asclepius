@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "@/api/client";
@@ -5,7 +6,12 @@ import { getErrorMessage } from "@/lib/errors";
 import { useConfirm } from "@/contexts/ConfirmContext";
 import { buildBulkConfirm, shouldConfirmBulk } from "@/lib/confirmBulk";
 import { useToast } from "@/contexts/ToastContext";
-import { DEFAULT_NORM, isNormType, type NormItem, type NormType } from "./types";
+import {
+  DEFAULT_NORM,
+  isNormType,
+  type NormItem,
+  type NormType,
+} from "./types";
 import { type AutoMergeProposal } from "./AutoMergePanel";
 
 /**
@@ -114,7 +120,7 @@ export function useNormalization() {
     if (batchTargetId === -1) {
       if (!batchNewDisplay.trim()) {
         toast({
-          title: "Display name is required for a new target.",
+          title: message("feedback.displayNameIsRequiredForANewTarget"),
           variant: "warning",
         });
         return;
@@ -138,9 +144,14 @@ export function useNormalization() {
     }
 
     const ok = await confirm({
-      title: `Merge ${sources.length} entries?`,
-      description: `Aliases and references will be moved into ${label}, and the source rows will be deleted.`,
-      confirmText: "Merge",
+      title: message("feedback.mergeEntries", {
+        value0: String(sources.length),
+      }),
+      description: message(
+        "feedback.aliasesAndReferencesWillBeMovedIntoAndTheSource",
+        { value0: String(label) },
+      ),
+      confirmText: message("feedback.merge"),
       variant: "destructive",
     });
     if (!ok) return;
@@ -149,7 +160,7 @@ export function useNormalization() {
     } catch (err: any) {
       const d = getErrorMessage(err, "Merge failed");
       toast({
-        title: "Merge failed",
+        title: message("feedback.mergeFailed"),
         description: typeof d === "string" ? d : JSON.stringify(d),
         variant: "error",
       });
@@ -231,7 +242,7 @@ export function useNormalization() {
     } catch (err: any) {
       const d = getErrorMessage(err, "Auto-merge request failed");
       toast({
-        title: "Auto-merge failed",
+        title: message("feedback.autoMergeFailed"),
         description: typeof d === "string" ? d : JSON.stringify(d),
         variant: "error",
       });
@@ -242,9 +253,10 @@ export function useNormalization() {
 
   const handleDelete = async (id: number, name: string) => {
     const ok = await confirm({
-      title: `Delete "${name}"?`,
-      description:
-        "References from documents, encounters, imaging, and lab results will be cleared (the documents stay, they just lose this classification). Aliases will also be removed.",
+      title: message("feedback.delete", { value0: String(name) }),
+      description: message(
+        "feedback.referencesFromDocumentsEncountersImagingAndLabResultsWillBe",
+      ),
       variant: "destructive",
     });
     if (!ok) return;
@@ -253,7 +265,7 @@ export function useNormalization() {
     } catch (err: any) {
       const d = getErrorMessage(err, "Delete failed");
       toast({
-        title: "Delete failed",
+        title: message("feedback.deleteFailed"),
         description: typeof d === "string" ? d : JSON.stringify(d),
         variant: "error",
       });
@@ -281,12 +293,12 @@ export function useNormalization() {
       const ok = await confirm(
         buildBulkConfirm({
           count: sources.length,
-          verb: "Merge",
-          noun: "entry",
+          action: "merge",
           targetLabel,
-          description:
-            "Aliases and references will be moved into the target and the source rows will be deleted.",
-          confirmText: "Merge",
+          description: message(
+            "feedback.aliasesAndReferencesWillBeMovedIntoTheTargetAnd",
+          ),
+          confirmText: message("feedback.merge"),
           variant: "destructive",
         }),
       );
@@ -351,7 +363,7 @@ export function useNormalization() {
 
   const handleDeleteAlias = async (aliasId: number) => {
     const ok = await confirm({
-      title: "Delete this alias?",
+      title: message("feedback.deleteThisAlias"),
       variant: "destructive",
     });
     if (!ok) return;
@@ -378,7 +390,7 @@ export function useNormalization() {
     if (targetId === -1) {
       if (!rowNewDisplay.trim()) {
         toast({
-          title: "Display name is required for a new target.",
+          title: message("feedback.displayNameIsRequiredForANewTarget"),
           variant: "warning",
         });
         return;
@@ -396,9 +408,12 @@ export function useNormalization() {
       payload = { source_ids: [sourceId], target_id: targetId };
     }
     const ok = await confirm({
-      title: "Merge this entry?",
-      description: `All aliases and references will be moved into ${label}, and the source row will be deleted.`,
-      confirmText: "Merge",
+      title: message("feedback.mergeThisEntry"),
+      description: message(
+        "feedback.allAliasesAndReferencesWillBeMovedIntoAndThe",
+        { value0: String(label) },
+      ),
+      confirmText: message("feedback.merge"),
       variant: "destructive",
     });
     if (!ok) return;
@@ -407,7 +422,7 @@ export function useNormalization() {
     } catch (err: any) {
       const d = getErrorMessage(err, "Merge failed");
       toast({
-        title: "Merge failed",
+        title: message("feedback.mergeFailed"),
         description: typeof d === "string" ? d : JSON.stringify(d),
         variant: "error",
       });

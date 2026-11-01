@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
@@ -189,7 +190,7 @@ function GeneralLlmCard({
       setTimeout(() => setSaved(false), 2500);
     } catch (e: any) {
       toast({
-        title: "Failed to save General LLM",
+        title: message("feedback.failedToSaveGeneralLlm"),
         description: getErrorMessage(e, ""),
         variant: "error",
       });
@@ -354,7 +355,7 @@ function TranslationDefaultsCard({
       setTimeout(() => setSaved(false), 2500);
     } catch (e: any) {
       toast({
-        title: "Failed to save translation defaults",
+        title: message("feedback.failedToSaveTranslationDefaults"),
         description: getErrorMessage(e, ""),
         variant: "error",
       });
@@ -471,7 +472,11 @@ export default function PriorityTab() {
   const ocr = useMemo(() => asSorted(ocrData), [ocrData]) as OcrProvider[];
 
   useEffect(() => {
-    if (credErr) toast({ title: "Failed to load routing", variant: "error" });
+    if (credErr)
+      toast({
+        title: message("feedback.failedToLoadRouting"),
+        variant: "error",
+      });
   }, [credErr, toast]);
 
   const reloadAll = async () => {

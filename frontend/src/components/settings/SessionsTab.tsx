@@ -1,10 +1,12 @@
+import { useUiFormat } from "@/lib/formatting";
+import { message } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import api from "@/api/client";
 import { getErrorMessage } from "@/lib/errors";
 import { useConfirm } from "@/contexts/ConfirmContext";
 import { useToast } from "@/contexts/ToastContext";
 import { RefreshCw, Trash2, Monitor, Smartphone, Globe } from "lucide-react";
-import { formatDateTime, formatRelative, parseBackendTs } from "@/lib/datetime";
+import { parseBackendTs } from "@/lib/datetime";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Badge from "@/components/ui/Badge";
@@ -71,6 +73,7 @@ function statusBadge(
 }
 
 export default function SessionsTab() {
+  const { formatDateTime, formatRelative } = useUiFormat();
   const confirm = useConfirm();
   const { toast } = useToast();
   const [sessions, setSessions] = useState<SessionRow[]>([]);
@@ -88,7 +91,7 @@ export default function SessionsTab() {
       setSessions(res.data.items || []);
     } catch (err: any) {
       toast({
-        title: "Failed to load sessions",
+        title: message("feedback.failedToLoadSessions"),
         description: getErrorMessage(err, ""),
         variant: "error",
       });
@@ -127,10 +130,15 @@ export default function SessionsTab() {
       ? " This is your current session — you will be logged out immediately."
       : "";
     const ok = await confirm({
-      title: `Revoke session for ${row.username}?`,
-      description: `The user will be signed out on their next request.${warningSelf}`,
+      title: message("feedback.revokeSessionFor", {
+        value0: String(row.username),
+      }),
+      description: message(
+        "feedback.theUserWillBeSignedOutOnTheirNextRequest",
+        { value0: String(warningSelf) },
+      ),
       variant: "destructive",
-      confirmText: "Revoke",
+      confirmText: message("feedback.revoke"),
     });
     if (!ok) return;
     setBusyId(row.session_id);
@@ -146,7 +154,7 @@ export default function SessionsTab() {
       await load();
     } catch (err: any) {
       toast({
-        title: "Revoke failed",
+        title: message("feedback.revokeFailed"),
         description: getErrorMessage(err, ""),
         variant: "error",
       });
@@ -199,176 +207,178 @@ export default function SessionsTab() {
         </div>
       ) : (
         <>
-        {/* md+ table */}
-        <div className="hidden overflow-hidden rounded-lg border md:block">
-          <table className="w-full text-sm">
-            <thead className="border-b bg-muted/50">
-              <tr>
-                <th className="px-3 py-2 text-left font-medium">User</th>
-                <th className="px-3 py-2 text-left font-medium">Client</th>
-                <th className="px-3 py-2 text-left font-medium">IP</th>
-                <th className="px-3 py-2 text-left font-medium">Last active</th>
-                <th className="px-3 py-2 text-left font-medium">Created</th>
-                <th className="px-3 py-2 text-left font-medium">Expires</th>
-                <th className="px-3 py-2 text-left font-medium">Status</th>
-                <th className="px-3 py-2 text-left font-medium w-px whitespace-nowrap">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {filtered.map((s) => {
-                const { label: uaLabel, icon: UAIcon } = describeUserAgent(
-                  s.user_agent,
-                );
-                const isRevoked = s.revoked_at !== null;
-                const expiresMs = parseBackendTs(s.expires_at);
-                const isExpired =
-                  !isRevoked && expiresMs != null && expiresMs < Date.now();
-                return (
-                  <tr
-                    key={s.session_id}
-                    className={
-                      isRevoked || isExpired
-                        ? "opacity-60"
-                        : s.is_current
-                          ? "bg-primary/5"
-                          : ""
-                    }
-                  >
-                    <td className="px-3 py-1.5">
-                      <div className="font-medium">
-                        {s.display_name || s.username}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        @{s.username} • {s.role}
-                      </div>
-                    </td>
-                    <td className="px-3 py-1.5">
-                      <span
-                        className="inline-flex items-center gap-1.5"
-                        title={s.user_agent || ""}
-                      >
-                        <UAIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="truncate max-w-[180px]">
-                          {uaLabel}
-                        </span>
-                      </span>
-                    </td>
-                    <td className="px-3 py-1.5 font-mono text-xs text-muted-foreground">
-                      {s.ip_address || "—"}
-                    </td>
-                    <td
-                      className="px-3 py-1.5 text-muted-foreground"
-                      title={formatDateTime(s.last_active_at)}
+          {/* md+ table */}
+          <div className="hidden overflow-hidden rounded-lg border md:block">
+            <table className="w-full text-sm">
+              <thead className="border-b bg-muted/50">
+                <tr>
+                  <th className="px-3 py-2 text-left font-medium">User</th>
+                  <th className="px-3 py-2 text-left font-medium">Client</th>
+                  <th className="px-3 py-2 text-left font-medium">IP</th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    Last active
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">Created</th>
+                  <th className="px-3 py-2 text-left font-medium">Expires</th>
+                  <th className="px-3 py-2 text-left font-medium">Status</th>
+                  <th className="px-3 py-2 text-left font-medium w-px whitespace-nowrap">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {filtered.map((s) => {
+                  const { label: uaLabel, icon: UAIcon } = describeUserAgent(
+                    s.user_agent,
+                  );
+                  const isRevoked = s.revoked_at !== null;
+                  const expiresMs = parseBackendTs(s.expires_at);
+                  const isExpired =
+                    !isRevoked && expiresMs != null && expiresMs < Date.now();
+                  return (
+                    <tr
+                      key={s.session_id}
+                      className={
+                        isRevoked || isExpired
+                          ? "opacity-60"
+                          : s.is_current
+                            ? "bg-primary/5"
+                            : ""
+                      }
                     >
-                      {formatRelative(s.last_active_at, "past")}
-                    </td>
-                    <td
-                      className="px-3 py-1.5 text-muted-foreground"
-                      title={formatDateTime(s.created_at)}
-                    >
-                      {formatRelative(s.created_at, "past")}
-                    </td>
-                    <td
-                      className="px-3 py-1.5 text-muted-foreground"
-                      title={formatDateTime(s.expires_at)}
-                    >
-                      {formatRelative(s.expires_at, "future")}
-                    </td>
-                    <td className="px-3 py-1.5">
-                      {statusBadge(isRevoked, isExpired, s.is_current)}
-                    </td>
-                    <td className="px-3 py-1.5 whitespace-nowrap">
-                      {!isRevoked && !isExpired && (
-                        <button
-                          onClick={() => revoke(s)}
-                          disabled={busyId === s.session_id}
-                          className="flex items-center gap-1 rounded-md border border-destructive/30 px-2 py-1 text-xs text-destructive hover:bg-destructive-soft disabled:opacity-50 coarse:min-h-11"
-                          title="Revoke this session"
+                      <td className="px-3 py-1.5">
+                        <div className="font-medium">
+                          {s.display_name || s.username}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          @{s.username} • {s.role}
+                        </div>
+                      </td>
+                      <td className="px-3 py-1.5">
+                        <span
+                          className="inline-flex items-center gap-1.5"
+                          title={s.user_agent || ""}
                         >
-                          <Trash2 className="h-3 w-3" /> Revoke
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                          <UAIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="truncate max-w-[180px]">
+                            {uaLabel}
+                          </span>
+                        </span>
+                      </td>
+                      <td className="px-3 py-1.5 font-mono text-xs text-muted-foreground">
+                        {s.ip_address || "—"}
+                      </td>
+                      <td
+                        className="px-3 py-1.5 text-muted-foreground"
+                        title={formatDateTime(s.last_active_at)}
+                      >
+                        {formatRelative(s.last_active_at, "past")}
+                      </td>
+                      <td
+                        className="px-3 py-1.5 text-muted-foreground"
+                        title={formatDateTime(s.created_at)}
+                      >
+                        {formatRelative(s.created_at, "past")}
+                      </td>
+                      <td
+                        className="px-3 py-1.5 text-muted-foreground"
+                        title={formatDateTime(s.expires_at)}
+                      >
+                        {formatRelative(s.expires_at, "future")}
+                      </td>
+                      <td className="px-3 py-1.5">
+                        {statusBadge(isRevoked, isExpired, s.is_current)}
+                      </td>
+                      <td className="px-3 py-1.5 whitespace-nowrap">
+                        {!isRevoked && !isExpired && (
+                          <button
+                            onClick={() => revoke(s)}
+                            disabled={busyId === s.session_id}
+                            className="flex items-center gap-1 rounded-md border border-destructive/30 px-2 py-1 text-xs text-destructive hover:bg-destructive-soft disabled:opacity-50 coarse:min-h-11"
+                            title="Revoke this session"
+                          >
+                            <Trash2 className="h-3 w-3" /> Revoke
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-        {/* < md stacked cards */}
-        <ul className="divide-y overflow-hidden rounded-lg border bg-card md:hidden">
-          {filtered.map((s) => {
-            const { label: uaLabel, icon: UAIcon } = describeUserAgent(
-              s.user_agent,
-            );
-            const isRevoked = s.revoked_at !== null;
-            const expiresMs = parseBackendTs(s.expires_at);
-            const isExpired =
-              !isRevoked && expiresMs != null && expiresMs < Date.now();
-            return (
-              <li
-                key={s.session_id}
-                className={`space-y-2 p-3 ${
-                  isRevoked || isExpired
-                    ? "opacity-60"
-                    : s.is_current
-                      ? "bg-primary/5"
-                      : ""
-                }`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">
-                      {s.display_name || s.username}
-                    </p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      @{s.username} · {s.role}
-                    </p>
-                  </div>
-                  <span className="shrink-0">
-                    {statusBadge(isRevoked, isExpired, s.is_current)}
-                  </span>
-                </div>
-                <div
-                  className="flex items-center gap-1.5 text-xs text-muted-foreground"
-                  title={s.user_agent || ""}
+          {/* < md stacked cards */}
+          <ul className="divide-y overflow-hidden rounded-lg border bg-card md:hidden">
+            {filtered.map((s) => {
+              const { label: uaLabel, icon: UAIcon } = describeUserAgent(
+                s.user_agent,
+              );
+              const isRevoked = s.revoked_at !== null;
+              const expiresMs = parseBackendTs(s.expires_at);
+              const isExpired =
+                !isRevoked && expiresMs != null && expiresMs < Date.now();
+              return (
+                <li
+                  key={s.session_id}
+                  className={`space-y-2 p-3 ${
+                    isRevoked || isExpired
+                      ? "opacity-60"
+                      : s.is_current
+                        ? "bg-primary/5"
+                        : ""
+                  }`}
                 >
-                  <UAIcon className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">{uaLabel}</span>
-                  {s.ip_address && (
-                    <span className="shrink-0 font-mono">
-                      · {s.ip_address}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">
+                        {s.display_name || s.username}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        @{s.username} · {s.role}
+                      </p>
+                    </div>
+                    <span className="shrink-0">
+                      {statusBadge(isRevoked, isExpired, s.is_current)}
                     </span>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-                  <span title={formatDateTime(s.last_active_at)}>
-                    active {formatRelative(s.last_active_at, "past")}
-                  </span>
-                  <span title={formatDateTime(s.created_at)}>
-                    created {formatRelative(s.created_at, "past")}
-                  </span>
-                  <span title={formatDateTime(s.expires_at)}>
-                    expires {formatRelative(s.expires_at, "future")}
-                  </span>
-                </div>
-                {!isRevoked && !isExpired && (
-                  <Button
-                    variant="secondary"
-                    onClick={() => revoke(s)}
-                    disabled={busyId === s.session_id}
-                    className="border-destructive/30 text-destructive hover:bg-destructive-soft active:bg-destructive-soft"
+                  </div>
+                  <div
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground"
+                    title={s.user_agent || ""}
                   >
-                    <Trash2 className="h-3.5 w-3.5" /> Revoke
-                  </Button>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+                    <UAIcon className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{uaLabel}</span>
+                    {s.ip_address && (
+                      <span className="shrink-0 font-mono">
+                        · {s.ip_address}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                    <span title={formatDateTime(s.last_active_at)}>
+                      active {formatRelative(s.last_active_at, "past")}
+                    </span>
+                    <span title={formatDateTime(s.created_at)}>
+                      created {formatRelative(s.created_at, "past")}
+                    </span>
+                    <span title={formatDateTime(s.expires_at)}>
+                      expires {formatRelative(s.expires_at, "future")}
+                    </span>
+                  </div>
+                  {!isRevoked && !isExpired && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => revoke(s)}
+                      disabled={busyId === s.session_id}
+                      className="border-destructive/30 text-destructive hover:bg-destructive-soft active:bg-destructive-soft"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Revoke
+                    </Button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         </>
       )}
     </div>

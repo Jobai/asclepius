@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -76,6 +77,7 @@ export default function Sheet({
   dismissible = true,
   children,
 }: SheetProps) {
+  const { t: ui } = useTranslation("common");
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -123,7 +125,11 @@ export default function Sheet({
             </div>
             {!hideCloseButton && (
               <Dialog.Close asChild>
-                <IconButton label="Close" size="sm" className="-mr-1">
+                <IconButton
+                  label={ui("actions.close")}
+                  size="sm"
+                  className="-mr-1"
+                >
                   <X className="h-4 w-4" />
                 </IconButton>
               </Dialog.Close>

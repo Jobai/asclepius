@@ -91,6 +91,7 @@ function TabPane({ tab }: { tab: TabKey }) {
 }
 
 export default function SettingsPage() {
+  const { t: ui } = useTranslation("common");
   const { t } = useTranslation("settings");
   // URL-driven active tab so refresh / copy-paste / back-nav all land on the
   // correct page. Nested panes (Document Analysis sub-tabs, Access sub-tabs,
@@ -160,7 +161,7 @@ export default function SettingsPage() {
         <div className="sticky top-0 z-sticky -mx-4 bg-background/95 px-4 py-2 backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <IconButton
-              label="Back to settings"
+              label={ui("ui.backSettings")}
               onClick={() => navigate("/settings")}
             >
               <ArrowLeft className="h-5 w-5" />

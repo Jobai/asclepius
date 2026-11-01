@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Check, ChevronDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,7 @@ export default function MultiSelect({
   onChange,
   searchable = true,
 }: MultiSelectProps) {
+  const { t: ui } = useTranslation("common");
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -97,7 +99,7 @@ export default function MultiSelect({
           {hasActive && (
             <span
               role="button"
-              aria-label="Clear filter"
+              aria-label={ui("ui.clearFilter")}
               onClick={(e) => {
                 e.stopPropagation();
                 clearAll();
@@ -116,7 +118,7 @@ export default function MultiSelect({
             onClick={selectAll}
             className="rounded px-1.5 py-0.5 text-primary hover:bg-accent coarse:py-1.5"
           >
-            Select all
+            {ui("actions.selectAll")}
           </button>
           <span className="text-muted-foreground">|</span>
           <button
@@ -124,7 +126,7 @@ export default function MultiSelect({
             onClick={clearAll}
             className="rounded px-1.5 py-0.5 text-primary hover:bg-accent coarse:py-1.5"
           >
-            Clear
+            {ui("actions.clear")}
           </button>
           {search && filtered.length > 0 && (
             <>
@@ -134,7 +136,7 @@ export default function MultiSelect({
                 onClick={addSearchResults}
                 className="rounded px-1.5 py-0.5 text-primary hover:bg-accent coarse:py-1.5"
               >
-                Add results to selection
+                {ui("ui.addResults")}
               </button>
             </>
           )}
@@ -143,7 +145,7 @@ export default function MultiSelect({
     >
       {filtered.length === 0 ? (
         <div className="px-3 py-2 text-sm text-muted-foreground">
-          No matches
+          {ui("ui.noMatchesSimple")}
         </div>
       ) : (
         filtered.map((option) => {

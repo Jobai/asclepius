@@ -1,3 +1,5 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,10 +14,11 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 type Step = "welcome" | "account" | "patient" | "done";
 
 export default function SetupWizardPage() {
+  const renderMessage = useMessage();
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
   const [step, setStep] = useState<Step>("welcome");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<UiMessage | null>("");
   const [loading, setLoading] = useState(false);
 
   // Account fields
@@ -32,19 +35,19 @@ export default function SetupWizardPage() {
   const goToPatient = () => {
     setError("");
     if (!username.trim()) {
-      setError("Username is required");
+      setError(message("feedback.usernameIsRequired"));
       return;
     }
     if (!password) {
-      setError("Password is required");
+      setError(message("feedback.passwordIsRequired"));
       return;
     }
     if (password.length < 4) {
-      setError("Password must be at least 4 characters");
+      setError(message("feedback.passwordMustBeAtLeastCharacters"));
       return;
     }
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(message("feedback.passwordsDoNotMatch"));
       return;
     }
     // Pre-fill patient name from display name if empty
@@ -67,7 +70,7 @@ export default function SetupWizardPage() {
       });
       setStep("done");
     } catch (err: any) {
-      setError(getErrorMessage(err, "Setup failed"));
+      setError(getErrorMessage(err, message("feedback.setupFailed")));
     } finally {
       setLoading(false);
     }
@@ -147,7 +150,7 @@ export default function SetupWizardPage() {
 
               {error && (
                 <div className="rounded-md bg-destructive-soft px-3 py-2 text-sm text-destructive">
-                  {error}
+                  {renderMessage(error ?? undefined)}
                 </div>
               )}
 
@@ -231,7 +234,7 @@ export default function SetupWizardPage() {
 
               {error && (
                 <div className="rounded-md bg-destructive-soft px-3 py-2 text-sm text-destructive">
-                  {error}
+                  {renderMessage(error ?? undefined)}
                 </div>
               )}
 

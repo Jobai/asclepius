@@ -1,3 +1,6 @@
+import { useUiFormat } from "@/lib/formatting";
+import { message } from "@/i18n/messages";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import {
@@ -192,6 +195,7 @@ function RunningCard({
   job: NonNullable<PipelineStatus["current_job"]>;
   status: PipelineStatus;
 }) {
+  const { locale } = useUiFormat();
   const badge = kindBadge(job.kind);
   const planned = job.stages_planned ?? [];
   const flow = flowBadge(planned);
@@ -250,7 +254,9 @@ function RunningCard({
               {elapsed != null && (
                 <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                   <Hourglass className="h-3 w-3" />
-                  <span className="tabular-nums">{formatElapsed(elapsed)}</span>
+                  <span className="tabular-nums">
+                    {formatElapsed(elapsed, locale)}
+                  </span>
                 </span>
               )}
             </div>
@@ -379,6 +385,7 @@ function Stepper({
   providers?: PipelineProviders | null;
   providerNames?: PipelineProviders | null;
 }) {
+  useTranslation("common");
   return (
     <div>
       <div className="flex items-end justify-between mb-2">
@@ -510,6 +517,7 @@ function MobileStages({
   providers?: PipelineProviders | null;
   providerNames?: PipelineProviders | null;
 }) {
+  useTranslation("common");
   const activeStage =
     currentStage && planned.includes(currentStage)
       ? currentStage
@@ -609,6 +617,7 @@ function PageProgress({
   total: number;
   stage: string | null | undefined;
 }) {
+  useTranslation("common");
   const pct = Math.min(100, Math.round((current / total) * 100));
   return (
     <div>
@@ -847,14 +856,18 @@ function CancelJobButton({
     const ok = await confirm({
       title:
         variant === "running"
-          ? "Cancel running extraction?"
-          : "Remove from queue?",
+          ? message("feedback.cancelRunningExtraction")
+          : message("feedback.removeFromQueue"),
       description:
         variant === "running"
-          ? `The current stage on ${filename || `doc#${docId}`} will be aborted and the document marked as cancelled.`
-          : `${filename || `doc#${docId}`} will be removed from the queue and marked as cancelled.`,
-      confirmText: "Cancel job",
-      cancelText: "Keep",
+          ? message("feedback.theCurrentStageOnWillBeAbortedAndTheDocument", {
+              value0: String(filename || `doc#${docId}`),
+            })
+          : message("feedback.willBeRemovedFromTheQueueAndMarkedAsCancelled", {
+              value0: String(filename || `doc#${docId}`),
+            }),
+      confirmText: message("feedback.cancelJob"),
+      cancelText: message("feedback.keep"),
       variant: "destructive",
     });
     if (!ok) return;
@@ -864,7 +877,7 @@ function CancelJobButton({
       await refresh();
     } catch (err: any) {
       toast({
-        title: "Failed to cancel",
+        title: message("feedback.failedToCancel"),
         description: getErrorMessage(err),
         variant: "error",
       });

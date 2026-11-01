@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import api from "@/api/client";
 import { Save, RotateCcw, Languages } from "lucide-react";
@@ -51,11 +52,16 @@ export default function PromptsTab() {
       await api.patch("/settings", { canonical_language: value });
       setCanonicalLanguage(value);
       toast({
-        title: "Canonical language updated",
-        description: `All LLM output will now be in ${value}.`,
+        title: message("feedback.canonicalLanguageUpdated"),
+        description: message("feedback.allLlmOutputWillNowBeIn", {
+          value0: String(value),
+        }),
       });
     } catch {
-      toast({ title: "Failed to update canonical language", variant: "error" });
+      toast({
+        title: message("feedback.failedToUpdateCanonicalLanguage"),
+        variant: "error",
+      });
     }
     setSavingLanguage(false);
   };
@@ -67,16 +73,19 @@ export default function PromptsTab() {
       setEditing(null);
       load();
     } catch {
-      toast({ title: "Failed to save prompt", variant: "error" });
+      toast({
+        title: message("feedback.failedToSavePrompt"),
+        variant: "error",
+      });
     }
     setSaving(false);
   };
 
   const handleReset = async (key: string) => {
     const ok = await confirm({
-      title: "Reset this prompt to the default?",
-      description: "Your customization will be lost.",
-      confirmText: "Reset",
+      title: message("feedback.resetThisPromptToTheDefault"),
+      description: message("feedback.yourCustomizationWillBeLost"),
+      confirmText: message("feedback.reset"),
       variant: "destructive",
     });
     if (!ok) return;
@@ -85,7 +94,7 @@ export default function PromptsTab() {
       setEditing(null);
       load();
     } catch {
-      toast({ title: "Failed to reset", variant: "error" });
+      toast({ title: message("feedback.failedToReset"), variant: "error" });
     }
   };
 
@@ -174,7 +183,11 @@ export default function PromptsTab() {
                         onClick={() => {
                           const token = `{${v.name}}`;
                           navigator.clipboard?.writeText(token);
-                          toast({ title: `Copied ${token}` });
+                          toast({
+                            title: message("feedback.copied", {
+                              value0: String(token),
+                            }),
+                          });
                         }}
                         className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] hover:bg-accent coarse:min-h-11 coarse:px-2"
                       >

@@ -1,3 +1,4 @@
+import type { CommonKey } from "@/i18n/messages";
 export type ColumnKey =
   | "type"
   | "date"
@@ -12,23 +13,48 @@ export type SortKey = ColumnKey | "file";
 
 export interface ColumnDef {
   key: ColumnKey;
-  label: string;
+  labelKey: CommonKey;
   defaultVisible: boolean;
   /** CSS width used in the table colgroup. */
   width: string;
 }
 
 export const COLUMNS: ColumnDef[] = [
-  { key: "type", label: "Type", defaultVisible: true, width: "14%" },
-  { key: "date", label: "Date", defaultVisible: true, width: "12%" },
-  { key: "facility", label: "Facility", defaultVisible: true, width: "22%" },
-  { key: "doctor", label: "Doctor", defaultVisible: false, width: "16%" },
-  { key: "patient", label: "Patient", defaultVisible: false, width: "14%" },
-  { key: "specialty", label: "Specialty", defaultVisible: false, width: "14%" },
-  { key: "status", label: "Status", defaultVisible: true, width: "16%" },
+  { key: "type", labelKey: "columns.type", defaultVisible: true, width: "14%" },
+  { key: "date", labelKey: "columns.date", defaultVisible: true, width: "12%" },
+  {
+    key: "facility",
+    labelKey: "columns.facility",
+    defaultVisible: true,
+    width: "22%",
+  },
+  {
+    key: "doctor",
+    labelKey: "columns.doctor",
+    defaultVisible: false,
+    width: "16%",
+  },
+  {
+    key: "patient",
+    labelKey: "columns.patient",
+    defaultVisible: false,
+    width: "14%",
+  },
+  {
+    key: "specialty",
+    labelKey: "columns.specialty",
+    defaultVisible: false,
+    width: "14%",
+  },
+  {
+    key: "status",
+    labelKey: "columns.status",
+    defaultVisible: true,
+    width: "16%",
+  },
   {
     key: "date_added",
-    label: "Date added",
+    labelKey: "columns.dateAdded",
     defaultVisible: false,
     width: "14%",
   },

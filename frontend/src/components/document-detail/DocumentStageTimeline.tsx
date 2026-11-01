@@ -1,3 +1,6 @@
+import { statusLabel } from "@/lib/utils";
+import { useUiFormat } from "@/lib/formatting";
+import { useTranslation } from "react-i18next";
 import { useEffect, useMemo, useState } from "react";
 import {
   Check,
@@ -38,7 +41,7 @@ function statusVisuals(status: DocumentStageEvent["status"]): StatusVisual {
   switch (status) {
     case "completed":
       return {
-        label: "Completed",
+        label: statusLabel("completed"),
         Icon: Check,
         iconClass: "bg-success text-white",
         rowAccentClass: "border-l-success",
@@ -46,7 +49,7 @@ function statusVisuals(status: DocumentStageEvent["status"]): StatusVisual {
       };
     case "failed":
       return {
-        label: "Failed",
+        label: statusLabel("failed"),
         Icon: X,
         iconClass: "bg-destructive text-white",
         rowAccentClass: "border-l-destructive",
@@ -54,7 +57,7 @@ function statusVisuals(status: DocumentStageEvent["status"]): StatusVisual {
       };
     case "started":
       return {
-        label: "Running",
+        label: statusLabel("started"),
         Icon: Loader2,
         iconClass: "bg-info text-white",
         rowAccentClass: "border-l-info",
@@ -63,7 +66,7 @@ function statusVisuals(status: DocumentStageEvent["status"]): StatusVisual {
       };
     case "cancelled":
       return {
-        label: "Cancelled",
+        label: statusLabel("cancelled"),
         Icon: Ban,
         iconClass: "bg-warning text-white",
         rowAccentClass: "border-l-warning",
@@ -72,7 +75,7 @@ function statusVisuals(status: DocumentStageEvent["status"]): StatusVisual {
     case "skipped":
     default:
       return {
-        label: status === "skipped" ? "Skipped" : status,
+        label: statusLabel(status),
         Icon: MinusCircle,
         iconClass: "bg-muted text-muted-foreground",
         rowAccentClass: "border-l-muted",
@@ -81,11 +84,11 @@ function statusVisuals(status: DocumentStageEvent["status"]): StatusVisual {
   }
 }
 
-function formatTimestamp(ts: string | null): string {
+function formatTimestamp(ts: string | null, locale: string): string {
   if (!ts) return "";
   const ms = parseBackendTs(ts);
   if (ms == null) return ts;
-  return new Date(ms).toLocaleString(undefined, {
+  return new Date(ms).toLocaleString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -95,11 +98,11 @@ function formatTimestamp(ts: string | null): string {
   });
 }
 
-function formatRunStartShort(ts: string | null): string {
+function formatRunStartShort(ts: string | null, locale: string): string {
   if (!ts) return "";
   const ms = parseBackendTs(ts);
   if (ms == null) return ts;
-  return new Date(ms).toLocaleString(undefined, {
+  return new Date(ms).toLocaleString(locale, {
     month: "short",
     day: "numeric",
     hour: "2-digit",
@@ -109,19 +112,29 @@ function formatRunStartShort(ts: string | null): string {
 
 function durationMs(start: string | null, end: string | null): number | null {
   if (!start || !end) return null;
-  const a = new Date(start).getTime();
-  const b = new Date(end).getTime();
-  if (isNaN(a) || isNaN(b)) return null;
+  const a = parseBackendTs(start);
+  const b = parseBackendTs(end);
+  if (a == null || b == null) return null;
   return Math.max(0, b - a);
 }
 
-function formatDuration(ms: number | null): string {
+function formatDuration(ms: number | null, locale: string): string {
   if (ms == null) return "";
-  if (ms < 1000) return `${ms}ms`;
-  if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
+  const unit = (value: number, unit: string, digits = 0) =>
+    new Intl.NumberFormat(locale, {
+      style: "unit",
+      unit,
+      unitDisplay: "narrow",
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    }).format(value);
+  if (ms < 1000) return unit(ms, "millisecond");
+  if (ms < 60_000) return unit(ms / 1000, "second", 1);
   const mins = Math.floor(ms / 60_000);
   const secs = Math.round((ms % 60_000) / 1000);
-  return secs === 0 ? `${mins}m` : `${mins}m ${secs}s`;
+  return secs === 0
+    ? unit(mins, "minute")
+    : `${unit(mins, "minute")} ${unit(secs, "second")}`;
 }
 
 interface RunGroup {
@@ -373,6 +386,7 @@ export default function DocumentStageTimeline({
 }
 
 function RunCard({ group }: { group: RunGroup }) {
+  const { locale } = useUiFormat();
   const isReprocess = group.job_kind === "reprocess";
   const isTranslate =
     group.job_kind === "translate" || group.job_kind === "translate_region";
@@ -458,12 +472,12 @@ function RunCard({ group }: { group: RunGroup }) {
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground mt-0.5">
             <span className="inline-flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              {formatRunStartShort(startTs)}
+              {formatRunStartShort(startTs, locale)}
             </span>
             {totalMs != null && (
               <span className="inline-flex items-center gap-1">
                 <Hourglass className="h-3 w-3" />
-                {formatDuration(totalMs)}
+                {formatDuration(totalMs, locale)}
               </span>
             )}
             <span>
@@ -497,6 +511,8 @@ function StageRow({
   event: DocumentStageEvent;
   isLast: boolean;
 }) {
+  const { locale } = useUiFormat();
+  useTranslation("common");
   const v = statusVisuals(event.status);
   const StageIcon = stageIcon(event.stage);
   const dur = durationMs(event.started_at, event.finished_at);
@@ -529,7 +545,7 @@ function StageRow({
           {dur != null && (
             <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground tabular-nums">
               <Hourglass className="h-3 w-3" />
-              {formatDuration(dur)}
+              {formatDuration(dur, locale)}
             </span>
           )}
           {event.page_total && event.page_current && (
@@ -540,10 +556,10 @@ function StageRow({
         </div>
         <div
           className="mt-0.5 text-[11px] text-muted-foreground"
-          title={formatTimestamp(event.finished_at)}
+          title={formatTimestamp(event.finished_at, locale)}
         >
-          {formatTimestamp(event.started_at) ||
-            formatTimestamp(event.finished_at)}
+          {formatTimestamp(event.started_at, locale) ||
+            formatTimestamp(event.finished_at, locale)}
         </div>
         {event.message && (
           <p className="mt-1 text-xs text-destructive break-words whitespace-pre-wrap">

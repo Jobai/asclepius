@@ -1,8 +1,10 @@
+import { useUiFormat } from "@/lib/formatting";
+import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { FileText, Upload } from "lucide-react";
 import type { PipelineStatus } from "@/types";
-import { formatDocType, getBestDate, getStatusClasses } from "@/lib/utils";
+import { getBestDate, getStatusClasses } from "@/lib/utils";
 import ResponsiveTable, {
   type ColumnSpec,
 } from "@/components/ui/ResponsiveTable";
@@ -47,6 +49,8 @@ export default function DocumentTable({
   selectionMode,
   onUploadClick,
 }: DocumentTableProps) {
+  const { formatDocType, formatDate, formatDateTime } = useUiFormat();
+  const { t: ui } = useTranslation("common");
   const navigate = useNavigate();
 
   const columns = useMemo<ColumnSpec<any>[]>(() => {
@@ -58,7 +62,8 @@ export default function DocumentTable({
             return <span title={t}>{t}</span>;
           };
         case "date":
-          return (doc: any) => getBestDate(doc) || "-";
+          return (doc: any) =>
+            getBestDate(doc) ? formatDate(getBestDate(doc)) : "-";
         case "doctor":
           return (doc: any) => (
             <span title={doc.doctor_name || ""}>{doc.doctor_name || "-"}</span>
@@ -82,7 +87,7 @@ export default function DocumentTable({
           };
         case "date_added":
           return (doc: any) => {
-            const d = doc.created_at ? String(doc.created_at).slice(0, 10) : "";
+            const d = doc.created_at ? formatDateTime(doc.created_at) : "";
             return <span title={doc.created_at || ""}>{d || "-"}</span>;
           };
         // status
@@ -100,7 +105,7 @@ export default function DocumentTable({
     return [
       {
         key: "file",
-        header: "File",
+        header: ui("columns.file"),
         sortable: true,
         // The cell stops propagation so the inline rename pencil + input
         // don't bubble to the row's navigate handler — but the filename
@@ -112,18 +117,16 @@ export default function DocumentTable({
           </div>
         ),
       },
-      ...orderedVisibleColumns.map(
-        (c): ColumnSpec<any> => ({
-          key: c.key,
-          header: c.label,
-          width: c.width,
-          sortable: true,
-          cellClassName: c.key === "status" ? undefined : "text-muted-foreground",
-          cell: cellFor(c),
-        }),
-      ),
+      ...orderedVisibleColumns.map((c): ColumnSpec<any> => ({
+        key: c.key,
+        header: ui(c.labelKey),
+        width: c.width,
+        sortable: true,
+        cellClassName: c.key === "status" ? undefined : "text-muted-foreground",
+        cell: cellFor(c),
+      })),
     ];
-  }, [orderedVisibleColumns, onRenamed, pipeline]);
+  }, [orderedVisibleColumns, onRenamed, pipeline, ui]);
 
   return (
     <ResponsiveTable
@@ -131,7 +134,9 @@ export default function DocumentTable({
       rows={documents}
       getRowId={(doc) => doc.id}
       onRowClick={(doc) =>
-        selectionMode ? onToggleSelect(doc.id) : navigate(`/documents/${doc.id}`)
+        selectionMode
+          ? onToggleSelect(doc.id)
+          : navigate(`/documents/${doc.id}`)
       }
       sort={sortBy ? { key: sortBy, dir: sortOrder } : null}
       onSortChange={(key) => onSortToggle(key as SortKey)}
@@ -140,17 +145,19 @@ export default function DocumentTable({
       selectedIds={selectedIds}
       onToggleSelect={(id) => onToggleSelect(id as number)}
       onToggleSelectAll={onToggleSelectAll}
-      rowSelectLabel={(doc) => `Select ${doc.original_filename || doc.id}`}
+      rowSelectLabel={(doc) =>
+        ui("ui.selectItem", { name: doc.original_filename || doc.id })
+      }
       loading={loading}
       empty={
         <EmptyState
           icon={FileText}
-          title="No documents yet"
-          description="Drop files into the inbox or upload to get started"
+          title={ui("ui.noDocuments")}
+          description={ui("ui.uploadHelp")}
           action={
             <Button onClick={onUploadClick}>
               <Upload className="h-4 w-4" aria-hidden />
-              Upload
+              {ui("actions.upload")}
             </Button>
           }
         />

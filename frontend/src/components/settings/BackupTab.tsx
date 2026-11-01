@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import api from "@/api/client";
 import { getErrorMessage } from "@/lib/errors";
@@ -123,7 +124,7 @@ export default function BackupTab() {
   const saveJob = async () => {
     if (!scopeOk) {
       toast({
-        title: "Select at least one of Database or Vault",
+        title: message("feedback.selectAtLeastOneOfDatabaseOrVault"),
         variant: "error",
       });
       return;
@@ -137,7 +138,7 @@ export default function BackupTab() {
   const runNow = async () => {
     if (!scopeOk) {
       toast({
-        title: "Select at least one of Database or Vault",
+        title: message("feedback.selectAtLeastOneOfDatabaseOrVault"),
         variant: "error",
       });
       return;
@@ -145,12 +146,19 @@ export default function BackupTab() {
     setRunning(true);
     try {
       const res = await api.post("/settings/backup/run", {});
-      toast({ title: `Backup created: ${res.data.file}`, variant: "success" });
+      toast({
+        title: message("feedback.backupCreated", {
+          value0: String(res.data.file),
+        }),
+        variant: "success",
+      });
       await loadFiles();
       await loadSettings();
     } catch (e: any) {
       toast({
-        title: `Backup failed: ${getErrorMessage(e, "unknown")}`,
+        title: message("feedback.backupFaileddee17", {
+          value0: String(getErrorMessage(e, "unknown")),
+        }),
         variant: "error",
       });
     }
@@ -159,8 +167,10 @@ export default function BackupTab() {
 
   const deleteFile = async (file: BackupFile) => {
     const ok = await confirm({
-      title: `Delete ${file.name}?`,
-      description: "This permanently removes the backup file from disk.",
+      title: message("feedback.delete9b216", { value0: String(file.name) }),
+      description: message(
+        "feedback.thisPermanentlyRemovesTheBackupFileFromDisk",
+      ),
       variant: "destructive",
     });
     if (!ok) return;
@@ -170,7 +180,7 @@ export default function BackupTab() {
       );
       await loadFiles();
     } catch {
-      toast({ title: "Delete failed", variant: "error" });
+      toast({ title: message("feedback.deleteFailed"), variant: "error" });
     }
   };
 
@@ -189,7 +199,7 @@ export default function BackupTab() {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch {
-      toast({ title: "Download failed", variant: "error" });
+      toast({ title: message("feedback.downloadFailed"), variant: "error" });
     }
   };
 
@@ -213,7 +223,7 @@ export default function BackupTab() {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch {
-      toast({ title: "Backup failed", variant: "error" });
+      toast({ title: message("feedback.backupFailed"), variant: "error" });
     }
     setDownloadingOneShot(false);
   };

@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { Stethoscope } from "lucide-react";
 import api from "@/api/client";
@@ -110,14 +111,16 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
           description += ` (skipped out-of-range: ${oor.join(", ")})`;
         }
         toast({
-          title: queued ? "AI edit queued" : "Pages reprocessed",
+          title: queued
+            ? message("feedback.aiEditQueued")
+            : message("feedback.pagesReprocessed"),
           description,
           variant: "success",
         });
       }
     } catch (e: any) {
       toast({
-        title: "AI edit failed",
+        title: message("feedback.aiEditFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });

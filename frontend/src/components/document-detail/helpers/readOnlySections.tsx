@@ -1,3 +1,5 @@
+import { useUiFormat } from "@/lib/formatting";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { ChevronRight, Eye, EyeOff, Pill, Syringe } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -113,6 +115,8 @@ export function TranslatedTextSection({
   model: string | null;
   translatedAt: string | null;
 }) {
+  const { t: ui } = useTranslation("common");
+  const { formatDateTime } = useUiFormat();
   const [open, setOpen] = useCollapseState("translated-text", true);
   if (!text) return null;
   // Old rows persisted the verbose provider_label ("Display · model_id");
@@ -121,7 +125,7 @@ export function TranslatedTextSection({
   const modelShort = model?.includes(" · ")
     ? model.split(" · ").pop() || model
     : model;
-  const ts = translatedAt ? new Date(translatedAt) : null;
+
   return (
     <div className="rounded-lg border">
       <button
@@ -145,10 +149,9 @@ export function TranslatedTextSection({
           )}
         </div>
         <span className="shrink-0 text-[11px] text-muted-foreground tabular-nums">
-          {open ? "Hide" : "Show"} · {text.length.toLocaleString()} chars
-          {ts
-            ? ` · ${ts.toLocaleDateString()} ${ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-            : ""}
+          {open ? ui("actions.hide") : ui("actions.show")} ·{" "}
+          {ui("ui.characters", { count: text.length })}
+          {translatedAt ? ` · ${formatDateTime(translatedAt)}` : ""}
         </span>
       </button>
       {open && (

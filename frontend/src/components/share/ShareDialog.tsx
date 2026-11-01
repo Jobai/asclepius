@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import {
   Copy,
@@ -140,7 +141,7 @@ export default function ShareDialog({
     // trip. The backend re-validates with the same regex.
     if (otpDelivery === "email" && !EMAIL_RE.test(recipientContact.trim())) {
       toast({
-        title: "Email OTP delivery needs a valid email in Contact",
+        title: message("feedback.emailOtpDeliveryNeedsAValidEmailInContact"),
         variant: "error",
       });
       return;
@@ -165,7 +166,7 @@ export default function ShareDialog({
       refresh();
     } catch (err: any) {
       toast({
-        title: "Could not create share",
+        title: message("feedback.couldNotCreateShare"),
         description: getErrorMessage(err),
         variant: "error",
       });
@@ -177,11 +178,11 @@ export default function ShareDialog({
   const onRevoke = async (id: number) => {
     try {
       await api.delete(`/shares/${id}`);
-      toast({ title: "Share revoked", variant: "success" });
+      toast({ title: message("feedback.shareRevoked"), variant: "success" });
       refresh();
     } catch (err: any) {
       toast({
-        title: "Revoke failed",
+        title: message("feedback.revokeFailed"),
         description: getErrorMessage(err),
         variant: "error",
       });
@@ -206,18 +207,18 @@ export default function ShareDialog({
       toast({
         title:
           added > 0
-            ? `Added ${added} document${added === 1 ? "" : "s"} to the share`
-            : "Those documents are already in this share",
+            ? message("feedback.documentsAdded", { count: Number(added) })
+            : message("feedback.thoseDocumentsAreAlreadyInThisShare"),
         description:
           added > 0 && already > 0
-            ? `${already} were already shared`
+            ? message("feedback.wereAlreadyShared", { value0: String(already) })
             : undefined,
         variant: "success",
       });
       refresh();
     } catch (err: any) {
       toast({
-        title: "Could not add documents",
+        title: message("feedback.couldNotAddDocuments"),
         description: getErrorMessage(err),
         variant: "error",
       });
@@ -235,7 +236,7 @@ export default function ShareDialog({
       setActiveOtps((s) => ({ ...s, [shareId]: res.data?.active_otp || null }));
     } catch (err: any) {
       toast({
-        title: "Could not load OTP",
+        title: message("feedback.couldNotLoadOtp"),
         description: getErrorMessage(err),
         variant: "error",
       });
@@ -275,343 +276,343 @@ export default function ShareDialog({
       // list is tall); auto-sized centered dialog from sm up.
       contentClassName="h-[calc(100dvh-3rem)] sm:h-auto sm:max-w-2xl"
     >
-        <div className="space-y-4 text-sm">
-          <div className="rounded-md border bg-muted/30 px-3 py-2 text-xs">
-            <div className="text-muted-foreground">Sharing:</div>
-            <div className="font-medium">{docCountLabel}</div>
-            {patientName && (
-              <div className="text-muted-foreground mt-0.5">
-                Patient: {patientName}
-              </div>
-            )}
-          </div>
+      <div className="space-y-4 text-sm">
+        <div className="rounded-md border bg-muted/30 px-3 py-2 text-xs">
+          <div className="text-muted-foreground">Sharing:</div>
+          <div className="font-medium">{docCountLabel}</div>
+          {patientName && (
+            <div className="text-muted-foreground mt-0.5">
+              Patient: {patientName}
+            </div>
+          )}
+        </div>
 
-          {!createResult && (
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium mb-1">
-                  Recipient name (shown on watermark + audit log)
-                </label>
-                <Input
-                  type="text"
-                  value={recipientLabel}
-                  onChange={(e) => setRecipientLabel(e.target.value)}
-                  placeholder="e.g. Dr. Maria Rossi"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium mb-1">
-                  OTP delivery
-                </label>
-                <div className="flex flex-col gap-1.5 rounded-md border bg-background p-2.5">
-                  {/* The whole label is the touch target; coarse:min-h-11
+        {!createResult && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-medium mb-1">
+                Recipient name (shown on watermark + audit log)
+              </label>
+              <Input
+                type="text"
+                value={recipientLabel}
+                onChange={(e) => setRecipientLabel(e.target.value)}
+                placeholder="e.g. Dr. Maria Rossi"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium mb-1">
+                OTP delivery
+              </label>
+              <div className="flex flex-col gap-1.5 rounded-md border bg-background p-2.5">
+                {/* The whole label is the touch target; coarse:min-h-11
                       grows each option to the 44px minimum on phones. */}
-                  <label className="flex cursor-pointer items-start gap-2 text-xs coarse:min-h-11">
-                    <input
-                      type="radio"
-                      name="otp_delivery"
-                      value="manual"
-                      checked={otpDelivery === "manual"}
-                      onChange={() => setOtpDelivery("manual")}
-                      className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
-                    />
-                    <span>
-                      <span className="font-medium">
-                        I'll convey the code myself
-                      </span>{" "}
-                      <span className="text-muted-foreground">
-                        — the OTP appears in this dashboard so you can read it
-                        over the phone.
-                      </span>
+                <label className="flex cursor-pointer items-start gap-2 text-xs coarse:min-h-11">
+                  <input
+                    type="radio"
+                    name="otp_delivery"
+                    value="manual"
+                    checked={otpDelivery === "manual"}
+                    onChange={() => setOtpDelivery("manual")}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                  />
+                  <span>
+                    <span className="font-medium">
+                      I'll convey the code myself
+                    </span>{" "}
+                    <span className="text-muted-foreground">
+                      — the OTP appears in this dashboard so you can read it
+                      over the phone.
                     </span>
-                  </label>
-                  <label
-                    className={`flex items-start gap-2 text-xs coarse:min-h-11 ${!smtpEnabled ? "opacity-60" : "cursor-pointer"}`}
-                  >
-                    <input
-                      type="radio"
-                      name="otp_delivery"
-                      value="email"
-                      checked={otpDelivery === "email"}
-                      onChange={() => setOtpDelivery("email")}
-                      disabled={!smtpEnabled}
-                      className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
-                    />
-                    <span>
-                      <span className="font-medium">
-                        Email the code to the recipient
-                      </span>{" "}
-                      <span className="text-muted-foreground">
-                        {smtpEnabled
-                          ? "— the OTP is sent automatically. You still send the link separately."
-                          : "— configure SMTP in Settings → Email first."}
-                      </span>
+                  </span>
+                </label>
+                <label
+                  className={`flex items-start gap-2 text-xs coarse:min-h-11 ${!smtpEnabled ? "opacity-60" : "cursor-pointer"}`}
+                >
+                  <input
+                    type="radio"
+                    name="otp_delivery"
+                    value="email"
+                    checked={otpDelivery === "email"}
+                    onChange={() => setOtpDelivery("email")}
+                    disabled={!smtpEnabled}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                  />
+                  <span>
+                    <span className="font-medium">
+                      Email the code to the recipient
+                    </span>{" "}
+                    <span className="text-muted-foreground">
+                      {smtpEnabled
+                        ? "— the OTP is sent automatically. You still send the link separately."
+                        : "— configure SMTP in Settings → Email first."}
                     </span>
-                  </label>
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium mb-1">
-                  {otpDelivery === "email"
-                    ? "Recipient email (OTPs will be sent here)"
-                    : "Contact (free-text, for your records only)"}
+                  </span>
                 </label>
-                <Input
-                  type={otpDelivery === "email" ? "email" : "text"}
-                  value={recipientContact}
-                  onChange={(e) => setRecipientContact(e.target.value)}
-                  placeholder={
-                    otpDelivery === "email"
-                      ? "doctor@example.com"
-                      : "phone, email, or other identifier"
-                  }
-                />
               </div>
-              <div>
-                <label className="block text-xs font-medium mb-1">
-                  Expires after (days)
-                </label>
-                <Input
-                  type="number"
-                  min={1}
-                  max={90}
-                  value={days}
-                  onChange={(e) => setDays(parseInt(e.target.value, 10) || 7)}
-                  className="w-32"
-                />
-              </div>
-              {/* Provider defaults — when the doctor clicks Translate
+            </div>
+            <div>
+              <label className="block text-xs font-medium mb-1">
+                {otpDelivery === "email"
+                  ? "Recipient email (OTPs will be sent here)"
+                  : "Contact (free-text, for your records only)"}
+              </label>
+              <Input
+                type={otpDelivery === "email" ? "email" : "text"}
+                value={recipientContact}
+                onChange={(e) => setRecipientContact(e.target.value)}
+                placeholder={
+                  otpDelivery === "email"
+                    ? "doctor@example.com"
+                    : "phone, email, or other identifier"
+                }
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium mb-1">
+                Expires after (days)
+              </label>
+              <Input
+                type="number"
+                min={1}
+                max={90}
+                value={days}
+                onChange={(e) => setDays(parseInt(e.target.value, 10) || 7)}
+                className="w-32"
+              />
+            </div>
+            {/* Provider defaults — when the doctor clicks Translate
                   the backend uses these unless the request overrides
                   them. The doctor surface intentionally has no provider
                   picker, so the admin's choice here is final from the
                   doctor's point of view. */}
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="block text-xs font-medium mb-1">
-                    OCR provider for translation
-                  </label>
-                  <ProviderSelect
-                    kind="ocr"
-                    value={ocrProviderId}
-                    onChange={setOcrProviderId}
-                    options={ocrOptions}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium mb-1">
-                    LLM provider for translation
-                  </label>
-                  <ProviderSelect
-                    kind="llm"
-                    value={llmProviderId}
-                    onChange={setLlmProviderId}
-                    options={llmOptions}
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end">
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={onCreate}
-                  loading={submitting}
-                  disabled={!patientId || documentIds.length === 0}
-                  className="w-full sm:w-auto"
-                >
-                  Create share link
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {createResult && (
-            <div className="rounded-md border border-primary/40 bg-primary/5 p-3 space-y-2">
-              <p className="text-xs font-medium text-primary">
-                Share created. Copy the link below; it is shown only once.
-              </p>
-              <div className="flex items-center gap-1.5">
-                <Input
-                  readOnly
-                  value={createResult.share_url}
-                  className="min-w-0 flex-1 font-mono"
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label className="block text-xs font-medium mb-1">
+                  OCR provider for translation
+                </label>
+                <ProviderSelect
+                  kind="ocr"
+                  value={ocrProviderId}
+                  onChange={setOcrProviderId}
+                  options={ocrOptions}
                 />
-                <IconButton
-                  variant="secondary"
-                  label={tokenCopied ? "Copied" : "Copy link"}
-                  onClick={onCopyUrl}
-                  // h-10 matches the Input primitive's height on fine
-                  // pointers; both grow to 44px on coarse.
-                  className="h-10 w-10 bg-background"
-                >
-                  {tokenCopied ? (
-                    <Check className="h-4 w-4 text-success" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </IconButton>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {otpDelivery === "email" ? (
-                  <>
-                    Send this link to the doctor. When they open it and request
-                    a code, it will be emailed automatically to{" "}
-                    <span className="font-mono">
-                      {recipientContact || "(no recipient)"}
-                    </span>
-                    . The doctor will need a fresh code each session.
-                  </>
-                ) : (
-                  <>
-                    Send this link to the doctor. When they open it, they will
-                    request a 6-digit code which you can read from the list
-                    below and convey to them. The doctor will need a fresh code
-                    each session.
-                  </>
-                )}
-              </p>
+              <div>
+                <label className="block text-xs font-medium mb-1">
+                  LLM provider for translation
+                </label>
+                <ProviderSelect
+                  kind="llm"
+                  value={llmProviderId}
+                  onChange={setLlmProviderId}
+                  options={llmOptions}
+                />
+              </div>
             </div>
-          )}
+            <div className="flex justify-end">
+              <Button
+                variant="primary"
+                size="md"
+                onClick={onCreate}
+                loading={submitting}
+                disabled={!patientId || documentIds.length === 0}
+                className="w-full sm:w-auto"
+              >
+                Create share link
+              </Button>
+            </div>
+          </div>
+        )}
 
-          {patientId && (
-            <div className="border-t pt-4">
-              <h3 className="text-xs font-semibold uppercase text-muted-foreground mb-2">
-                Existing shares for this patient
-              </h3>
-              {shares.length === 0 ? (
-                <p className="text-xs text-muted-foreground">No shares yet.</p>
+        {createResult && (
+          <div className="rounded-md border border-primary/40 bg-primary/5 p-3 space-y-2">
+            <p className="text-xs font-medium text-primary">
+              Share created. Copy the link below; it is shown only once.
+            </p>
+            <div className="flex items-center gap-1.5">
+              <Input
+                readOnly
+                value={createResult.share_url}
+                className="min-w-0 flex-1 font-mono"
+              />
+              <IconButton
+                variant="secondary"
+                label={tokenCopied ? "Copied" : "Copy link"}
+                onClick={onCopyUrl}
+                // h-10 matches the Input primitive's height on fine
+                // pointers; both grow to 44px on coarse.
+                className="h-10 w-10 bg-background"
+              >
+                {tokenCopied ? (
+                  <Check className="h-4 w-4 text-success" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+              </IconButton>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {otpDelivery === "email" ? (
+                <>
+                  Send this link to the doctor. When they open it and request a
+                  code, it will be emailed automatically to{" "}
+                  <span className="font-mono">
+                    {recipientContact || "(no recipient)"}
+                  </span>
+                  . The doctor will need a fresh code each session.
+                </>
               ) : (
-                <ul className="space-y-2">
-                  {shares.map((s) => {
-                    const isRevoked = !!s.revoked_at;
-                    const isExpired =
-                      !isRevoked && s.expires_at < new Date().toISOString();
-                    const status = isRevoked
-                      ? "revoked"
-                      : isExpired
-                        ? "expired"
-                        : "active";
-                    return (
-                      <li
-                        key={s.id}
-                        className="rounded-md border bg-card px-3 py-2 text-xs flex items-start justify-between gap-3"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium">{s.recipient_label}</div>
-                          <div className="text-muted-foreground">
-                            {s.document_count} doc
-                            {s.document_count !== 1 ? "s" : ""} · expires{" "}
-                            {s.expires_at} · {status}
-                          </div>
-                          {!isRevoked &&
-                            !isExpired &&
-                            s.otp_delivery === "email" && (
-                              <div className="mt-1.5 text-xs text-muted-foreground italic">
-                                Code emailed to{" "}
-                                <span className="font-mono">
-                                  {s.recipient_contact}
-                                </span>
-                                . The admin can't read it back.
-                              </div>
-                            )}
-                          {!isRevoked &&
-                            !isExpired &&
-                            s.otp_delivery !== "email" && (
-                              <div className="mt-1.5">
-                                {revealOtp[s.id] ? (
-                                  <div className="font-mono text-base tracking-widest text-primary">
-                                    {loadingOtp[s.id] ? (
-                                      <span className="inline-flex items-center gap-2 text-xs text-muted-foreground italic font-sans tracking-normal">
-                                        <Loader2 className="h-3 w-3 animate-spin" />
-                                        Loading code...
+                <>
+                  Send this link to the doctor. When they open it, they will
+                  request a 6-digit code which you can read from the list below
+                  and convey to them. The doctor will need a fresh code each
+                  session.
+                </>
+              )}
+            </p>
+          </div>
+        )}
+
+        {patientId && (
+          <div className="border-t pt-4">
+            <h3 className="text-xs font-semibold uppercase text-muted-foreground mb-2">
+              Existing shares for this patient
+            </h3>
+            {shares.length === 0 ? (
+              <p className="text-xs text-muted-foreground">No shares yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {shares.map((s) => {
+                  const isRevoked = !!s.revoked_at;
+                  const isExpired =
+                    !isRevoked && s.expires_at < new Date().toISOString();
+                  const status = isRevoked
+                    ? "revoked"
+                    : isExpired
+                      ? "expired"
+                      : "active";
+                  return (
+                    <li
+                      key={s.id}
+                      className="rounded-md border bg-card px-3 py-2 text-xs flex items-start justify-between gap-3"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium">{s.recipient_label}</div>
+                        <div className="text-muted-foreground">
+                          {s.document_count} doc
+                          {s.document_count !== 1 ? "s" : ""} · expires{" "}
+                          {s.expires_at} · {status}
+                        </div>
+                        {!isRevoked &&
+                          !isExpired &&
+                          s.otp_delivery === "email" && (
+                            <div className="mt-1.5 text-xs text-muted-foreground italic">
+                              Code emailed to{" "}
+                              <span className="font-mono">
+                                {s.recipient_contact}
+                              </span>
+                              . The admin can't read it back.
+                            </div>
+                          )}
+                        {!isRevoked &&
+                          !isExpired &&
+                          s.otp_delivery !== "email" && (
+                            <div className="mt-1.5">
+                              {revealOtp[s.id] ? (
+                                <div className="font-mono text-base tracking-widest text-primary">
+                                  {loadingOtp[s.id] ? (
+                                    <span className="inline-flex items-center gap-2 text-xs text-muted-foreground italic font-sans tracking-normal">
+                                      <Loader2 className="h-3 w-3 animate-spin" />
+                                      Loading code...
+                                    </span>
+                                  ) : (
+                                    activeOtps[s.id]?.code || (
+                                      <span className="text-xs text-muted-foreground italic font-sans tracking-normal">
+                                        No active code; ask the doctor to
+                                        request one
                                       </span>
-                                    ) : (
-                                      activeOtps[s.id]?.code || (
-                                        <span className="text-xs text-muted-foreground italic font-sans tracking-normal">
-                                          No active code; ask the doctor to
-                                          request one
-                                        </span>
-                                      )
-                                    )}
-                                  </div>
-                                ) : (
-                                  <Button
-                                    variant="secondary"
+                                    )
+                                  )}
+                                </div>
+                              ) : (
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => onRevealOtp(s.id)}
+                                >
+                                  <Eye className="h-3 w-3" aria-hidden /> Show
+                                  active code
+                                </Button>
+                              )}
+                              {revealOtp[s.id] && !loadingOtp[s.id] && (
+                                <div className="inline-flex items-center gap-1 ml-2">
+                                  {activeOtps[s.id]?.code && (
+                                    <CopyOtpInlineButton
+                                      code={activeOtps[s.id]!.code}
+                                    />
+                                  )}
+                                  <IconButton
+                                    label="Refetch code"
                                     size="sm"
                                     onClick={() => onRevealOtp(s.id)}
                                   >
-                                    <Eye className="h-3 w-3" aria-hidden /> Show
-                                    active code
-                                  </Button>
-                                )}
-                                {revealOtp[s.id] && !loadingOtp[s.id] && (
-                                  <div className="inline-flex items-center gap-1 ml-2">
-                                    {activeOtps[s.id]?.code && (
-                                      <CopyOtpInlineButton
-                                        code={activeOtps[s.id]!.code}
-                                      />
-                                    )}
-                                    <IconButton
-                                      label="Refetch code"
-                                      size="sm"
-                                      onClick={() => onRevealOtp(s.id)}
-                                    >
-                                      <RefreshCw className="h-3 w-3" />
-                                    </IconButton>
-                                    <IconButton
-                                      label="Hide code"
-                                      size="sm"
-                                      onClick={() =>
-                                        setRevealOtp((r) => ({
-                                          ...r,
-                                          [s.id]: false,
-                                        }))
-                                      }
-                                    >
-                                      <EyeOff className="h-3 w-3" />
-                                    </IconButton>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                        </div>
-                        <div className="flex items-center gap-1.5 flex-shrink-0">
-                          {!isRevoked && !isExpired && documentIds.length > 0 && (
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => onAddToShare(s.id)}
-                              disabled={addingTo !== null}
-                              className="border-primary/40 text-primary hover:bg-primary/5 active:bg-primary/5"
-                              title={`Add the ${docCountLabel} to this share`}
-                            >
-                              {addingTo === s.id ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                              ) : (
-                                <Plus className="h-3 w-3" />
+                                    <RefreshCw className="h-3 w-3" />
+                                  </IconButton>
+                                  <IconButton
+                                    label="Hide code"
+                                    size="sm"
+                                    onClick={() =>
+                                      setRevealOtp((r) => ({
+                                        ...r,
+                                        [s.id]: false,
+                                      }))
+                                    }
+                                  >
+                                    <EyeOff className="h-3 w-3" />
+                                  </IconButton>
+                                </div>
                               )}
-                              Add these
-                            </Button>
+                            </div>
                           )}
-                          {!isRevoked && (
-                            <IconButton
-                              label="Revoke share"
-                              variant="danger"
-                              size="sm"
-                              onClick={() => onRevoke(s.id)}
-                              className="border border-destructive/40"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </IconButton>
-                          )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
-          )}
-        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        {!isRevoked && !isExpired && documentIds.length > 0 && (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => onAddToShare(s.id)}
+                            disabled={addingTo !== null}
+                            className="border-primary/40 text-primary hover:bg-primary/5 active:bg-primary/5"
+                            title={`Add the ${docCountLabel} to this share`}
+                          >
+                            {addingTo === s.id ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <Plus className="h-3 w-3" />
+                            )}
+                            Add these
+                          </Button>
+                        )}
+                        {!isRevoked && (
+                          <IconButton
+                            label="Revoke share"
+                            variant="danger"
+                            size="sm"
+                            onClick={() => onRevoke(s.id)}
+                            className="border border-destructive/40"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </IconButton>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        )}
+      </div>
     </Sheet>
   );
 }

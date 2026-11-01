@@ -1,3 +1,6 @@
+import { useTranslation } from "react-i18next";
+import { stageLabel } from "@/lib/pipelineStages";
+import type { CommonKey, CommonTranslator } from "@/i18n/messages";
 import { useState } from "react";
 import { usePipelineStatus } from "@/contexts/PipelineStatusContext";
 import type { PipelineStatus } from "@/types";
@@ -15,7 +18,11 @@ import {
   KIND_BADGE_CLASSES,
   PROVIDER_BADGE_CLASSES,
 } from "@/lib/statusTokens";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/Popover";
 import Sheet from "@/components/ui/Sheet";
 
 type ChipSpec = {
@@ -32,18 +39,18 @@ type ChipSpec = {
   cap?: number;
 };
 
-const KIND_LABELS: Record<string, string> = {
-  reprocess: "Reprocess",
-  translate: "Translate",
-  translate_region: "Region translate",
-  ai_edit: "AI edit",
-  upload: "Upload",
+const KIND_LABELS: Record<string, CommonKey> = {
+  reprocess: "feedback.reprocess",
+  translate: "pipeline.translate",
+  translate_region: "pipeline.translateRegion",
+  ai_edit: "stages.ai_edit",
+  upload: "actions.upload",
 };
 
 /** Build the chip list from the live pipeline snapshot. Shared by the
  *  desktop chip strip and the mobile summary chip so both always describe
  *  the same state. */
-function buildChips(status: PipelineStatus): ChipSpec[] {
+function buildChips(status: PipelineStatus, ui: CommonTranslator): ChipSpec[] {
   const chips: ChipSpec[] = [];
 
   // Current pipeline document. Prefer the richer current_job block (gives us
@@ -54,16 +61,18 @@ function buildChips(status: PipelineStatus): ChipSpec[] {
   if (job || status.processing) {
     const filename = job?.filename ?? status.processing ?? "";
     const stageRaw = job?.stage ?? status.processing_step ?? null;
-    const step = stageRaw ? ` · ${stageRaw.replace(/_/g, " ")}` : "";
+    const step = stageRaw ? ` · ${stageLabel(stageRaw, ui)}` : "";
     const kind = job?.kind ?? "upload";
-    const kindLabel = KIND_LABELS[kind] ?? "Upload";
+    const kindLabel = ui(KIND_LABELS[kind] ?? "actions.upload");
     const pageCurrent = job?.page_current ?? status.processing_page_current;
     const pageTotal = job?.page_total ?? status.processing_pages;
     const pageInfo =
-      pageTotal && pageCurrent ? `Page ${pageCurrent} of ${pageTotal}` : "";
+      pageTotal && pageCurrent
+        ? ui("pipeline.page", { current: pageCurrent, total: pageTotal })
+        : "";
     const stagesInfo =
       (job?.stages_planned || []).length > 0
-        ? `Stages: ${job!.stages_planned.map((s) => (job!.stages_done.includes(s) ? `✓ ${s.replace(/_/g, " ")}` : s.replace(/_/g, " "))).join(" → ")}`
+        ? `Stages: ${job!.stages_planned.map((s) => (job!.stages_done.includes(s) ? `✓ ${stageLabel(s, ui)}` : stageLabel(s, ui))).join(" → ")}`
         : "";
     chips.push({
       key: "pipeline-doc",
@@ -72,7 +81,7 @@ function buildChips(status: PipelineStatus): ChipSpec[] {
       cardTitle: filename || "Pipeline",
       cardSubtitle: [
         kindLabel,
-        stageRaw?.replace(/_/g, " "),
+        stageRaw ? stageLabel(stageRaw, ui) : "",
         pageInfo,
         stagesInfo,
       ]
@@ -106,7 +115,7 @@ function buildChips(status: PipelineStatus): ChipSpec[] {
     // makes that explicit so the user doesn't read the dual chips as
     // parallel calls.
     const statusSuffix =
-      q.in_flight > 0 ? "" : q.waiting > 0 ? " (queued)" : "";
+      q.in_flight > 0 ? "" : q.waiting > 0 ? ui("pipeline.queuedSuffix") : "";
     chips.push({
       key: `${q.kind}-${q.credential_id}`,
       icon,
@@ -131,20 +140,22 @@ function buildChips(status: PipelineStatus): ChipSpec[] {
     let label: string;
     let cardSubtitle: string | undefined;
     if (queue > 0) {
-      label = `Pipeline: ${queue} queued`;
-      cardSubtitle = last ? `Last: ${last}` : undefined;
+      label = ui("pipeline.queuedLabel", { count: queue });
+      cardSubtitle = last ? ui("pipeline.last", { name: last }) : undefined;
     } else if (status.watcher_active === false) {
-      label = "Pipeline: stopped";
+      label = ui("pipeline.stopped");
     } else {
       label =
-        total > 0 ? `Pipeline: idle (${total} processed)` : "Pipeline: idle";
-      cardSubtitle = last ? `Last: ${last}` : undefined;
+        total > 0
+          ? ui("pipeline.idleProcessed", { count: total })
+          : ui("pipeline.idleLabel");
+      cardSubtitle = last ? ui("pipeline.last", { name: last }) : undefined;
     }
     chips.push({
       key: "pipeline-idle",
       icon: Activity,
       label,
-      cardTitle: "Pipeline status",
+      cardTitle: ui("pipeline.title"),
       cardSubtitle,
       colorClass: "bg-muted text-muted-foreground border-border",
     });
@@ -155,6 +166,7 @@ function buildChips(status: PipelineStatus): ChipSpec[] {
 
 /** Detail card body shared by the desktop popover and the mobile sheet. */
 function ChipDetailCard({ spec }: { spec: ChipSpec }) {
+  const { t: ui } = useTranslation("common");
   return (
     <div>
       <div className="border-b px-3 py-2">
@@ -171,9 +183,9 @@ function ChipDetailCard({ spec }: { spec: ChipSpec }) {
         <div className="grid grid-cols-3 divide-x text-center">
           {(
             [
-              ["Running", spec.running ?? 0],
-              ["Waiting", spec.waiting ?? 0],
-              ["Cap", spec.cap],
+              [ui("pipeline.running"), spec.running ?? 0],
+              [ui("pipeline.waiting"), spec.waiting ?? 0],
+              [ui("pipeline.cap"), spec.cap],
             ] as const
           ).map(([label, value]) => (
             <div key={label} className="px-3 py-2">
@@ -197,9 +209,10 @@ function ChipDetailCard({ spec }: { spec: ChipSpec }) {
  * screens and for keyboard users.
  */
 export default function MetricsStrip() {
+  const { t: ui } = useTranslation("common");
   const { status } = usePipelineStatus();
   if (!status) return null;
-  const chips = buildChips(status);
+  const chips = buildChips(status, ui);
 
   return (
     <div className="flex min-w-0 max-w-full items-center justify-end gap-2 whitespace-nowrap">
@@ -233,11 +246,12 @@ export default function MetricsStrip() {
  * pipeline is working — that opens a bottom sheet listing every queue.
  */
 export function PipelineChip() {
+  const { t: ui } = useTranslation("common");
   const { status } = usePipelineStatus();
   const [open, setOpen] = useState(false);
   if (!status) return null;
 
-  const chips = buildChips(status);
+  const chips = buildChips(status, ui);
   const busy = Boolean(
     status.current_job || status.processing || (status.llm_queues || []).length,
   );
@@ -250,7 +264,7 @@ export function PipelineChip() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Pipeline activity"
+        aria-label={ui("pipeline.activity")}
         className={cn(
           "flex h-9 items-center gap-1 rounded-full border px-2.5 text-xs font-medium transition-colors coarse:h-10",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -265,8 +279,8 @@ export function PipelineChip() {
       <Sheet
         open={open}
         onOpenChange={setOpen}
-        title="Pipeline activity"
-        description={busy ? "Working" : "Idle"}
+        title={ui("pipeline.activity")}
+        description={busy ? ui("pipeline.working") : ui("pipeline.idle")}
       >
         <div className="space-y-3">
           {chips.map((spec) => (

@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
@@ -121,7 +122,7 @@ export default function LabResultsPage() {
     } catch (err: any) {
       const d = getErrorMessage(err, "Save failed");
       toast({
-        title: "Save failed",
+        title: message("feedback.saveFailed"),
         description: typeof d === "string" ? d : JSON.stringify(d),
         variant: "error",
       });
@@ -131,8 +132,19 @@ export default function LabResultsPage() {
 
   const deleteRow = async (row: LabRow) => {
     const ok = await confirm({
-      title: "Delete this lab result?",
-      description: `${row.test_name_canonical || row.test_name_original}${row.value != null ? ` = ${row.value}${row.unit ? " " + row.unit : ""}` : ""} on ${row.test_date || "unknown date"} will be removed. The source document is untouched.`,
+      title: message("feedback.deleteThisLabResult"),
+      description: message(
+        "feedback.onWillBeRemovedTheSourceDocumentIsUntouched",
+        {
+          value0: String(row.test_name_canonical || row.test_name_original),
+          value1: String(
+            row.value != null
+              ? ` = ${row.value}${row.unit ? " " + row.unit : ""}`
+              : "",
+          ),
+          value2: String(row.test_date || "unknown date"),
+        },
+      ),
       variant: "destructive",
     });
     if (!ok) return;
@@ -142,7 +154,7 @@ export default function LabResultsPage() {
     } catch (err: any) {
       const d = getErrorMessage(err, "Delete failed");
       toast({
-        title: "Delete failed",
+        title: message("feedback.deleteFailed"),
         description: typeof d === "string" ? d : JSON.stringify(d),
         variant: "error",
       });
@@ -157,7 +169,7 @@ export default function LabResultsPage() {
     } catch (err: any) {
       const d = getErrorMessage(err, "Delete failed");
       toast({
-        title: "Delete failed",
+        title: message("feedback.deleteFailed"),
         description: typeof d === "string" ? d : JSON.stringify(d),
         variant: "error",
       });
@@ -167,11 +179,13 @@ export default function LabResultsPage() {
 
   const deleteAllOrphans = async () => {
     const ok = await confirm({
-      title: `Delete ${orphans.length} orphan lab result${orphans.length === 1 ? "" : "s"}?`,
+      title: message("feedback.orphanResultsDelete", {
+        count: Number(orphans.length),
+      }),
       description:
         "These results reference documents that no longer exist. Removing them keeps the list clean — the non-existent source documents are already gone.",
       variant: "destructive",
-      confirmText: "Delete all",
+      confirmText: message("feedback.deleteAll"),
     });
     if (!ok) return;
     setOrphanBusy("all");
@@ -189,7 +203,9 @@ export default function LabResultsPage() {
     await load();
     if (failed.length) {
       toast({
-        title: `${failed.length} orphan(s) failed to delete`,
+        title: message("feedback.orphanResultsFailed", {
+          count: Number(failed.length),
+        }),
         description: failed.join(", "),
         variant: "error",
       });

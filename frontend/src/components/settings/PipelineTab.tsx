@@ -1,3 +1,5 @@
+import { statusLabel } from "@/lib/utils";
+import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import api from "@/api/client";
 import { usePolling } from "@/lib/polling";
@@ -71,16 +73,15 @@ export default function PipelineTab() {
       await api.post("/documents/retry-all-failed");
       setTimeout(loadFailed, 2000);
     } catch {
-      toast({ title: "Failed to retry", variant: "error" });
+      toast({ title: message("feedback.failedToRetry"), variant: "error" });
     }
     setRetryingAll(false);
   };
 
   const deleteDoc = async (docId: number) => {
     const ok = await confirm({
-      title: "Delete this document?",
-      description:
-        "The file will be removed from disk and cannot be recovered.",
+      title: message("feedback.deleteThisDocument"),
+      description: message("feedback.theFileWillBeRemovedFromDiskAndCannotBe"),
       variant: "destructive",
     });
     if (!ok) return;
@@ -99,7 +100,10 @@ export default function PipelineTab() {
       setF((prev: any) => ({ ...prev, pipeline_watch_enabled: true }));
       setTimeout(() => loadStatus().catch(() => {}), 1000);
     } catch {
-      toast({ title: "Failed to start pipeline", variant: "error" });
+      toast({
+        title: message("feedback.failedToStartPipeline"),
+        variant: "error",
+      });
     }
     setStartingPipeline(false);
   };
@@ -112,7 +116,10 @@ export default function PipelineTab() {
       setF((prev: any) => ({ ...prev, pipeline_watch_enabled: false }));
       setTimeout(() => loadStatus().catch(() => {}), 1000);
     } catch {
-      toast({ title: "Failed to stop pipeline", variant: "error" });
+      toast({
+        title: message("feedback.failedToStopPipeline"),
+        variant: "error",
+      });
     }
     setStartingPipeline(false);
   };
@@ -383,7 +390,7 @@ export default function PipelineTab() {
                           : "bg-warning-soft text-warning"
                       }`}
                     >
-                      {doc.status}
+                      {statusLabel(doc.status)}
                     </span>
                     {doc.retry_count > 0 && (
                       <span className="text-[10px] text-muted-foreground">

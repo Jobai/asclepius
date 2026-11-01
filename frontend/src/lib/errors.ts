@@ -1,4 +1,5 @@
 import { AxiosError } from "axios";
+import type { UiMessage } from "@/i18n/messages";
 
 type FastApiDetailItem = { msg?: string };
 
@@ -12,8 +13,14 @@ type FastApiDetailItem = { msg?: string };
  *  - a plain Error (network failure, etc.),
  *  - anything else (falls back to the provided message).
  */
-export function getErrorMessage(err: unknown, fallback = "Something went wrong"): string {
-  const detail = (err as AxiosError<{ detail?: unknown }>)?.response?.data?.detail;
+export function getErrorMessage(err: unknown, fallback?: string): string;
+export function getErrorMessage(err: unknown, fallback: UiMessage): UiMessage;
+export function getErrorMessage(
+  err: unknown,
+  fallback: UiMessage = "Something went wrong",
+): UiMessage {
+  const detail = (err as AxiosError<{ detail?: unknown }>)?.response?.data
+    ?.detail;
   if (typeof detail === "string" && detail.trim()) return detail;
   if (Array.isArray(detail)) {
     const msgs = detail

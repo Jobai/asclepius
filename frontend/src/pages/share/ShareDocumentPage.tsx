@@ -1,3 +1,5 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
@@ -63,12 +65,13 @@ interface ShareDocumentDetail {
  * exposes a downloadable URL.
  */
 export default function ShareDocumentPage() {
+  const renderMessage = useMessage();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const { me, ended, theme, toggleTheme } = useShareSession();
   const docId = id ? parseInt(id, 10) : 0;
   const [doc, setDoc] = useState<ShareDocumentDetail | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<UiMessage | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -108,8 +111,8 @@ export default function ShareDocumentPage() {
       const status = err?.response?.status;
       setError(
         status === 410 || status === 404
-          ? "Document not available in this share."
-          : "Failed to load document.",
+          ? message("feedback.documentNotAvailableInThisShare")
+          : message("feedback.failedToLoadDocument"),
       );
     } finally {
       setLoading(false);
@@ -139,7 +142,7 @@ export default function ShareDocumentPage() {
     enabled: !!docId && hasPendingTranslation && !ended,
     onStop: (status) => {
       if (status === 410 || status === 404)
-        setError("Document not available in this share.");
+        setError(message("feedback.documentNotAvailableInThisShare"));
     },
   });
 
@@ -152,8 +155,10 @@ export default function ShareDocumentPage() {
         target_language: targetLanguage,
       });
       toast({
-        title: "Region translation queued",
-        description: `Will appear under "Region translations" in a moment.`,
+        title: message("feedback.regionTranslationQueued"),
+        description: message(
+          "feedback.willAppearUnderRegionTranslationsInAMoment",
+        ),
         variant: "success",
       });
       refresh();
@@ -161,10 +166,10 @@ export default function ShareDocumentPage() {
       const status = err?.response?.status;
       const detail = err?.response?.data?.detail;
       toast({
-        title: "Translation request failed",
+        title: message("feedback.translationRequestFailed"),
         description:
           (typeof detail === "string" ? detail : null) ||
-          `HTTP ${status ?? "?"}`,
+          message("feedback.http", { value0: String(status ?? "?") }),
         variant: "error",
       });
     }
@@ -185,7 +190,9 @@ export default function ShareDocumentPage() {
               <ArrowLeft className="h-4 w-4" /> Back to documents
             </Link>
           </div>
-          <p className="mt-6 text-sm text-destructive">{error}</p>
+          <p className="mt-6 text-sm text-destructive">
+            {renderMessage(error ?? undefined)}
+          </p>
         </div>
       </div>
     );

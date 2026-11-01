@@ -1,3 +1,4 @@
+import { message as uiMessage } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import { Languages, Save, Check } from "lucide-react";
 import api from "@/api/client";
@@ -89,7 +90,7 @@ export default function LanguageTab() {
         (e as Error)?.message ||
         "";
       toast({
-        title: "Failed to save translation language settings",
+        title: uiMessage("feedback.failedToSaveTranslationLanguageSettings"),
         description: message,
         variant: "error",
       });

@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import { KeyRound, Plus } from "lucide-react";
 import api from "@/api/client";
@@ -52,7 +53,11 @@ export default function ProvidersTab() {
   };
 
   useEffect(() => {
-    if (credErr) toast({ title: "Failed to load providers", variant: "error" });
+    if (credErr)
+      toast({
+        title: message("feedback.failedToLoadProviders"),
+        variant: "error",
+      });
   }, [credErr, toast]);
 
   // Group attached models by credential_id.
@@ -133,7 +138,9 @@ export default function ProvidersTab() {
     if (!cred) return;
     if ((cred.references?.total || 0) > 0) {
       toast({
-        title: `"${cred.name}" has attached models; remove them first`,
+        title: message("feedback.hasAttachedModelsRemoveThemFirst", {
+          value0: String(cred.name),
+        }),
         variant: "error",
       });
       return;
@@ -145,7 +152,7 @@ export default function ProvidersTab() {
       await reloadAll();
     } catch (e: any) {
       toast({
-        title: "Failed to delete provider",
+        title: message("feedback.failedToDeleteProvider"),
         description: getErrorMessage(e, ""),
         variant: "error",
       });
@@ -302,7 +309,7 @@ export default function ProvidersTab() {
         e?.message ||
         "Network error";
       toast({
-        title: `Test failed for "${m.name}"`,
+        title: message("feedback.testFailedFor", { value0: String(m.name) }),
         description: message,
         variant: "error",
       });

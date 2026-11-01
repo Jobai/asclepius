@@ -1,3 +1,5 @@
+import { useUiFormat } from "@/lib/formatting";
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
@@ -12,10 +14,12 @@ import {
   XCircle,
 } from "lucide-react";
 import type { PipelineStatus } from "@/types";
-import { formatDocType, getBestDate, getStatusClasses } from "@/lib/utils";
+import { getBestDate, getStatusClasses, statusLabel } from "@/lib/utils";
 import PipelineProgress from "@/components/pipeline/PipelineProgress";
 
 export default function DashboardPage() {
+  const { formatDocType, formatDate } = useUiFormat();
+  useTranslation("common");
   const { selectedPatient } = usePatient();
   const [documents, setDocuments] = useState<any[]>([]);
   const [pipeline, setPipeline] = useState<PipelineStatus | null>(null);
@@ -166,19 +170,21 @@ export default function DashboardPage() {
                     {doc.original_filename}
                   </p>
                   <p className="hidden truncate text-xs text-muted-foreground sm:block">
-                    {formatDocType(doc.doc_type)} | {getBestDate(doc) || "—"} |{" "}
+                    {formatDocType(doc.doc_type)} |{" "}
+                    {formatDate(getBestDate(doc))} |{" "}
                     {doc.patient_name || "Unclassified"}
                   </p>
                 </div>
                 <div className="flex min-w-0 items-center justify-between gap-2 sm:shrink-0 sm:justify-end">
                   <p className="min-w-0 truncate text-xs text-muted-foreground sm:hidden">
-                    {formatDocType(doc.doc_type)} | {getBestDate(doc) || "—"} |{" "}
+                    {formatDocType(doc.doc_type)} |{" "}
+                    {formatDate(getBestDate(doc))} |{" "}
                     {doc.patient_name || "Unclassified"}
                   </p>
                   <span
                     className={`shrink-0 rounded-full px-2 py-0.5 text-xs ${getStatusClasses(doc.status)}`}
                   >
-                    {doc.status}
+                    {statusLabel(doc.status)}
                   </span>
                 </div>
               </Link>

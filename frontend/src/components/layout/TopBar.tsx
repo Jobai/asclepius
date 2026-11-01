@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Menu, PanelLeft } from "lucide-react";
 import IconButton from "@/components/ui/IconButton";
 import MetricsStrip, { PipelineChip } from "@/components/layout/MetricsStrip";
@@ -23,10 +24,11 @@ export default function TopBar({
   onOpenDrawer,
   onToggleSidebar,
 }: TopBarProps) {
+  const { t: ui } = useTranslation("common");
   return (
     <header className="flex min-h-14 items-center gap-2 border-b bg-surface px-2 pt-safe text-surface-foreground sm:px-4">
       <IconButton
-        label="Open navigation"
+        label={ui("ui.openNavigation")}
         size="lg"
         className="lg:hidden"
         onClick={onOpenDrawer}
@@ -34,7 +36,7 @@ export default function TopBar({
         <Menu className="h-5 w-5" />
       </IconButton>
       <IconButton
-        label="Toggle sidebar"
+        label={ui("ui.toggleSidebar")}
         size="md"
         className="hidden lg:inline-flex"
         onClick={onToggleSidebar}

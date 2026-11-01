@@ -1,3 +1,5 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useRef, useState } from "react";
 import api from "@/api/client";
 import {
@@ -73,11 +75,12 @@ export default function DicomViewer({
   seriesId,
   modality,
 }: DicomViewerProps) {
+  const renderMessage = useMessage();
   const viewportRef = useRef<HTMLDivElement>(null);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [totalFrames, setTotalFrames] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<UiMessage | null>(null);
   const coarse = usePointerCoarse();
 
   // Pan + zoom state.
@@ -92,7 +95,11 @@ export default function DicomViewer({
   } | null>(null);
 
   // One-finger gesture accumulators (refs — no re-render per move).
-  const scrubRef = useRef<{ startFrame: number; accumDy: number; ppf: number } | null>(null);
+  const scrubRef = useRef<{
+    startFrame: number;
+    accumDy: number;
+    ppf: number;
+  } | null>(null);
   const scrubFrameRaf = useRef(0);
   const windowDragRef = useRef<{
     baseWc: number;
@@ -139,7 +146,7 @@ export default function DicomViewer({
         setLoading(false);
       })
       .catch(() => {
-        setError("Failed to load series frames");
+        setError(message("feedback.failedToLoadSeriesFrames"));
         setLoading(false);
       });
   }, [studyId, seriesId]);
@@ -433,7 +440,7 @@ export default function DicomViewer({
   if (error) {
     return (
       <div className="flex h-full min-h-[280px] items-center justify-center text-destructive">
-        {error}
+        {renderMessage(error ?? undefined)}
       </div>
     );
   }
@@ -492,9 +499,7 @@ export default function DicomViewer({
     <div className="flex flex-wrap items-center gap-3 text-xs">
       <Sun className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
       <div className="flex min-w-[240px] flex-1 items-center gap-2">
-        <span className="w-12 flex-shrink-0 text-muted-foreground">
-          Center
-        </span>
+        <span className="w-12 flex-shrink-0 text-muted-foreground">Center</span>
         <input
           type="number"
           step={1}
@@ -621,7 +626,11 @@ export default function DicomViewer({
           >
             <SlidersHorizontal className="h-4 w-4" />
           </IconButton>
-          <IconButton label="View DICOM metadata" size="md" onClick={openMetadata}>
+          <IconButton
+            label="View DICOM metadata"
+            size="md"
+            onClick={openMetadata}
+          >
             <Info className="h-4 w-4" />
           </IconButton>
         </div>
@@ -690,11 +699,7 @@ export default function DicomViewer({
 
       {/* Tools sheet (below md): zoom/view controls, contrast, gesture
           legend. */}
-      <Sheet
-        open={toolsOpen}
-        onOpenChange={setToolsOpen}
-        title="Viewer tools"
-      >
+      <Sheet open={toolsOpen} onOpenChange={setToolsOpen} title="Viewer tools">
         <div className="space-y-4">
           <div className="flex items-center justify-center gap-1">
             {viewControls}
@@ -758,9 +763,7 @@ export default function DicomViewer({
                   <th className="w-20 px-3 py-1.5 text-left font-medium">
                     Tag
                   </th>
-                  <th className="w-12 px-3 py-1.5 text-left font-medium">
-                    VR
-                  </th>
+                  <th className="w-12 px-3 py-1.5 text-left font-medium">VR</th>
                   <th className="px-3 py-1.5 text-left font-medium">Name</th>
                   <th className="px-3 py-1.5 text-left font-medium">Value</th>
                 </tr>

@@ -1,6 +1,15 @@
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import api from "@/api/client";
-import { Plus, Trash2, ChevronDown, ChevronUp, Save, X, Users } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Save,
+  X,
+  Users,
+} from "lucide-react";
 import { useToast } from "@/contexts/ToastContext";
 import { useConfirm } from "@/contexts/ConfirmContext";
 import { usePatients } from "@/hooks/data";
@@ -43,16 +52,20 @@ export default function PatientsPage() {
       setExpandedId(null);
       setEditData({});
     } catch {
-      toast({ title: "Failed to save patient", variant: "error" });
+      toast({
+        title: message("feedback.failedToSavePatient"),
+        variant: "error",
+      });
     }
     setSaving(false);
   };
 
   const handleDelete = async (id: number) => {
     const ok = await confirm({
-      title: "Delete patient?",
-      description:
-        "All documents, lab results, and medical events for this patient will also be removed. This cannot be undone.",
+      title: message("feedback.deletePatient"),
+      description: message(
+        "feedback.allDocumentsLabResultsAndMedicalEventsForThisPatient",
+      ),
       variant: "destructive",
     });
     if (!ok) return;
@@ -64,7 +77,10 @@ export default function PatientsPage() {
         setEditData({});
       }
     } catch {
-      toast({ title: "Failed to delete patient", variant: "error" });
+      toast({
+        title: message("feedback.failedToDeletePatient"),
+        variant: "error",
+      });
     }
   };
 
@@ -82,7 +98,10 @@ export default function PatientsPage() {
       setShowCreate(false);
       await loadPatients();
     } catch {
-      toast({ title: "Failed to create patient", variant: "error" });
+      toast({
+        title: message("feedback.failedToCreatePatient"),
+        variant: "error",
+      });
     }
     setSaving(false);
   };

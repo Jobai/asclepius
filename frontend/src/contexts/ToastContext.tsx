@@ -1,20 +1,22 @@
 import { createContext, useCallback, useContext, useState } from "react";
 import * as ToastPrimitive from "@radix-ui/react-toast";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useMessage, type UiMessage } from "@/i18n/messages";
 
 type ToastVariant = "default" | "success" | "error" | "warning";
 
 interface Toast {
   id: string;
-  title: string;
-  description?: string;
+  title: UiMessage;
+  description?: UiMessage;
   variant: ToastVariant;
 }
 
 interface ToastContextType {
   toast: (opts: {
-    title: string;
-    description?: string;
+    title: UiMessage;
+    description?: UiMessage;
     variant?: ToastVariant;
   }) => void;
 }
@@ -31,10 +33,16 @@ const variantStyles: Record<ToastVariant, string> = {
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const renderMessage = useMessage();
+  const { t: ui } = useTranslation("common");
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = useCallback(
-    (opts: { title: string; description?: string; variant?: ToastVariant }) => {
+    (opts: {
+      title: UiMessage;
+      description?: UiMessage;
+      variant?: ToastVariant;
+    }) => {
       const id = String(++toastCounter);
       setToasts((prev) => [...prev, { id, variant: "default", ...opts }]);
       // Auto-remove after animation
@@ -47,7 +55,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ToastContext.Provider value={{ toast: addToast }}>
-      <ToastPrimitive.Provider swipeDirection="right" duration={4000}>
+      <ToastPrimitive.Provider
+        swipeDirection="right"
+        duration={4000}
+        label={ui("ui.notifications")}
+      >
         {children}
         {toasts.map((t) => (
           <ToastPrimitive.Root
@@ -59,16 +71,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           >
             <div className="grid gap-1">
               <ToastPrimitive.Title className="text-sm font-semibold">
-                {t.title}
+                {renderMessage(t.title)}
               </ToastPrimitive.Title>
               {t.description && (
                 <ToastPrimitive.Description className="text-sm opacity-90">
-                  {t.description}
+                  {renderMessage(t.description)}
                 </ToastPrimitive.Description>
               )}
             </div>
             <ToastPrimitive.Close
-              aria-label="Dismiss"
+              aria-label={ui("actions.dismiss")}
               className="flex items-center justify-center rounded-md p-1.5 opacity-100 transition-opacity hover:text-foreground focus:opacity-100 md:opacity-0 md:group-hover:opacity-100 coarse:min-h-11 coarse:min-w-11"
             >
               <X className="h-4 w-4" />

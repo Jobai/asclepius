@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Check, FileText, Pencil, X } from "lucide-react";
@@ -33,7 +34,7 @@ export default function InlineRenameCell({
       onRenamed(res.data);
     } catch (e: any) {
       toast({
-        title: "Rename failed",
+        title: message("feedback.renameFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });

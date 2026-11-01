@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
 import { Check, ChevronDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -48,11 +49,14 @@ export default function Combobox({
   onChange,
   options,
   pinnedOptions = [],
-  placeholder = "Select...",
+  placeholder: placeholderProp,
   className = "",
   disabled = false,
-  title = "Select an option",
+  title: titleProp,
 }: ComboboxProps) {
+  const { t: ui } = useTranslation("common");
+  const placeholder = placeholderProp ?? ui("ui.selectPlaceholder");
+  const title = titleProp ?? ui("ui.selectOption");
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -128,7 +132,7 @@ export default function Combobox({
               {selectedOption && (
                 <span
                   role="button"
-                  aria-label="Clear selection"
+                  aria-label={ui("ui.clearSelection")}
                   onClick={(e) => {
                     e.stopPropagation();
                     onChange(null);
@@ -154,7 +158,7 @@ export default function Combobox({
         )}
         {filteredOptions.length === 0 ? (
           <div className="px-3 py-2 text-sm text-muted-foreground">
-            {search ? `No matches for "${search}"` : "No options"}
+            {search ? ui("ui.noMatches", { search }) : ui("ui.noOptions")}
           </div>
         ) : (
           filteredOptions.map((o) => renderOption(o, false))

@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useMemo, useRef, useState } from "react";
 import api from "@/api/client";
 import { Stethoscope, Pencil, X, Trash2, Search } from "lucide-react";
@@ -45,7 +46,7 @@ function DiagnosisHeading({
       setEditing(false);
       onSaved();
     } catch {
-      toast({ title: "Failed to save", variant: "error" });
+      toast({ title: message("feedback.failedToSave"), variant: "error" });
     }
     setSaving(false);
   };
@@ -60,7 +61,7 @@ function DiagnosisHeading({
       setVal("");
       onSaved();
     } catch {
-      toast({ title: "Failed to delete", variant: "error" });
+      toast({ title: message("feedback.failedToDelete"), variant: "error" });
     }
     setSaving(false);
   };
@@ -182,7 +183,7 @@ function IcdCodeSelect({
       setQuery("");
       onSaved();
     } catch {
-      toast({ title: "Failed to save", variant: "error" });
+      toast({ title: message("feedback.failedToSave"), variant: "error" });
     } finally {
       setSaving(false);
     }
@@ -313,18 +314,19 @@ export function EncountersSection({
 
   const handleDelete = async (encId: number) => {
     const ok = await confirm({
-      title: "Delete this encounter?",
-      description:
-        "The encounter row will be removed. The parent document is left untouched.",
+      title: message("feedback.deleteThisEncounter"),
+      description: message(
+        "feedback.theEncounterRowWillBeRemovedTheParentDocumentIs",
+      ),
       variant: "destructive",
-      confirmText: "Delete",
+      confirmText: message("feedback.delete"),
     });
     if (!ok) return;
     try {
       await api.delete(`/encounters/${encId}`);
       onUpdated?.();
     } catch {
-      toast({ title: "Failed to delete", variant: "error" });
+      toast({ title: message("feedback.failedToDelete"), variant: "error" });
     }
   };
 

@@ -1,3 +1,5 @@
+import { useUiFormat } from "@/lib/formatting";
+import { useTranslation } from "react-i18next";
 import {
   CartesianGrid,
   Legend,
@@ -49,6 +51,8 @@ interface Props {
  * bands).
  */
 export default function LabTrendChart({ rows, selectedCodes }: Props) {
+  const { t: ui } = useTranslation("common");
+  const { formatDate, formatClinicalValue } = useUiFormat();
   if (selectedCodes.length === 0) return null;
 
   // Filter to the selected codes + rows with a numeric value + a date.
@@ -123,12 +127,13 @@ export default function LabTrendChart({ rows, selectedCodes }: Props) {
   return (
     <div className="rounded-lg border bg-background p-2 sm:p-3">
       <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>
-          Trend — {data.length} data point{data.length === 1 ? "" : "s"}
-        </span>
+        <span>{ui("chart.points", { count: data.length })}</span>
         {refBand && (
           <span>
-            Reference band (shaded): {refBand.low}–{refBand.high}
+            {ui("chart.reference", {
+              low: formatClinicalValue(refBand.low),
+              high: formatClinicalValue(refBand.high),
+            })}
           </span>
         )}
       </div>
@@ -141,13 +146,26 @@ export default function LabTrendChart({ rows, selectedCodes }: Props) {
             <CartesianGrid strokeDasharray="3 3" stroke="#8884" />
             <XAxis
               dataKey="date"
+              tickFormatter={formatDate}
               stroke="currentColor"
               tick={{ fontSize: 11 }}
               interval="preserveStartEnd"
               minTickGap={24}
             />
-            <YAxis stroke="currentColor" tick={{ fontSize: 11 }} />
+            <YAxis
+              tickFormatter={formatClinicalValue}
+              stroke="currentColor"
+              tick={{ fontSize: 11 }}
+            />
             <Tooltip
+              labelFormatter={(date) => formatDate(String(date))}
+              formatter={(value) =>
+                formatClinicalValue(
+                  typeof value === "number" || typeof value === "string"
+                    ? value
+                    : String(value),
+                )
+              }
               contentStyle={{
                 backgroundColor: "hsl(var(--background))",
                 border: "1px solid hsl(var(--border))",

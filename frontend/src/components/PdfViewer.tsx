@@ -1,3 +1,5 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
 import {
@@ -25,12 +27,7 @@ import SelectionOverlay, {
   SelectionActionBar,
 } from "@/components/viewer/SelectionOverlay";
 import IconButton from "@/components/ui/IconButton";
-import {
-  Menu,
-  MenuContent,
-  MenuItem,
-  MenuTrigger,
-} from "@/components/ui/Menu";
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/Menu";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -84,6 +81,7 @@ export default function PdfViewer({
   onSelectionConfirm,
   onSelectionCancel,
 }: PdfViewerProps) {
+  const renderMessage = useMessage();
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.0);
@@ -98,7 +96,7 @@ export default function PdfViewer({
   );
   const containerRef = useRef<HTMLDivElement>(null);
   const pageWrapperRef = useRef<HTMLDivElement>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<UiMessage | null>(null);
   const [, setLoading] = useState(true);
   const [rotating, setRotating] = useState(false);
   const [cacheBuster, setCacheBuster] = useState(0);
@@ -186,8 +184,7 @@ export default function PdfViewer({
       const ox = focalX + containerRect.left - wrapperRect.left;
       const oy = focalY + containerRect.top - wrapperRect.top;
       const clampedRatio =
-        clampScale(effectiveScale * ratio, ZOOM_MIN, ZOOM_MAX) /
-        effectiveScale;
+        clampScale(effectiveScale * ratio, ZOOM_MIN, ZOOM_MAX) / effectiveScale;
       wrapper.style.transformOrigin = `${ox}px ${oy}px`;
       wrapper.style.transform = `scale(${clampedRatio})`;
       wrapper.style.willChange = "transform";
@@ -320,7 +317,9 @@ export default function PdfViewer({
       return;
     }
     console.error("PDF load error:", err);
-    setError(`Failed to load PDF: ${err.message}`);
+    setError(
+      message("feedback.failedToLoadPdf", { value0: String(err.message) }),
+    );
     setLoading(false);
   }, []);
 
@@ -514,7 +513,9 @@ export default function PdfViewer({
       >
         {error ? (
           <div className="flex flex-col items-center gap-3 py-8">
-            <div className="text-sm text-destructive">{error}</div>
+            <div className="text-sm text-destructive">
+              {renderMessage(error ?? undefined)}
+            </div>
             <button
               onClick={() => {
                 setError(null);

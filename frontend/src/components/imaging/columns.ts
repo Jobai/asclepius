@@ -1,3 +1,4 @@
+import type { CommonKey } from "@/i18n/messages";
 /** Column registry for the Imaging list view. Mirrors
  * components/documents/columns.ts so SettingsPage can drive both with
  * the same code path (useColumnPrefs + the shared ColumnPrefsSection). */
@@ -13,19 +14,54 @@ export type ImagingColumnKey =
 
 export interface ImagingColumnDef {
   key: ImagingColumnKey;
-  label: string;
+  labelKey: CommonKey;
   defaultVisible: boolean;
   width: string;
 }
 
 export const IMAGING_COLUMNS: ImagingColumnDef[] = [
-  { key: "modality", label: "Type", defaultVisible: true, width: "12%" },
-  { key: "body_part", label: "Body part", defaultVisible: true, width: "16%" },
-  { key: "study_date", label: "Date", defaultVisible: true, width: "10%" },
-  { key: "facility", label: "Facility", defaultVisible: true, width: "20%" },
-  { key: "doctor", label: "Doctor", defaultVisible: false, width: "16%" },
-  { key: "report_status", label: "Report", defaultVisible: true, width: "12%" },
-  { key: "date_added", label: "Added", defaultVisible: false, width: "10%" },
+  {
+    key: "modality",
+    labelKey: "columns.type",
+    defaultVisible: true,
+    width: "12%",
+  },
+  {
+    key: "body_part",
+    labelKey: "columns.bodyPart",
+    defaultVisible: true,
+    width: "16%",
+  },
+  {
+    key: "study_date",
+    labelKey: "columns.date",
+    defaultVisible: true,
+    width: "10%",
+  },
+  {
+    key: "facility",
+    labelKey: "columns.facility",
+    defaultVisible: true,
+    width: "20%",
+  },
+  {
+    key: "doctor",
+    labelKey: "columns.doctor",
+    defaultVisible: false,
+    width: "16%",
+  },
+  {
+    key: "report_status",
+    labelKey: "columns.report",
+    defaultVisible: true,
+    width: "12%",
+  },
+  {
+    key: "date_added",
+    labelKey: "columns.added",
+    defaultVisible: false,
+    width: "10%",
+  },
 ];
 
 export const IMAGING_DEFAULTS = {

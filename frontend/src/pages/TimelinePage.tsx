@@ -1,9 +1,12 @@
+import { useTranslation } from "react-i18next";
+import { formatDocType } from "@/lib/utils";
+import { useUiFormat } from "@/lib/formatting";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/api/client";
 import { usePatient } from "@/contexts/PatientContext";
 import { Loader2 } from "lucide-react";
-import { getBestDate, formatDate, formatDocType } from "@/lib/utils";
+import { getBestDate } from "@/lib/utils";
 
 interface TimelineDoc {
   id: number;
@@ -95,6 +98,8 @@ function getYear(s: string | null): string {
 }
 
 export default function TimelinePage() {
+  useTranslation("common");
+  const { formatDate, locale } = useUiFormat();
   const { selectedPatient } = usePatient();
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<TimelineDoc[]>([]);
@@ -289,7 +294,7 @@ export default function TimelinePage() {
                   .reverse()
                   .map((m) => {
                     const dt = new Date(m + "-01");
-                    return dt.toLocaleDateString("en-GB", {
+                    return dt.toLocaleDateString(locale, {
                       month: "short",
                       year: "numeric",
                     });
@@ -410,7 +415,7 @@ export default function TimelinePage() {
                             <span
                               className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${style.bg} ${style.text}`}
                             >
-                              {style.label}
+                              {formatDocType(doc.doc_type)}
                             </span>
                           </div>
                           <p className="text-sm font-medium truncate">

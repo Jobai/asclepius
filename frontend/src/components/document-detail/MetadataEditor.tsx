@@ -1,3 +1,6 @@
+import { useUiFormat } from "@/lib/formatting";
+import { statusLabel } from "@/lib/utils";
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import api from "@/api/client";
 import { getErrorMessage } from "@/lib/errors";
@@ -41,6 +44,7 @@ const DOC_TYPE_OPTIONS = [
  * ``imaging_dicom`` because that pipeline does not produce them.
  */
 export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
+  const { formatDocType } = useUiFormat();
   const { toast } = useToast();
   const [markingReviewed, setMarkingReviewed] = useState(false);
   // Both ``imaging_dicom`` and ``imaging_report`` are imaging documents —
@@ -57,13 +61,13 @@ export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
       // and the red banner disappears without a page refresh.
       onSave({ status: "done", error_message: null });
       toast({
-        title: "Marked as reviewed",
-        description: "Status set to done, review banner cleared.",
+        title: message("feedback.markedAsReviewed"),
+        description: message("feedback.statusSetToDoneReviewBannerCleared"),
         variant: "success",
       });
     } catch (e: any) {
       toast({
-        title: "Failed to mark as reviewed",
+        title: message("feedback.failedToMarkAsReviewed"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -74,7 +78,7 @@ export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
 
   return (
     <Section title="Document Info" sectionId="document-info">
-      <InfoRow label="Status" value={doc.status} />
+      <InfoRow label="Status" value={statusLabel(doc.status)} />
       {(doc.status === "failed" || doc.status === "needs_review") &&
         doc.error_message && (
           <div className="rounded-md bg-destructive-soft border border-destructive/25 p-3 space-y-2">
@@ -116,6 +120,7 @@ export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
         docId={doc.id}
         onSave={onSave}
         options={DOC_TYPE_OPTIONS}
+        formatLabel={formatDocType}
         placeholder="Search type..."
       />
       <EditableField

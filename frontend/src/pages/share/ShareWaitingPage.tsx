@@ -1,3 +1,6 @@
+import { useUiFormat } from "@/lib/formatting";
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Hourglass, Loader2, X } from "lucide-react";
@@ -25,10 +28,12 @@ const CLAIM_STOP_STATUSES = [401, 403, 404, 410];
  *   - the doctor clicks "Cancel" → DELETE the queue token and bounce.
  */
 export default function ShareWaitingPage() {
+  const renderMessage = useMessage();
+  const { formatTime } = useUiFormat();
   const navigate = useNavigate();
   const [recipientLabel, setRecipientLabel] = useState<string | null>(null);
   const [queueExpiresAt, setQueueExpiresAt] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<UiMessage | null>(null);
   const cancelledRef = useRef(false);
 
   // Poll /claim every 5s (paused while the tab is hidden, backoff on
@@ -71,11 +76,13 @@ export default function ShareWaitingPage() {
         setStopped(true);
         if (status === 410) {
           setError(
-            "Your waiting position has expired. Request a fresh access code to try again.",
+            message(
+              "feedback.yourWaitingPositionHasExpiredRequestAFreshAccessCode",
+            ),
           );
         } else {
           setError(
-            "Your waiting position is no longer valid. Open the share link again to request a fresh access code.",
+            message("feedback.yourWaitingPositionIsNoLongerValidOpenTheShare"),
           );
         }
         window.setTimeout(() => navigate("/share", { replace: true }), 2500);
@@ -118,11 +125,9 @@ export default function ShareWaitingPage() {
         {queueExpiresAt && (
           <p className="text-xs text-muted-foreground">
             Your waiting position is valid until{" "}
-            <span className="font-mono">
-              {new Date(queueExpiresAt + "Z").toLocaleTimeString()}
-            </span>
-            . If the other session does not end before then you will need to
-            request a fresh access code.
+            <span className="font-mono">{formatTime(queueExpiresAt)}</span>. If
+            the other session does not end before then you will need to request
+            a fresh access code.
           </p>
         )}
         <Button
@@ -135,7 +140,11 @@ export default function ShareWaitingPage() {
           <X className="h-4 w-4" />
           Cancel and exit
         </Button>
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && (
+          <p className="text-sm text-destructive">
+            {renderMessage(error ?? undefined)}
+          </p>
+        )}
         <p className="text-xs text-muted-foreground border-t pt-4">
           Only one device can view a share at a time. If you closed an earlier
           tab, this should clear up within a few minutes.

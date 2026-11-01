@@ -1,3 +1,4 @@
+import { message, type UiMessage } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import api from "@/api/client";
 import { getErrorMessage } from "@/lib/errors";
@@ -120,9 +121,10 @@ export default function UsersTab() {
 
   const deleteUser = async (id: number) => {
     const ok = await confirm({
-      title: "Delete this user?",
-      description:
-        "The user's login will be removed and their patient-access grants revoked. Documents they uploaded stay.",
+      title: message("feedback.deleteThisUser"),
+      description: message(
+        "feedback.theUserSLoginWillBeRemovedAndTheirPatient",
+      ),
       variant: "destructive",
     });
     if (!ok) return;
@@ -523,8 +525,8 @@ interface AccessModalProps {
   onClose: () => void;
   onSaved: (updated: Grant[]) => void | Promise<void>;
   toast: (args: {
-    title: string;
-    description?: string;
+    title: UiMessage;
+    description?: UiMessage;
     variant?: "default" | "error";
   }) => void;
 }
@@ -614,8 +616,11 @@ function AccessModal({
       const failed = results.filter((r) => r.status === "rejected").length;
       if (failed > 0) {
         toast({
-          title: "Some changes failed",
-          description: `${failed} of ${results.length} access updates did not apply.`,
+          title: message("feedback.someChangesFailed"),
+          description: message("feedback.ofAccessUpdatesDidNotApply", {
+            value0: String(failed),
+            value1: String(results.length),
+          }),
           variant: "error",
         });
       }
@@ -631,7 +636,7 @@ function AccessModal({
       await onSaved(updated);
     } catch (err: any) {
       toast({
-        title: "Save failed",
+        title: message("feedback.saveFailed"),
         description: getErrorMessage(err, ""),
         variant: "error",
       });
@@ -690,79 +695,79 @@ function AccessModal({
         </>
       }
     >
-        <div className="border-b pb-3 space-y-2">
-          <Input
-            type="text"
-            placeholder="Filter patients..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          />
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <button
-              onClick={toggleAllVisible}
-              className="inline-flex items-center hover:text-foreground coarse:min-h-11"
-            >
-              {allVisibleSelected ? "Clear visible" : "Select all visible"}
-            </button>
-            <span>
-              {Object.keys(selection).length} selected
-              {changeCount > 0 && (
-                <span className="ml-2 text-primary">
-                  • {changeCount} change{changeCount === 1 ? "" : "s"}
-                </span>
-              )}
-            </span>
-          </div>
+      <div className="border-b pb-3 space-y-2">
+        <Input
+          type="text"
+          placeholder="Filter patients..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <button
+            onClick={toggleAllVisible}
+            className="inline-flex items-center hover:text-foreground coarse:min-h-11"
+          >
+            {allVisibleSelected ? "Clear visible" : "Select all visible"}
+          </button>
+          <span>
+            {Object.keys(selection).length} selected
+            {changeCount > 0 && (
+              <span className="ml-2 text-primary">
+                • {changeCount} change{changeCount === 1 ? "" : "s"}
+              </span>
+            )}
+          </span>
         </div>
+      </div>
 
-        <div>
-          {patients.length === 0 ? (
-            <div className="p-6 text-center text-sm text-muted-foreground">
-              No patients exist yet.
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="p-6 text-center text-sm text-muted-foreground">
-              No patients match "{filter}".
-            </div>
-          ) : (
-            <ul className="divide-y">
-              {filtered.map((p) => {
-                const checked = p.id in selection;
-                return (
-                  <li
-                    key={p.id}
-                    className={`flex items-center gap-3 px-3 py-2 ${checked ? "bg-primary/5" : ""}`}
-                  >
-                    <label className="flex min-w-0 flex-1 items-center gap-2 cursor-pointer coarse:min-h-11">
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggle(p.id)}
-                        className="h-4 w-4 coarse:h-5 coarse:w-5"
-                      />
-                      <span className="text-sm">{p.display_name}</span>
-                      {initialMap[p.id] && (
-                        <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-                          <Check className="h-3 w-3 text-primary" /> current
-                        </span>
-                      )}
-                    </label>
-                    {checked && (
-                      <select
-                        value={selection[p.id]}
-                        onChange={(e) => setRole(p.id, e.target.value)}
-                        className="rounded-md border bg-background px-2 py-0.5 text-xs coarse:min-h-11"
-                      >
-                        <option value="viewer">viewer</option>
-                        <option value="owner">owner</option>
-                      </select>
+      <div>
+        {patients.length === 0 ? (
+          <div className="p-6 text-center text-sm text-muted-foreground">
+            No patients exist yet.
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="p-6 text-center text-sm text-muted-foreground">
+            No patients match "{filter}".
+          </div>
+        ) : (
+          <ul className="divide-y">
+            {filtered.map((p) => {
+              const checked = p.id in selection;
+              return (
+                <li
+                  key={p.id}
+                  className={`flex items-center gap-3 px-3 py-2 ${checked ? "bg-primary/5" : ""}`}
+                >
+                  <label className="flex min-w-0 flex-1 items-center gap-2 cursor-pointer coarse:min-h-11">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggle(p.id)}
+                      className="h-4 w-4 coarse:h-5 coarse:w-5"
+                    />
+                    <span className="text-sm">{p.display_name}</span>
+                    {initialMap[p.id] && (
+                      <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <Check className="h-3 w-3 text-primary" /> current
+                      </span>
                     )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+                  </label>
+                  {checked && (
+                    <select
+                      value={selection[p.id]}
+                      onChange={(e) => setRole(p.id, e.target.value)}
+                      className="rounded-md border bg-background px-2 py-0.5 text-xs coarse:min-h-11"
+                    >
+                      <option value="viewer">viewer</option>
+                      <option value="owner">owner</option>
+                    </select>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
     </Sheet>
   );
 }

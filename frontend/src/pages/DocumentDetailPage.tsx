@@ -1,10 +1,13 @@
+import { useUiFormat } from "@/lib/formatting";
+import { message } from "@/i18n/messages";
+import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "@/api/client";
 import { usePolling } from "@/lib/polling";
 import { getErrorMessage } from "@/lib/errors";
 import { FileText, X } from "lucide-react";
-import { formatDocType, getBestDate } from "@/lib/utils";
+import { getBestDate } from "@/lib/utils";
 import {
   EditableSummary,
   EditableFilename,
@@ -73,6 +76,8 @@ function DetailSkeleton() {
 }
 
 export default function DocumentDetailPage() {
+  const { formatDocType, formatDate } = useUiFormat();
+  useTranslation("common");
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -134,7 +139,10 @@ export default function DocumentDetailPage() {
       await api.post(`/documents/${id}/cancel`);
       await loadDoc();
     } catch {
-      toast({ title: "Failed to cancel processing", variant: "error" });
+      toast({
+        title: message("feedback.failedToCancelProcessing"),
+        variant: "error",
+      });
     }
   };
 
@@ -144,7 +152,7 @@ export default function DocumentDetailPage() {
       await loadDoc(false);
     } catch (e: any) {
       toast({
-        title: "Rotation failed",
+        title: message("feedback.rotationFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -158,10 +166,15 @@ export default function DocumentDetailPage() {
     const pageCount = typeof doc?.page_count === "number" ? doc.page_count : 0;
     if (pageCount > 5) {
       const ok = await confirm({
-        title: `Reprocess ${pageCount}-page document?`,
-        description: `This document has ${pageCount} pages. Reprocessing will run OCR and the LLM on every page, which can take a while and consume tokens if you're on a paid provider. Continue?`,
-        confirmText: "Reprocess",
-        cancelText: "Cancel",
+        title: message("feedback.reprocessPageDocument", {
+          value0: String(pageCount),
+        }),
+        description: message(
+          "feedback.thisDocumentHasPagesReprocessingWillRunOcrAndThe",
+          { value0: String(pageCount) },
+        ),
+        confirmText: message("feedback.reprocess"),
+        cancelText: message("feedback.cancel"),
       });
       if (!ok) return false;
     }
@@ -217,7 +230,7 @@ export default function DocumentDetailPage() {
       await loadDoc(false);
     } catch (e: any) {
       toast({
-        title: "Region translate failed",
+        title: message("feedback.regionTranslateFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -232,20 +245,23 @@ export default function DocumentDetailPage() {
     const studyId = doc?.imaging_studies?.[0]?.id;
     if (!studyId) return;
     const ok = await confirm({
-      title: "Unlink this report from the imaging study?",
+      title: message("feedback.unlinkThisReportFromTheImagingStudy"),
       description:
         "The PDF stays in the patient's documents and the DICOM study stays in /imaging — only the link between them is removed. The study will fall back to a placeholder report; you can re-attach this (or any other PDF) from the imaging view.",
       variant: "destructive",
-      confirmText: "Unlink",
+      confirmText: message("feedback.unlink"),
     });
     if (!ok) return;
     try {
       await api.delete(`/imaging/${studyId}/report`);
       await loadDoc(false);
-      toast({ title: "Imaging study unlinked", variant: "success" });
+      toast({
+        title: message("feedback.imagingStudyUnlinked"),
+        variant: "success",
+      });
     } catch (e: any) {
       toast({
-        title: "Unlink failed",
+        title: message("feedback.unlinkFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -254,9 +270,10 @@ export default function DocumentDetailPage() {
 
   const handleDelete = async () => {
     const ok = await confirm({
-      title: "Delete this document?",
-      description:
-        "The file will be removed from disk and all related records (lab results, encounters, medications, etc.) will be cascaded. This cannot be undone.",
+      title: message("feedback.deleteThisDocument"),
+      description: message(
+        "feedback.theFileWillBeRemovedFromDiskAndAllRelated",
+      ),
       variant: "destructive",
     });
     if (!ok) return;
@@ -264,7 +281,10 @@ export default function DocumentDetailPage() {
       await api.delete(`/documents/${id}`);
       navigate("/documents");
     } catch {
-      toast({ title: "Failed to delete document", variant: "error" });
+      toast({
+        title: message("feedback.failedToDeleteDocument"),
+        variant: "error",
+      });
     }
   };
 
@@ -274,10 +294,10 @@ export default function DocumentDetailPage() {
   // the hidden input's onChange below.
   const handleReplaceFile = async () => {
     const ok = await confirm({
-      title: "Replace this file?",
+      title: message("feedback.replaceThisFile"),
       description:
         "Pick a new file (e.g. the original PDF for a scan). The stored file is swapped and the old one deleted, but the extracted data — OCR text, fields, lab results — is kept. It is not reprocessed.",
-      confirmText: "Choose file...",
+      confirmText: message("feedback.chooseFile"),
     });
     if (!ok) return;
     replaceInputRef.current?.click();
@@ -290,11 +310,11 @@ export default function DocumentDetailPage() {
       await api.post(`/documents/${id}/replace-file`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast({ title: "File replaced", variant: "success" });
+      toast({ title: message("feedback.fileReplaced"), variant: "success" });
       loadDoc(false);
     } catch (e: any) {
       toast({
-        title: "Replace failed",
+        title: message("feedback.replaceFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -326,7 +346,7 @@ export default function DocumentDetailPage() {
             onSave={updateDocFields}
           />
           <p className="text-sm text-muted-foreground">
-            {formatDocType(doc.doc_type)} | {getBestDate(doc) || "No date"} |{" "}
+            {formatDocType(doc.doc_type)} | {formatDate(getBestDate(doc))} |{" "}
             {doc.patient_name || "Unclassified"}
           </p>
         </div>

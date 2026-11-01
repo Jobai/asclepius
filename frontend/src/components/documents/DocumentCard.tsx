@@ -1,6 +1,9 @@
+import { useUiFormat } from "@/lib/formatting";
+import { useTranslation } from "react-i18next";
 import type { PipelineStatus } from "@/types";
+import { stageLabel } from "@/lib/pipelineStages";
 import Badge, { type BadgeVariant } from "@/components/ui/Badge";
-import { formatDocType, getBestDate } from "@/lib/utils";
+import { getBestDate, statusLabel } from "@/lib/utils";
 
 const STATUS_VARIANTS: Record<string, BadgeVariant> = {
   done: "success",
@@ -25,9 +28,9 @@ export function statusText(doc: any, pipeline: PipelineStatus | null): string {
     pipeline?.processing_pages &&
     pipeline?.processing_page_current != null
   ) {
-    return `${pipeline?.processing_step || "processing"} (${pipeline?.processing_page_current}/${pipeline?.processing_pages})`;
+    return `${stageLabel(pipeline?.processing_step || "processing")} (${pipeline?.processing_page_current}/${pipeline?.processing_pages})`;
   }
-  return doc.status;
+  return statusLabel(doc.status);
 }
 
 /**
@@ -37,9 +40,11 @@ export function statusText(doc: any, pipeline: PipelineStatus | null): string {
  * page; the whole card is the tap target.
  */
 export default function DocumentCard({ doc, pipeline }: DocumentCardProps) {
+  const { formatDocType, formatDate } = useUiFormat();
+  useTranslation("common");
   const line1 = [
     doc.doc_type ? formatDocType(doc.doc_type) : null,
-    getBestDate(doc) || null,
+    getBestDate(doc) ? formatDate(getBestDate(doc)) : null,
   ].filter(Boolean);
   const line2 = [doc.doctor_name, doc.facility_name].filter(Boolean);
 

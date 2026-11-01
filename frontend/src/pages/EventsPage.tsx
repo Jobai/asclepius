@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
@@ -13,12 +14,7 @@ import {
   Pencil,
 } from "lucide-react";
 import IconButton from "@/components/ui/IconButton";
-import {
-  Menu,
-  MenuContent,
-  MenuItem,
-  MenuTrigger,
-} from "@/components/ui/Menu";
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/Menu";
 import { EVENT_COLORS } from "./events/constants";
 import EventForm from "./events/EventForm";
 import { useEventsPage } from "./events/useEventsPage";
@@ -67,8 +63,10 @@ export default function EventsPage() {
 
   const handleDelete = async (id: number) => {
     const ok = await confirm({
-      title: "Delete medical event?",
-      description: "Documents linked to this event will be unlinked but kept.",
+      title: message("feedback.deleteMedicalEvent"),
+      description: message(
+        "feedback.documentsLinkedToThisEventWillBeUnlinkedButKept",
+      ),
       variant: "destructive",
     });
     if (!ok) return;
@@ -78,10 +76,11 @@ export default function EventsPage() {
 
   const handleDeleteWithDocs = async (id: number) => {
     const ok = await confirm({
-      title: "Delete event + linked documents?",
-      description:
-        "The event AND all its linked documents will be permanently deleted. This cannot be undone.",
-      confirmText: "Delete everything",
+      title: message("feedback.deleteEventLinkedDocuments"),
+      description: message(
+        "feedback.theEventAndAllItsLinkedDocumentsWillBePermanently",
+      ),
+      confirmText: message("feedback.deleteEverything"),
       variant: "destructive",
     });
     if (!ok) return;
@@ -261,33 +260,35 @@ export default function EventsPage() {
                         </h4>
                         {eventDetail.documents?.length > 0 ? (
                           <div className="space-y-1">
-                            {eventDetail.documents.map((doc: LinkedDocument) => (
-                              <Link
-                                key={doc.document_id}
-                                to={`/documents/${doc.document_id}`}
-                                className="flex flex-col gap-0.5 rounded-md border p-2 text-xs hover:bg-accent/30 sm:flex-row sm:items-center sm:gap-2"
-                              >
-                                <span className="flex min-w-0 items-center gap-2">
-                                  <FileText className="h-3 w-3 flex-shrink-0 text-primary" />
-                                  <span className="min-w-0 truncate font-medium">
-                                    {doc.original_filename}
-                                  </span>
-                                  <span className="shrink-0 text-muted-foreground">
-                                    {doc.doc_type?.replace(/_/g, " ")}
-                                  </span>
-                                </span>
-                                <span className="flex items-center gap-2 pl-5 sm:pl-0">
-                                  <span className="text-muted-foreground">
-                                    {doc.event_date}
-                                  </span>
-                                  {doc.relevance !== "primary" && (
-                                    <span className="rounded bg-muted px-1 py-0.5 text-[9px]">
-                                      {doc.relevance}
+                            {eventDetail.documents.map(
+                              (doc: LinkedDocument) => (
+                                <Link
+                                  key={doc.document_id}
+                                  to={`/documents/${doc.document_id}`}
+                                  className="flex flex-col gap-0.5 rounded-md border p-2 text-xs hover:bg-accent/30 sm:flex-row sm:items-center sm:gap-2"
+                                >
+                                  <span className="flex min-w-0 items-center gap-2">
+                                    <FileText className="h-3 w-3 flex-shrink-0 text-primary" />
+                                    <span className="min-w-0 truncate font-medium">
+                                      {doc.original_filename}
                                     </span>
-                                  )}
-                                </span>
-                              </Link>
-                            ))}
+                                    <span className="shrink-0 text-muted-foreground">
+                                      {doc.doc_type?.replace(/_/g, " ")}
+                                    </span>
+                                  </span>
+                                  <span className="flex items-center gap-2 pl-5 sm:pl-0">
+                                    <span className="text-muted-foreground">
+                                      {doc.event_date}
+                                    </span>
+                                    {doc.relevance !== "primary" && (
+                                      <span className="rounded bg-muted px-1 py-0.5 text-[9px]">
+                                        {doc.relevance}
+                                      </span>
+                                    )}
+                                  </span>
+                                </Link>
+                              ),
+                            )}
                           </div>
                         ) : (
                           <p className="text-xs text-muted-foreground">

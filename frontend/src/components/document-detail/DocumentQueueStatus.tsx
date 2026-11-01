@@ -1,3 +1,5 @@
+import { useUiFormat } from "@/lib/formatting";
+import { useTranslation } from "react-i18next";
 import { type ReactNode } from "react";
 import {
   Tooltip,
@@ -21,6 +23,7 @@ interface Props {
  * to a generic "Queued" pill until pipeline-status arrives from the server.
  */
 export default function DocumentQueueStatus({ docId }: Props) {
+  useTranslation("common");
   const { status } = usePipelineStatus();
 
   const current = status?.current_job;
@@ -146,6 +149,8 @@ function ProcessingTooltipBody({
   providerNames: PipelineProviders | null;
   stageProvider: string | null;
 }) {
+  const { locale } = useUiFormat();
+  useTranslation("common");
   const now = useNow(true);
   const startedMs = parseBackendTs(startedAt);
   const elapsed = startedMs ? Math.max(0, now - startedMs) : null;
@@ -171,7 +176,9 @@ function ProcessingTooltipBody({
         )}
         {elapsed != null && (
           <Row label="Elapsed">
-            <span className="tabular-nums">{formatElapsed(elapsed)}</span>
+            <span className="tabular-nums">
+              {formatElapsed(elapsed, locale)}
+            </span>
           </Row>
         )}
       </div>

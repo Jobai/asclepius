@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { message } from "@/i18n/messages";
 import { useRef, useState } from "react";
 import { Pencil, Search, X } from "lucide-react";
 import api from "@/api/client";
@@ -25,6 +27,7 @@ export function EditableSelect({
   /** Override the PATCH endpoint. See EditableField for details. */
   apiPath?: string;
 }) {
+  const { t: ui } = useTranslation("common");
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState(value || "");
@@ -40,7 +43,7 @@ export function EditableSelect({
       setVal(newVal);
       onSave(res.data);
     } catch {
-      toast({ title: "Failed to save", variant: "error" });
+      toast({ title: message("feedback.failedToSave"), variant: "error" });
     }
     setSaving(false);
   };
@@ -58,7 +61,7 @@ export function EditableSelect({
           className="flex-1 h-7 rounded border bg-background px-2 text-sm"
           autoFocus
         >
-          <option value="">— none —</option>
+          <option value="">{ui("ui.none")}</option>
           {options.map((opt) => (
             <option key={opt} value={opt}>
               {fmt(opt)}
@@ -70,12 +73,15 @@ export function EditableSelect({
             onClick={() => handleSave("")}
             disabled={saving}
             variant="danger"
-            title="Delete the saved value"
+            title={ui("ui.deleteSaved")}
           >
-            Delete
+            {ui("actions.delete")}
           </ActionButton>
         )}
-        <IconButton label="Close" onClick={() => setEditing(false)}>
+        <IconButton
+          label={ui("actions.close")}
+          onClick={() => setEditing(false)}
+        >
           <X className="h-3.5 w-3.5" />
         </IconButton>
       </div>
@@ -96,7 +102,7 @@ export function EditableSelect({
           fmt(value)
         ) : (
           <span className="text-muted-foreground/50 italic group-hover:text-primary text-xs coarse:opacity-70">
-            click to edit
+            {ui("ui.clickEdit")}
           </span>
         )}
         <Pencil
@@ -134,6 +140,7 @@ export function EditableSearchableSelect({
   formatLabel?: (v: string) => string;
   placeholder?: string;
 }) {
+  const { t: ui } = useTranslation("common");
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
   const [query, setQuery] = useState("");
@@ -160,7 +167,7 @@ export function EditableSearchableSelect({
       setEditing(false);
       setQuery("");
     } catch {
-      toast({ title: "Failed to save", variant: "error" });
+      toast({ title: message("feedback.failedToSave"), variant: "error" });
     }
     setSaving(false);
   };
@@ -195,7 +202,7 @@ export function EditableSearchableSelect({
                     handleSave(filtered[0]);
                   }
                 }}
-                placeholder={placeholder || "Search..."}
+                placeholder={placeholder || ui("ui.searchPlaceholder")}
                 className="w-full h-7 rounded border bg-background pl-7 pr-2 text-sm"
                 autoFocus
                 disabled={saving}
@@ -206,13 +213,13 @@ export function EditableSearchableSelect({
                 onClick={() => handleSave(null)}
                 disabled={saving}
                 variant="danger"
-                title="Delete the saved value"
+                title={ui("ui.deleteSaved")}
               >
-                Delete
+                {ui("actions.delete")}
               </ActionButton>
             )}
             <IconButton
-              label="Close"
+              label={ui("actions.close")}
               onClick={() => {
                 setEditing(false);
                 setQuery("");
@@ -261,7 +268,7 @@ export function EditableSearchableSelect({
           fmt(value)
         ) : (
           <span className="text-muted-foreground/50 italic group-hover:text-primary text-xs coarse:opacity-70">
-            click to edit
+            {ui("ui.clickEdit")}
           </span>
         )}
         <Pencil

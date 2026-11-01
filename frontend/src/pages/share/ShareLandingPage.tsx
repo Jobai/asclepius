@@ -1,3 +1,5 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
@@ -29,10 +31,11 @@ type DeliveryInfo = {
  * to manual delivery.
  */
 export default function ShareLandingPage() {
+  const renderMessage = useMessage();
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<UiMessage | null>(null);
   const [info, setInfo] = useState<DeliveryInfo | null>(null);
 
   useEffect(() => {
@@ -64,7 +67,9 @@ export default function ShareLandingPage() {
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 429) {
-        setError("Too many requests. Please wait a few minutes and try again.");
+        setError(
+          message("feedback.tooManyRequestsPleaseWaitAFewMinutesAndTry"),
+        );
       } else if (status === 502) {
         // Email delivery failed at the SMTP layer. The OTP was not
         // sent and there is nothing the doctor can do — they need to
@@ -75,7 +80,7 @@ export default function ShareLandingPage() {
             "to switch this share to manual delivery.",
         );
       } else {
-        setError("Could not request a code. Please retry.");
+        setError(message("feedback.couldNotRequestACodePleaseRetry"));
       }
     } finally {
       setSubmitting(false);
@@ -124,7 +129,11 @@ export default function ShareLandingPage() {
           >
             {buttonLabel}
           </Button>
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && (
+            <p className="text-sm text-destructive">
+              {renderMessage(error ?? undefined)}
+            </p>
+          )}
         </form>
         <p className="text-xs text-muted-foreground border-t pt-4">
           Sessions expire automatically. The documents are read-only and cannot

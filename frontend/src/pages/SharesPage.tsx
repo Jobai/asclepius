@@ -1,10 +1,6 @@
+import { message } from "@/i18n/messages";
 import { Fragment, useMemo, useState } from "react";
-import {
-  Trash2,
-  RefreshCw,
-  ChevronDown,
-  ChevronRight,
-} from "lucide-react";
+import { Trash2, RefreshCw, ChevronDown, ChevronRight } from "lucide-react";
 
 import api from "@/api/client";
 import { getErrorMessage } from "@/lib/errors";
@@ -103,19 +99,19 @@ export default function SharesPage() {
 
   const onRevoke = async (id: number) => {
     const ok = await confirm({
-      title: "Revoke this share?",
-      description: "The doctor's session will be killed immediately.",
-      confirmText: "Revoke",
+      title: message("feedback.revokeThisShare"),
+      description: message("feedback.theDoctorSSessionWillBeKilledImmediately"),
+      confirmText: message("feedback.revoke"),
       variant: "destructive",
     });
     if (!ok) return;
     try {
       await api.delete(`/shares/${id}`);
-      toast({ title: "Share revoked", variant: "success" });
+      toast({ title: message("feedback.shareRevoked"), variant: "success" });
       refresh();
     } catch (err: any) {
       toast({
-        title: "Revoke failed",
+        title: message("feedback.revokeFailed"),
         description: getErrorMessage(err),
         variant: "error",
       });
@@ -124,23 +120,23 @@ export default function SharesPage() {
 
   const onDelete = async (id: number) => {
     const ok = await confirm({
-      title: "Permanently delete this share?",
+      title: message("feedback.permanentlyDeleteThisShare"),
       description:
         "It will be removed from the database along with its OTPs, sessions, " +
         "and audit history. Any live doctor session is killed. This cannot " +
         "be undone.",
-      confirmText: "Delete",
+      confirmText: message("feedback.delete"),
       variant: "destructive",
     });
     if (!ok) return;
     try {
       await api.delete(`/shares/${id}/purge`);
-      toast({ title: "Share deleted", variant: "success" });
+      toast({ title: message("feedback.shareDeleted"), variant: "success" });
       if (expandedId === id) setExpandedId(null);
       refresh();
     } catch (err: any) {
       toast({
-        title: "Delete failed",
+        title: message("feedback.deleteFailed"),
         description: getErrorMessage(err),
         variant: "error",
       });
@@ -159,7 +155,7 @@ export default function SharesPage() {
       setActiveOtp((s) => ({ ...s, [id]: res.data?.active_otp || null }));
     } catch (err: any) {
       toast({
-        title: "Could not load code",
+        title: message("feedback.couldNotLoadCode"),
         description: getErrorMessage(err),
         variant: "error",
       });
@@ -179,7 +175,7 @@ export default function SharesPage() {
       }));
     } catch (err: any) {
       toast({
-        title: "Could not load sessions",
+        title: message("feedback.couldNotLoadSessions"),
         description: getErrorMessage(err),
         variant: "error",
       });
@@ -204,7 +200,7 @@ export default function SharesPage() {
       setAuditByShare((s) => ({ ...s, [id]: res.data?.events || [] }));
     } catch (err: any) {
       toast({
-        title: "Could not load audit log",
+        title: message("feedback.couldNotLoadAuditLog"),
         description: getErrorMessage(err),
         variant: "error",
       });
@@ -215,19 +211,22 @@ export default function SharesPage() {
 
   const onRevokeSession = async (shareId: number, rowid: number) => {
     const ok = await confirm({
-      title: "Kill this active doctor session?",
-      description: "They will be bounced back to the landing page.",
-      confirmText: "Kill session",
+      title: message("feedback.killThisActiveDoctorSession"),
+      description: message("feedback.theyWillBeBouncedBackToTheLandingPage"),
+      confirmText: message("feedback.killSession"),
       variant: "destructive",
     });
     if (!ok) return;
     try {
       await api.delete(`/shares/${shareId}/sessions/${rowid}`);
-      toast({ title: "Session terminated", variant: "success" });
+      toast({
+        title: message("feedback.sessionTerminated"),
+        variant: "success",
+      });
       loadSessions(shareId);
     } catch (err: any) {
       toast({
-        title: "Could not terminate session",
+        title: message("feedback.couldNotTerminateSession"),
         description: getErrorMessage(err),
         variant: "error",
       });
@@ -237,11 +236,14 @@ export default function SharesPage() {
   const onDropQueue = async (shareId: number, rowid: number) => {
     try {
       await api.delete(`/shares/${shareId}/queue/${rowid}`);
-      toast({ title: "Queue entry dropped", variant: "success" });
+      toast({
+        title: message("feedback.queueEntryDropped"),
+        variant: "success",
+      });
       loadSessions(shareId);
     } catch (err: any) {
       toast({
-        title: "Could not drop queue entry",
+        title: message("feedback.couldNotDropQueueEntry"),
         description: getErrorMessage(err),
         variant: "error",
       });
@@ -320,8 +322,7 @@ export default function SharesPage() {
       <p className="text-sm text-muted-foreground">
         {counts.total} share{counts.total === 1 ? "" : "s"} total ·{" "}
         <span className="text-success">{counts.active} active</span> ·{" "}
-        <span className="text-warning">{counts.expired} expired</span>{" "}
-        ·{" "}
+        <span className="text-warning">{counts.expired} expired</span> ·{" "}
         <span className="text-muted-foreground">{counts.revoked} revoked</span>
       </p>
 
@@ -337,200 +338,207 @@ export default function SharesPage() {
         </div>
       ) : (
         <>
-        {/* md+ keeps the 10-column table; below md the same shares render
+          {/* md+ keeps the 10-column table; below md the same shares render
             as cards (no x-scroll fallback — the table never fit phones). */}
-        <div className="hidden md:block rounded-lg border overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50 text-xs uppercase">
-              <tr>
-                <th className="text-left px-3 py-2 w-8"></th>
-                <th className="text-left px-3 py-2">Recipient</th>
-                <th className="text-left px-3 py-2">Patient</th>
-                <th className="text-left px-3 py-2">Docs</th>
-                <th className="text-left px-3 py-2">Status</th>
-                <th className="text-left px-3 py-2">Expires</th>
-                <th className="text-left px-3 py-2">Accesses</th>
-                <th className="text-left px-3 py-2">Last access</th>
-                <th className="text-left px-3 py-2 w-[230px]">Active code</th>
-                <th className="text-left px-3 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {filtered.map((s) => {
-                const now = new Date().toISOString();
-                const isRevoked = !!s.revoked_at;
-                const isExpired = !isRevoked && s.expires_at < now;
-                const status = isRevoked
-                  ? "revoked"
-                  : isExpired
-                    ? "expired"
-                    : "active";
-                const isOpen = expandedId === s.id;
-                return (
-                  <Fragment key={s.id}>
-                    <tr className={isOpen ? "bg-muted/20" : ""}>
-                      <td className="px-3 py-2 align-top">
-                        <button
-                          onClick={() => onToggleAudit(s.id)}
-                          className="rounded p-0.5 hover:bg-accent"
-                          title="Toggle audit log"
-                        >
-                          {isOpen ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
-                          )}
-                        </button>
-                      </td>
-                      <td className="px-3 py-2 align-top">
-                        <div className="font-medium">{s.recipient_label}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {s.recipient_contact}
-                        </div>
-                      </td>
-                      <td className="px-3 py-2 align-top">{s.patient_name}</td>
-                      <td className="px-3 py-2 align-top">
-                        {s.document_count}
-                      </td>
-                      <td className="px-3 py-2 align-top">
-                        <StatusBadge status={status} />
-                      </td>
-                      <td className="px-3 py-2 align-top text-xs">
-                        {formatLocal(s.expires_at)}
-                      </td>
-                      <td className="px-3 py-2 align-top">{s.access_count}</td>
-                      <td className="px-3 py-2 align-top text-xs text-muted-foreground">
-                        {s.last_accessed_at
-                          ? formatLocal(s.last_accessed_at)
-                          : "never"}
-                      </td>
-                      <td className="px-3 py-2 align-top">
-                        {isRevoked || isExpired ? (
-                          <span className="text-xs text-muted-foreground italic">
-                            n/a
-                          </span>
-                        ) : s.otp_delivery === "email" ? (
-                          // The OTP plaintext is never persisted for
-                          // email shares — the admin cannot read it
-                          // back. Showing the Show button would just
-                          // dead-end on an empty `active_otp`.
-                          <span className="text-xs text-muted-foreground italic whitespace-normal">
-                            Emailed to{" "}
-                            <span className="font-mono not-italic">
-                              {s.recipient_contact}
+          <div className="hidden md:block rounded-lg border overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50 text-xs uppercase">
+                <tr>
+                  <th className="text-left px-3 py-2 w-8"></th>
+                  <th className="text-left px-3 py-2">Recipient</th>
+                  <th className="text-left px-3 py-2">Patient</th>
+                  <th className="text-left px-3 py-2">Docs</th>
+                  <th className="text-left px-3 py-2">Status</th>
+                  <th className="text-left px-3 py-2">Expires</th>
+                  <th className="text-left px-3 py-2">Accesses</th>
+                  <th className="text-left px-3 py-2">Last access</th>
+                  <th className="text-left px-3 py-2 w-[230px]">Active code</th>
+                  <th className="text-left px-3 py-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {filtered.map((s) => {
+                  const now = new Date().toISOString();
+                  const isRevoked = !!s.revoked_at;
+                  const isExpired = !isRevoked && s.expires_at < now;
+                  const status = isRevoked
+                    ? "revoked"
+                    : isExpired
+                      ? "expired"
+                      : "active";
+                  const isOpen = expandedId === s.id;
+                  return (
+                    <Fragment key={s.id}>
+                      <tr className={isOpen ? "bg-muted/20" : ""}>
+                        <td className="px-3 py-2 align-top">
+                          <button
+                            onClick={() => onToggleAudit(s.id)}
+                            className="rounded p-0.5 hover:bg-accent"
+                            title="Toggle audit log"
+                          >
+                            {isOpen ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                          </button>
+                        </td>
+                        <td className="px-3 py-2 align-top">
+                          <div className="font-medium">{s.recipient_label}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {s.recipient_contact}
+                          </div>
+                        </td>
+                        <td className="px-3 py-2 align-top">
+                          {s.patient_name}
+                        </td>
+                        <td className="px-3 py-2 align-top">
+                          {s.document_count}
+                        </td>
+                        <td className="px-3 py-2 align-top">
+                          <StatusBadge status={status} />
+                        </td>
+                        <td className="px-3 py-2 align-top text-xs">
+                          {formatLocal(s.expires_at)}
+                        </td>
+                        <td className="px-3 py-2 align-top">
+                          {s.access_count}
+                        </td>
+                        <td className="px-3 py-2 align-top text-xs text-muted-foreground">
+                          {s.last_accessed_at
+                            ? formatLocal(s.last_accessed_at)
+                            : "never"}
+                        </td>
+                        <td className="px-3 py-2 align-top">
+                          {isRevoked || isExpired ? (
+                            <span className="text-xs text-muted-foreground italic">
+                              n/a
                             </span>
-                          </span>
-                        ) : (
-                          <OtpCell
-                            visible={!!otpVisible[s.id]}
-                            loading={!!otpLoading[s.id]}
-                            otp={activeOtp[s.id] ?? null}
-                            onShow={() => onShowOtp(s.id)}
-                            onHide={() =>
-                              setOtpVisible((st) => ({ ...st, [s.id]: false }))
-                            }
-                            onRefresh={() => onShowOtp(s.id)}
-                          />
-                        )}
-                      </td>
-                      <td className="px-3 py-2 align-top whitespace-nowrap">
-                        <div className="flex items-center gap-1.5">
-                          {/* Copy-link is hidden for legacy rows that
+                          ) : s.otp_delivery === "email" ? (
+                            // The OTP plaintext is never persisted for
+                            // email shares — the admin cannot read it
+                            // back. Showing the Show button would just
+                            // dead-end on an empty `active_otp`.
+                            <span className="text-xs text-muted-foreground italic whitespace-normal">
+                              Emailed to{" "}
+                              <span className="font-mono not-italic">
+                                {s.recipient_contact}
+                              </span>
+                            </span>
+                          ) : (
+                            <OtpCell
+                              visible={!!otpVisible[s.id]}
+                              loading={!!otpLoading[s.id]}
+                              otp={activeOtp[s.id] ?? null}
+                              onShow={() => onShowOtp(s.id)}
+                              onHide={() =>
+                                setOtpVisible((st) => ({
+                                  ...st,
+                                  [s.id]: false,
+                                }))
+                              }
+                              onRefresh={() => onShowOtp(s.id)}
+                            />
+                          )}
+                        </td>
+                        <td className="px-3 py-2 align-top whitespace-nowrap">
+                          <div className="flex items-center gap-1.5">
+                            {/* Copy-link is hidden for legacy rows that
                               predate the token_clear column — those have
                               token_clear=null and we can't recover the
                               raw URL from the hash. Admin must reissue. */}
-                          {!isRevoked && !isExpired && s.token_clear && (
-                            <CopyLinkButton
-                              token={s.token_clear}
-                              shareUrl={s.share_url}
-                            />
-                          )}
-                          {!isRevoked && (
-                            <button
-                              onClick={() => onRevoke(s.id)}
-                              className="inline-flex items-center gap-1 rounded-md border border-destructive/40 px-2 py-1 text-xs text-destructive hover:bg-destructive/10"
-                              title="Revoke share (keeps the row, kills the session)"
-                            >
-                              <Trash2 className="h-3 w-3" /> Revoke
-                            </button>
-                          )}
-                          {/* Permanent delete — removes the row and all
+                            {!isRevoked && !isExpired && s.token_clear && (
+                              <CopyLinkButton
+                                token={s.token_clear}
+                                shareUrl={s.share_url}
+                              />
+                            )}
+                            {!isRevoked && (
+                              <button
+                                onClick={() => onRevoke(s.id)}
+                                className="inline-flex items-center gap-1 rounded-md border border-destructive/40 px-2 py-1 text-xs text-destructive hover:bg-destructive/10"
+                                title="Revoke share (keeps the row, kills the session)"
+                              >
+                                <Trash2 className="h-3 w-3" /> Revoke
+                              </button>
+                            )}
+                            {/* Permanent delete — removes the row and all
                               its history. Offered for every status so old
                               and legacy shares can be cleaned out. */}
-                          <button
-                            onClick={() => onDelete(s.id)}
-                            className="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs text-muted-foreground hover:bg-accent hover:text-destructive"
-                            title="Permanently delete this share from the database"
-                          >
-                            <Trash2 className="h-3 w-3" /> Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    {isOpen && (
-                      <tr className="bg-muted/10">
-                        <td></td>
-                        <td colSpan={9} className="px-3 py-3 space-y-4">
-                          <SessionsPanel
-                            loading={!!sessionsLoading[s.id]}
-                            data={sessionsByShare[s.id]}
-                            onRefresh={() => loadSessions(s.id)}
-                            onRevokeSession={(rowid) =>
-                              onRevokeSession(s.id, rowid)
-                            }
-                            onDropQueue={(rowid) => onDropQueue(s.id, rowid)}
-                          />
-                          <AuditPanel
-                            loading={!!auditLoading[s.id]}
-                            events={auditByShare[s.id] || []}
-                          />
+                            <button
+                              onClick={() => onDelete(s.id)}
+                              className="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs text-muted-foreground hover:bg-accent hover:text-destructive"
+                              title="Permanently delete this share from the database"
+                            >
+                              <Trash2 className="h-3 w-3" /> Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
-                    )}
-                  </Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                      {isOpen && (
+                        <tr className="bg-muted/10">
+                          <td></td>
+                          <td colSpan={9} className="px-3 py-3 space-y-4">
+                            <SessionsPanel
+                              loading={!!sessionsLoading[s.id]}
+                              data={sessionsByShare[s.id]}
+                              onRefresh={() => loadSessions(s.id)}
+                              onRevokeSession={(rowid) =>
+                                onRevokeSession(s.id, rowid)
+                              }
+                              onDropQueue={(rowid) => onDropQueue(s.id, rowid)}
+                            />
+                            <AuditPanel
+                              loading={!!auditLoading[s.id]}
+                              events={auditByShare[s.id] || []}
+                            />
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-        <div className="space-y-3 md:hidden">
-          {filtered.map((s) => {
-            const now = new Date().toISOString();
-            const isRevoked = !!s.revoked_at;
-            const isExpired = !isRevoked && s.expires_at < now;
-            const status: ShareStatus = isRevoked
-              ? "revoked"
-              : isExpired
-                ? "expired"
-                : "active";
-            return (
-              <ShareCard
-                key={s.id}
-                share={s}
-                status={status}
-                expanded={expandedId === s.id}
-                onToggleExpand={() => onToggleAudit(s.id)}
-                otpVisible={!!otpVisible[s.id]}
-                otpLoading={!!otpLoading[s.id]}
-                otp={activeOtp[s.id] ?? null}
-                onShowOtp={() => onShowOtp(s.id)}
-                onHideOtp={() =>
-                  setOtpVisible((st) => ({ ...st, [s.id]: false }))
-                }
-                onRevoke={() => onRevoke(s.id)}
-                onDelete={() => onDelete(s.id)}
-                sessionsLoading={!!sessionsLoading[s.id]}
-                sessions={sessionsByShare[s.id]}
-                onRefreshSessions={() => loadSessions(s.id)}
-                onRevokeSession={(rowid) => onRevokeSession(s.id, rowid)}
-                onDropQueue={(rowid) => onDropQueue(s.id, rowid)}
-                auditLoading={!!auditLoading[s.id]}
-                auditEvents={auditByShare[s.id] || []}
-              />
-            );
-          })}
-        </div>
+          <div className="space-y-3 md:hidden">
+            {filtered.map((s) => {
+              const now = new Date().toISOString();
+              const isRevoked = !!s.revoked_at;
+              const isExpired = !isRevoked && s.expires_at < now;
+              const status: ShareStatus = isRevoked
+                ? "revoked"
+                : isExpired
+                  ? "expired"
+                  : "active";
+              return (
+                <ShareCard
+                  key={s.id}
+                  share={s}
+                  status={status}
+                  expanded={expandedId === s.id}
+                  onToggleExpand={() => onToggleAudit(s.id)}
+                  otpVisible={!!otpVisible[s.id]}
+                  otpLoading={!!otpLoading[s.id]}
+                  otp={activeOtp[s.id] ?? null}
+                  onShowOtp={() => onShowOtp(s.id)}
+                  onHideOtp={() =>
+                    setOtpVisible((st) => ({ ...st, [s.id]: false }))
+                  }
+                  onRevoke={() => onRevoke(s.id)}
+                  onDelete={() => onDelete(s.id)}
+                  sessionsLoading={!!sessionsLoading[s.id]}
+                  sessions={sessionsByShare[s.id]}
+                  onRefreshSessions={() => loadSessions(s.id)}
+                  onRevokeSession={(rowid) => onRevokeSession(s.id, rowid)}
+                  onDropQueue={(rowid) => onDropQueue(s.id, rowid)}
+                  auditLoading={!!auditLoading[s.id]}
+                  auditEvents={auditByShare[s.id] || []}
+                />
+              );
+            })}
+          </div>
         </>
       )}
     </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { usePatient } from "@/contexts/PatientContext";
 import { Check, ChevronsUpDown, User, Users as UsersIcon } from "lucide-react";
@@ -23,6 +24,7 @@ export interface PatientSelectorProps {
 export default function PatientSelector({
   variant = "block",
 }: PatientSelectorProps) {
+  const { t: ui } = useTranslation("common");
   const { selectedPatient, setSelectedPatient } = usePatient();
   const { data, reload } = usePatients();
   const patients: Patient[] = Array.isArray(data) ? data : [];
@@ -57,8 +59,8 @@ export default function PatientSelector({
         type="button"
         aria-label={
           selectedPatient
-            ? `Patient: ${selectedPatient.display_name}`
-            : "All patients"
+            ? ui("ui.patientName", { name: selectedPatient.display_name })
+            : ui("ui.patientAll")
         }
         className="flex h-9 max-w-[40vw] items-center gap-1.5 rounded-full border bg-background px-3 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring coarse:h-10"
       >
@@ -73,7 +75,7 @@ export default function PatientSelector({
           <>
             <UsersIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
             <span className="hidden min-w-0 truncate text-muted-foreground min-[360px]:inline">
-              All
+              {ui("ui.all")}
             </span>
           </>
         )}
@@ -94,7 +96,7 @@ export default function PatientSelector({
           <>
             <UsersIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
             <span className="min-w-0 flex-1 truncate text-left text-muted-foreground">
-              All patients
+              {ui("ui.patientAll")}
             </span>
           </>
         )}
@@ -106,22 +108,22 @@ export default function PatientSelector({
     <PickerShell
       open={open}
       onOpenChange={handleOpenChange}
-      title="Select patient"
+      title={ui("ui.patientSelect")}
       search={query}
       onSearchChange={setQuery}
-      searchPlaceholder="Search patients…"
+      searchPlaceholder={ui("ui.patientSearch")}
       trigger={trigger}
       panelClassName={cn(variant === "block" && "w-[248px]")}
     >
       <PickerOption selected={!selectedPatient} onClick={() => pick(null)}>
         <UsersIcon className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
-        <span className="flex-1">All patients</span>
+        <span className="flex-1">{ui("ui.patientAll")}</span>
         {!selectedPatient && <Check className="h-3.5 w-3.5 text-primary" />}
       </PickerOption>
 
       {filtered.length === 0 && query && (
         <div className="px-3 py-2 text-xs italic text-muted-foreground">
-          No patients match "{query}"
+          {ui("ui.patientMatch", { query })}
         </div>
       )}
 

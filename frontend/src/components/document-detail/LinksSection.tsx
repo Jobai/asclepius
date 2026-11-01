@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import {
   FileText,
@@ -125,12 +126,15 @@ export default function LinksSection({
       const detail = err?.response?.data?.detail;
       if (err?.response?.status === 409) {
         toast({
-          title: detail || "These documents are already linked",
+          title: detail || message("feedback.theseDocumentsAreAlreadyLinked"),
           variant: "warning",
         });
         setSearchResults((prev) => prev.filter((d: any) => d.id !== targetId));
       } else {
-        toast({ title: detail || "Failed to link document", variant: "error" });
+        toast({
+          title: detail || message("feedback.failedToLinkDocument"),
+          variant: "error",
+        });
       }
     }
     requestAnimationFrame(() => window.scrollTo(0, scrollY));
@@ -141,7 +145,10 @@ export default function LinksSection({
       await api.delete(`/documents/${docId}/links/${linkId}`);
       onLinksChange(links.filter((l: any) => l.id !== linkId));
     } catch {
-      toast({ title: "Failed to remove link", variant: "error" });
+      toast({
+        title: message("feedback.failedToRemoveLink"),
+        variant: "error",
+      });
     }
   };
 
@@ -170,7 +177,7 @@ export default function LinksSection({
         );
       } else {
         toast({
-          title: "Failed to link",
+          title: message("feedback.failedToLink"),
           description: getErrorMessage(e),
           variant: "error",
         });

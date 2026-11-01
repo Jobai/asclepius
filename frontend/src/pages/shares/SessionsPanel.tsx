@@ -1,6 +1,6 @@
+import { useUiFormat } from "@/lib/formatting";
 import { Activity, Loader2, RefreshCw, Trash2 } from "lucide-react";
 import type { SessionsResponse } from "./types";
-import { formatLocal } from "./format";
 
 export default function SessionsPanel({
   loading,
@@ -107,6 +107,7 @@ function SessionsTable<T extends SessionTableRow>({
   onAction: (rowid: number) => void;
   renderStatus?: (r: T) => React.ReactNode;
 }) {
+  const { formatDateTime: formatLocal } = useUiFormat();
   const actionButton = (rowid: number) => (
     <button
       onClick={() => onAction(rowid)}
@@ -181,7 +182,9 @@ function SessionsTable<T extends SessionTableRow>({
             </div>
             <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-muted-foreground">
               <span>started {formatLocal(r.created_at)}</span>
-              <span>seen {r.last_seen_at ? formatLocal(r.last_seen_at) : "—"}</span>
+              <span>
+                seen {r.last_seen_at ? formatLocal(r.last_seen_at) : "—"}
+              </span>
               <span>expires {formatLocal(r.expires_at)}</span>
             </div>
             {r.user_agent && (

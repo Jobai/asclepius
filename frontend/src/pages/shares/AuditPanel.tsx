@@ -1,6 +1,6 @@
+import { useUiFormat } from "@/lib/formatting";
 import { Activity, Loader2, ScrollText } from "lucide-react";
 import type { AuditEvent } from "./types";
-import { formatLocal } from "./format";
 
 export default function AuditPanel({
   loading,
@@ -9,6 +9,7 @@ export default function AuditPanel({
   loading: boolean;
   events: AuditEvent[];
 }) {
+  const { formatDateTime: formatLocal } = useUiFormat();
   if (loading) {
     return (
       <div className="text-xs text-muted-foreground inline-flex items-center gap-1.5">

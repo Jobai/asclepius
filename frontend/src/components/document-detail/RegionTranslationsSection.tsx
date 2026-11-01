@@ -1,10 +1,11 @@
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { Crop, Trash2 } from "lucide-react";
 import api from "@/api/client";
 import { useToast } from "@/contexts/ToastContext";
 import { useConfirm } from "@/contexts/ConfirmContext";
 import { Section } from "@/components/document-detail/DocumentDetailHelpers";
-import { parseBackendTs } from "@/lib/datetime";
+import { useUiFormat } from "@/lib/formatting";
 import RegionThumbLightbox from "@/components/RegionThumbLightbox";
 
 export interface RegionTranslation {
@@ -29,25 +30,12 @@ export interface RegionTranslationsSectionProps {
   onChanged: () => void;
 }
 
-function formatTs(ts: string | null): string {
-  if (!ts) return "";
-  // Route through parseBackendTs so a naive (tz-less) backend timestamp is
-  // interpreted as UTC. The old copy used ``new Date(ts)`` directly, which
-  // parsed naive strings as *local* time and rendered the wrong offset.
-  const ms = parseBackendTs(ts);
-  if (ms == null) return ts;
-  const d = new Date(ms);
-  return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  })}`;
-}
-
 export default function RegionTranslationsSection({
   docId,
   items,
   onChanged,
 }: RegionTranslationsSectionProps) {
+  const { formatDateTime: formatTs } = useUiFormat();
   const { toast } = useToast();
   const confirm = useConfirm();
   const [busyId, setBusyId] = useState<number | null>(null);
@@ -57,8 +45,10 @@ export default function RegionTranslationsSection({
 
   const handleDelete = async (id: number) => {
     const ok = await confirm({
-      title: "Delete this region translation?",
-      description: "The cropped image and its translation will be removed.",
+      title: message("feedback.deleteThisRegionTranslation"),
+      description: message(
+        "feedback.theCroppedImageAndItsTranslationWillBeRemoved",
+      ),
       variant: "destructive",
     });
     if (!ok) return;
@@ -67,7 +57,7 @@ export default function RegionTranslationsSection({
       await api.delete(`/documents/${docId}/region-translations/${id}`);
       onChanged();
     } catch {
-      toast({ title: "Failed to delete", variant: "error" });
+      toast({ title: message("feedback.failedToDelete"), variant: "error" });
     } finally {
       setBusyId(null);
     }

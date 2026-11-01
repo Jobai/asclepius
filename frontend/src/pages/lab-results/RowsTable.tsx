@@ -1,3 +1,4 @@
+import { useUiFormat } from "@/lib/formatting";
 import { Link } from "react-router-dom";
 import { AlertTriangle, Check, Edit3, FileText, Trash2, X } from "lucide-react";
 import type { LabRow } from "./types";
@@ -29,6 +30,8 @@ export function RowsTable({
   saving,
   showDocument = true,
 }: RowsTableProps) {
+  const { formatClinicalValue, formatClinicalResult, formatDate } =
+    useUiFormat();
   return (
     <>
       {/* Stacked rows below md — the 7-column table has no room on phones. */}
@@ -160,20 +163,20 @@ export function RowsTable({
                       <span
                         className={`font-medium ${lr.is_abnormal ? "text-destructive" : ""}`}
                       >
-                        {lr.value ?? lr.value_text ?? "—"}
+                        {formatClinicalResult(lr)}
                         {lr.unit ? ` ${lr.unit}` : ""}
                       </span>
                       {lr.reference_range_low != null &&
                         lr.reference_range_high != null && (
                           <span className="ml-2 text-muted-foreground">
-                            ref {lr.reference_range_low}–
-                            {lr.reference_range_high}
+                            ref {formatClinicalValue(lr.reference_range_low)}–
+                            {formatClinicalValue(lr.reference_range_high)}
                           </span>
                         )}
                     </div>
                     <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
                       <span className="flex-shrink-0">
-                        {lr.test_date || "—"}
+                        {lr.test_date ? formatDate(lr.test_date) : "—"}
                       </span>
                       {showDocument &&
                         (lr.document_id ? (
@@ -360,7 +363,7 @@ export function RowsTable({
                       </div>
                     ) : lr.reference_range_low != null &&
                       lr.reference_range_high != null ? (
-                      `${lr.reference_range_low}–${lr.reference_range_high}`
+                      `${formatClinicalValue(lr.reference_range_low)}–${formatClinicalValue(lr.reference_range_high)}`
                     ) : (
                       "—"
                     )}
@@ -371,7 +374,10 @@ export function RowsTable({
                         type="date"
                         value={(editVals.test_date as string) ?? ""}
                         onChange={(e) =>
-                          setEditVals({ ...editVals, test_date: e.target.value })
+                          setEditVals({
+                            ...editVals,
+                            test_date: e.target.value,
+                          })
                         }
                         className="rounded border bg-background px-1.5 py-0.5 text-sm"
                       />

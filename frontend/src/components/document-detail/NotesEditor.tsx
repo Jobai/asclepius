@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { StickyNote } from "lucide-react";
 import api from "@/api/client";
@@ -21,7 +22,7 @@ export default function NotesEditor({ docId, initialNotes }: NotesEditorProps) {
       await api.patch(`/documents/${docId}`, { user_notes: notes });
       setEditing(false);
     } catch {
-      toast({ title: "Failed to save notes", variant: "error" });
+      toast({ title: message("feedback.failedToSaveNotes"), variant: "error" });
     }
   };
 

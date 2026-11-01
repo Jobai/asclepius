@@ -1,3 +1,5 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message as uiMessage } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import { ChevronDown, Languages, Loader2, Crop, FileText } from "lucide-react";
 
@@ -68,10 +70,11 @@ export default function ShareTranslateMenu({
   onStartRegionSelection,
   onQueued,
 }: ShareTranslateMenuProps) {
+  const renderMessage = useMessage();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<UiMessage | null>(null);
+  const [error, setError] = useState<UiMessage | null>(null);
   // Same content, two presentations: anchored popover from sm up, bottom
   // sheet below (thumb-reachable, no cramped floating panel at 390px).
   const isSm = useMediaQuery("(min-width: 640px)");
@@ -112,7 +115,10 @@ export default function ShareTranslateMenu({
         target_language: targetLanguage,
       });
       setMessage(
-        `Translation of page ${currentPage} into ${targetLanguage} queued. The translation will appear under "Region translations" in a moment; refresh to see it.`,
+        uiMessage("feedback.translationQueued", {
+          page: currentPage,
+          language: targetLanguage,
+        }),
       );
       onQueued?.();
     } catch (err: any) {
@@ -120,17 +126,23 @@ export default function ShareTranslateMenu({
       const retryAfter = err?.response?.headers?.["retry-after"];
       const detail = err?.response?.data?.detail;
       if (status === 429 && retryAfter) {
-        setError(`Try again in ${retryAfter}s.`);
+        setError(
+          uiMessage("feedback.tryAgainInS", { value0: String(retryAfter) }),
+        );
       } else if (status === 503) {
         setError(
           detail ||
-            "Translation temporarily unavailable; ask the sender to retry later.",
+            uiMessage(
+              "feedback.translationTemporarilyUnavailableAskTheSenderToRetryLater",
+            ),
         );
       } else if (detail) {
         setError(typeof detail === "string" ? detail : JSON.stringify(detail));
       } else {
         setError(
-          `Translation request failed${status ? ` (HTTP ${status})` : ""}.`,
+          uiMessage("feedback.translationRequestFailed646ed", {
+            value0: String(status ? ` (HTTP ${status})` : ""),
+          }),
         );
       }
     } finally {
@@ -242,9 +254,15 @@ export default function ShareTranslateMenu({
         <div className="space-y-1">{menuOptions}</div>
       </Sheet>
       {message && (
-        <p className="text-xs text-muted-foreground max-w-md">{message}</p>
+        <p className="text-xs text-muted-foreground max-w-md">
+          {renderMessage(message ?? undefined)}
+        </p>
       )}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && (
+        <p className="text-xs text-destructive">
+          {renderMessage(error ?? undefined)}
+        </p>
+      )}
     </div>
   );
 }

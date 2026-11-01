@@ -1,9 +1,42 @@
 # UI localization foundation
 
-Steps 1–3 are implemented. Language selectors and account synchronization work;
-feature-wide translation and locale formatting remain Steps 4–6 in
-`LOCALIZATION_PLAN.md` at the repository root. Most existing UI text is still
-English; the selector and Appearance section are translated.
+Steps 1–4 are implemented: language selection, account synchronization, shared
+labels/formatting, and reactive application messages. Backend error codes and
+feature-wide translation remain Steps 5–6 in `LOCALIZATION_PLAN.md`. Some
+feature-specific static copy and backend errors are still English.
+
+## Shared labels, formatting, and messages (Step 4)
+
+Navigation, page titles, document/imaging column registries, document types,
+statuses, and pipeline stages store translation keys with stable internal IDs.
+Consumers subscribe to language changes; memoized columns include the translator
+in their dependencies. Unknown enum values retain a readable fallback.
+
+Use `useUiFormat()` in React components. Its date/time, relative-time, count, and
+clinical-value helpers bind the resolved UI locale. Pure helpers take locale
+arguments explicitly. Date-only values stay calendar dates; backend timestamps
+continue to use `parseBackendTs` to interpret naive timestamps as UTC. Choosing a
+language never changes timezone. Countdown clocks with fixed `HH:MM:SS` fields
+remain numeric clocks.
+
+Numeric clinical values use an explicit 21-significant-digit display policy.
+`formatClinicalResult` preserves nonempty original `value_text` exactly, including
+comparison signs, trailing zeros, ranges, and qualifiers. Display formatting does
+not parse localized strings or change input values, numeric chart data, units,
+sorting/filtering keys, or API payloads.
+
+For an application-owned toast, confirmation, or error stored in state, pass
+`message("feedback.failedToSave")` or another typed key with interpolation values.
+`UiMessage` also accepts literal strings for server/user content. Render stored
+errors with `useMessage()` rather than storing `t(...)` results. Toast/confirmation
+providers translate descriptors during rendering, so existing notifications and
+pending confirmation promises survive a language switch. Nested descriptors may
+be used for operation names inside summary messages. Bulk actions use complete
+pluralized sentences rather than English `s` suffixes.
+
+`getErrorMessage` preserves its original string behavior and accepts a descriptor
+fallback. Server messages remain literal diagnostics; stable error-code translation
+is Step 5. Feature-specific static headings and help text are Step 6.
 
 ## Selecting a language (Step 3)
 
@@ -128,10 +161,11 @@ uses Node 20 and does not require this flag.
 
 ## Coverage inventory for later migration
 
-Feature-wide translations below remain **unmigrated** after Step 3; the new
-language controls, Appearance section, and document-translation tab label are
-localized. Migrate remaining labels and consumers together, retaining internal
-identifiers and existing behavior.
+The feature-wide inventory below still guides Step 6. Shared navigation, column
+labels, statuses/types/stages, controls, formatting, and persistent application
+messages are now localized. Feature-specific static copy and backend error-code
+handling remain pending. Migrate remaining labels and consumers together,
+retaining internal identifiers and existing behavior.
 
 | Group | Source areas | Strings/context to review |
 | --- | --- | --- |

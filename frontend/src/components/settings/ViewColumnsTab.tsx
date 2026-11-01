@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useColumnPrefs } from "@/lib/columnPrefs";
 import {
   COLUMNS as DOC_COLUMNS,
@@ -16,10 +17,13 @@ import { ChevronDown, ChevronUp, RotateCcw } from "lucide-react";
  * Persisted to ``user_view_prefs`` via /api/settings/view-prefs/{view_key}
  * so the choice follows the user across devices. */
 export default function ViewColumnsTab() {
+  const { t: ui } = useTranslation("common");
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-base font-semibold mb-1">Table columns</h2>
+        <h2 className="text-base font-semibold mb-1">
+          {ui("ui.tableColumns")}
+        </h2>
         <p className="text-sm text-muted-foreground">
           Pick which columns appear in each list view, and reorder them. Saves
           automatically.
@@ -27,21 +31,21 @@ export default function ViewColumnsTab() {
       </div>
 
       <ViewSection
-        title="Documents"
+        title={ui("nav.documents")}
         viewKey="documents"
         defs={DOC_COLUMNS.map((c) => ({
           key: c.key as string,
-          label: c.label,
+          label: ui(c.labelKey),
         }))}
         defaults={DOCUMENTS_DEFAULTS}
       />
 
       <ViewSection
-        title="Imaging"
+        title={ui("nav.imaging")}
         viewKey="imaging"
         defs={IMAGING_COLUMNS.map((c) => ({
           key: c.key as string,
-          label: c.label,
+          label: ui(c.labelKey),
         }))}
         defaults={IMAGING_DEFAULTS}
       />
@@ -65,6 +69,7 @@ function ViewSection({
   defs: { key: string; label: string }[];
   defaults: { visible: string[]; order: string[] };
 }) {
+  const { t: ui } = useTranslation("common");
   const prefs = useColumnPrefs(viewKey, defaults);
 
   // Render columns in the user's order, then any leftover (not yet ordered)
@@ -101,7 +106,7 @@ function ViewSection({
     return (
       <div className="rounded-lg border p-4">
         <h3 className="font-medium">{title}</h3>
-        <p className="text-xs text-muted-foreground mt-2">Loading...</p>
+        <p className="text-xs text-muted-foreground mt-2">{ui("ui.loading")}</p>
       </div>
     );
   }
@@ -113,9 +118,9 @@ function ViewSection({
         <button
           onClick={reset}
           className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 coarse:min-h-11"
-          title="Reset to defaults"
+          title={ui("ui.resetDefaults")}
         >
-          <RotateCcw className="h-3 w-3" /> Reset
+          <RotateCcw className="h-3 w-3" /> {ui("ui.reset")}
         </button>
       </div>
       <ul className="divide-y rounded-md border">
@@ -139,18 +144,18 @@ function ViewSection({
               <button
                 onClick={() => move(k, "up")}
                 disabled={i === 0}
-                aria-label="Move up"
+                aria-label={ui("ui.moveUp")}
                 className="flex items-center justify-center rounded p-1 hover:bg-accent disabled:opacity-30 coarse:min-h-11 coarse:min-w-11"
-                title="Move up"
+                title={ui("ui.moveUp")}
               >
                 <ChevronUp className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={() => move(k, "down")}
                 disabled={i === ordered.length - 1}
-                aria-label="Move down"
+                aria-label={ui("ui.moveDown")}
                 className="flex items-center justify-center rounded p-1 hover:bg-accent disabled:opacity-30 coarse:min-h-11 coarse:min-w-11"
-                title="Move down"
+                title={ui("ui.moveDown")}
               >
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>

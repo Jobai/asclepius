@@ -1,3 +1,5 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,9 +10,10 @@ import Input from "@/components/ui/Input";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function LoginPage() {
+  const renderMessage = useMessage();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<UiMessage | null>("");
   const [loading, setLoading] = useState(false);
   const [oidcEnabled, setOidcEnabled] = useState(false);
   const [hidePasswordLogin, setHidePasswordLogin] = useState(false);
@@ -40,7 +43,7 @@ export default function LoginPage() {
       await login(username, password);
       navigate("/");
     } catch {
-      setError("Invalid username or password");
+      setError(message("feedback.invalidUsernameOrPassword"));
     } finally {
       setLoading(false);
     }
@@ -98,7 +101,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {error}
+                {renderMessage(error ?? undefined)}
               </div>
             )}
 

@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowUpDown, Upload } from "lucide-react";
 import api from "@/api/client";
@@ -189,10 +190,31 @@ export default function DocumentsPage() {
     setSelectedIds(new Set());
     await reloadDocuments();
     if (failures.length === 0) {
-      toast({ title: `${label}: ${ok}/${ids.length} done` });
+      toast({
+        title: message("feedback.done", {
+          value0:
+            label === "Delete"
+              ? message("actions.delete")
+              : label.startsWith("Reprocess")
+                ? message("feedback.reprocess")
+                : message("feedback.regenerate"),
+          value1: String(ok),
+          value2: String(ids.length),
+        }),
+      });
     } else {
       toast({
-        title: `${label}: ${ok}/${ids.length} done, ${failures.length} failed`,
+        title: message("feedback.doneFailed", {
+          value0:
+            label === "Delete"
+              ? message("actions.delete")
+              : label.startsWith("Reprocess")
+                ? message("feedback.reprocess")
+                : message("feedback.regenerate"),
+          value1: String(ok),
+          value2: String(ids.length),
+          value3: String(failures.length),
+        }),
         description:
           failures.slice(0, 3).join(" • ") +
           (failures.length > 3 ? ` (+${failures.length - 3} more)` : ""),
@@ -204,9 +226,10 @@ export default function DocumentsPage() {
   const bulkDelete = async () => {
     const n = selectedIds.size;
     const ok = await confirm({
-      title: `Delete ${n} document${n === 1 ? "" : "s"}?`,
-      description:
-        "Files will be removed from disk and every related record (lab results, encounters, medications, etc.) will be cascaded. This cannot be undone.",
+      title: message("feedback.documentsDelete", { count: Number(n) }),
+      description: message(
+        "feedback.filesWillBeRemovedFromDiskAndEveryRelatedRecord",
+      ),
       variant: "destructive",
     });
     if (!ok) return;
@@ -225,10 +248,12 @@ export default function DocumentsPage() {
       const ok = await confirm(
         buildBulkConfirm({
           count: selectedIds.size,
-          verb: "Reprocess",
-          noun: "document",
-          description: `This will re-run ${modeLabel} on every selected document. It can take a while and may consume paid-provider tokens.`,
-          confirmText: "Reprocess",
+          action: "reprocess",
+          description: message(
+            "feedback.thisWillReRunOnEverySelectedDocumentItCan",
+            { value0: String(modeLabel) },
+          ),
+          confirmText: message("feedback.reprocess"),
         }),
       );
       if (!ok) return;
@@ -244,14 +269,24 @@ export default function DocumentsPage() {
       const ok = await confirm({
         title:
           longDocs.length === 1
-            ? `Reprocess ${longDocs[0].page_count}-page document?`
-            : `Reprocess ${longDocs.length} long documents?`,
+            ? message("feedback.reprocessPageDocument", {
+                value0: String(longDocs[0].page_count),
+              })
+            : message("feedback.reprocessLongDocuments", {
+                value0: String(longDocs.length),
+              }),
         description:
           longDocs.length === 1
-            ? `"${longDocs[0].original_filename}" has ${longDocs[0].page_count} pages. Reprocessing runs OCR and the LLM on every page, which can take a while and cost tokens on a paid provider.`
-            : `${longDocs.length} of the selected documents have more than 5 pages (${totalPages} pages total). Reprocessing runs OCR and the LLM on every page, which can take a while and cost tokens on a paid provider.`,
-        confirmText: "Reprocess",
-        cancelText: "Cancel",
+            ? message("feedback.hasPagesReprocessingRunsOcrAndTheLlmOnEvery", {
+                value0: String(longDocs[0].original_filename),
+                value1: String(longDocs[0].page_count),
+              })
+            : message(
+                "feedback.ofTheSelectedDocumentsHaveMoreThanPagesPagesTotal",
+                { value0: String(longDocs.length), value1: String(totalPages) },
+              ),
+        confirmText: message("feedback.reprocess"),
+        cancelText: message("feedback.cancel"),
       });
       if (!ok) return;
     }
@@ -270,11 +305,11 @@ export default function DocumentsPage() {
       const ok = await confirm(
         buildBulkConfirm({
           count: selectedIds.size,
-          verb: "Regenerate filename on",
-          noun: "document",
-          description:
-            "Each file is re-analyzed by the LLM and renamed on disk. This can take a while and may consume paid-provider tokens.",
-          confirmText: "Regenerate",
+          action: "regenerateFilename",
+          description: message(
+            "feedback.eachFileIsReAnalyzedByTheLlmAndRenamed",
+          ),
+          confirmText: message("feedback.regenerate"),
         }),
       );
       if (!ok) return;

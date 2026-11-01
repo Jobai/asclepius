@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import { ChevronDown, Pencil, RefreshCw, X } from "lucide-react";
 import api from "@/api/client";
@@ -15,6 +17,7 @@ export function EditableSummary({
   docId: number;
   onSave: (updated?: any) => void;
 }) {
+  const { t: ui } = useTranslation("common");
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState(value || "");
@@ -34,7 +37,7 @@ export function EditableSummary({
       setEditing(false);
       onSave(res.data);
     } catch {
-      toast({ title: "Failed to save", variant: "error" });
+      toast({ title: message("feedback.failedToSave"), variant: "error" });
     }
     setSaving(false);
   };
@@ -47,7 +50,7 @@ export function EditableSummary({
       setVal("");
       onSave(res.data);
     } catch {
-      toast({ title: "Failed to delete", variant: "error" });
+      toast({ title: message("feedback.failedToDelete"), variant: "error" });
     }
     setSaving(false);
   };
@@ -84,7 +87,7 @@ export function EditableSummary({
                   disabled={saving}
                   variant="primary"
                 >
-                  {saving ? "Saving..." : "Save"}
+                  {saving ? ui("ui.saving") : ui("actions.save")}
                 </ActionButton>
                 {value && (
                   <ActionButton
@@ -93,7 +96,7 @@ export function EditableSummary({
                     variant="danger"
                     title="Delete the saved summary"
                   >
-                    Delete
+                    {ui("actions.delete")}
                   </ActionButton>
                 )}
                 <ActionButton
@@ -102,7 +105,7 @@ export function EditableSummary({
                     setVal(value || "");
                   }}
                 >
-                  Close
+                  {ui("actions.close")}
                 </ActionButton>
               </div>
             </>
@@ -119,7 +122,7 @@ export function EditableSummary({
                 )}
               </p>
               <p className="mt-1 text-[10px] text-primary/50 opacity-100 md:opacity-0 md:group-hover:opacity-100">
-                click to edit
+                {ui("ui.clickEdit")}
               </p>
             </div>
           )}
@@ -140,6 +143,7 @@ export function EditableFilename({
   docId: number;
   onSave: (updated?: any) => void;
 }) {
+  const { t: ui } = useTranslation("common");
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState(value || "");
@@ -164,7 +168,7 @@ export function EditableFilename({
       onSave(res.data);
     } catch (e: any) {
       toast({
-        title: "Rename failed",
+        title: message("feedback.renameFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -183,7 +187,7 @@ export function EditableFilename({
       }
     } catch (e: any) {
       toast({
-        title: "Failed to generate filename",
+        title: message("feedback.failedToGenerateFilename"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -209,10 +213,10 @@ export function EditableFilename({
           disabled={saving}
         />
         <ActionButton onClick={handleSave} disabled={saving} variant="primary">
-          {saving ? "..." : "Save"}
+          {saving ? "..." : ui("actions.save")}
         </ActionButton>
         <IconButton
-          label="Close"
+          label={ui("actions.close")}
           onClick={() => {
             setEditing(false);
             setVal(value);

@@ -1,3 +1,4 @@
+import { useUiFormat } from "@/lib/formatting";
 import { useState } from "react";
 import {
   Check,
@@ -19,7 +20,7 @@ import type {
   ShareStatus,
   ShareSummary,
 } from "./types";
-import { formatLocal } from "./format";
+
 import { buildShareUrl } from "./CopyLinkButton";
 import OtpCell from "./OtpCell";
 import SessionsPanel from "./SessionsPanel";
@@ -83,6 +84,7 @@ export default function ShareCard({
   auditLoading,
   auditEvents,
 }: ShareCardProps) {
+  const { formatDateTime: formatLocal } = useUiFormat();
   const isRevoked = status === "revoked";
   const isExpired = status === "expired";
 

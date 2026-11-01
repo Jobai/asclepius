@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { message } from "@/i18n/messages";
 import React, { useState } from "react";
 import { Pencil, X } from "lucide-react";
 import api from "@/api/client";
@@ -33,6 +35,7 @@ export function EditableField({
    * strings like body_part="ABDOMEN" without rewriting the DB. */
   formatDisplay?: (v: any) => string;
 }) {
+  const { t: ui } = useTranslation("common");
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState(value || "");
@@ -47,7 +50,7 @@ export function EditableField({
       // Pass updated doc back so parent can update state without full reload
       onSave(res.data);
     } catch {
-      toast({ title: "Failed to save", variant: "error" });
+      toast({ title: message("feedback.failedToSave"), variant: "error" });
     }
     setSaving(false);
   };
@@ -61,7 +64,7 @@ export function EditableField({
       setVal("");
       onSave(res.data);
     } catch {
-      toast({ title: "Failed to delete", variant: "error" });
+      toast({ title: message("feedback.failedToDelete"), variant: "error" });
     }
     setSaving(false);
   };
@@ -103,19 +106,19 @@ export function EditableField({
             disabled={saving}
             variant="primary"
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? ui("ui.saving") : ui("actions.save")}
           </ActionButton>
           {value && (
             <ActionButton
               onClick={handleDelete}
               disabled={saving}
               variant="danger"
-              title="Delete the saved value"
+              title={ui("ui.deleteSaved")}
             >
-              Delete
+              {ui("actions.delete")}
             </ActionButton>
           )}
-          <IconButton label="Close" onClick={cancel}>
+          <IconButton label={ui("actions.close")} onClick={cancel}>
             <X className="h-3.5 w-3.5" />
           </IconButton>
         </div>
@@ -144,19 +147,19 @@ export function EditableField({
             disabled={saving}
             variant="primary"
           >
-            {saving ? "..." : "Save"}
+            {saving ? "..." : ui("actions.save")}
           </ActionButton>
           {value && (
             <ActionButton
               onClick={handleDelete}
               disabled={saving}
               variant="danger"
-              title="Delete the saved value"
+              title={ui("ui.deleteSaved")}
             >
-              Delete
+              {ui("actions.delete")}
             </ActionButton>
           )}
-          <IconButton label="Close" onClick={cancel}>
+          <IconButton label={ui("actions.close")} onClick={cancel}>
             <X className="h-3.5 w-3.5" />
           </IconButton>
         </div>
@@ -186,7 +189,7 @@ export function EditableField({
           </p>
         ) : (
           <p className="text-xs italic text-muted-foreground/50 group-hover:text-primary">
-            click to add
+            {ui("ui.clickAdd")}
           </p>
         )}
       </div>
@@ -211,7 +214,7 @@ export function EditableField({
           )
         ) : (
           <span className="text-muted-foreground/50 italic group-hover:text-primary text-xs coarse:opacity-70">
-            click to edit
+            {ui("ui.clickEdit")}
           </span>
         )}
         <Pencil

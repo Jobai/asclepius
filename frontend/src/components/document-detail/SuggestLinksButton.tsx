@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import api from "@/api/client";
 import { Stethoscope } from "lucide-react";
@@ -21,7 +22,10 @@ export default function SuggestLinksButton({
       const res = await api.post(`/documents/${docId}/suggest-links`);
       setSuggestions(res.data.suggestions || []);
     } catch {
-      toast({ title: "Failed to get suggestions", variant: "error" });
+      toast({
+        title: message("feedback.failedToGetSuggestions"),
+        variant: "error",
+      });
     }
     setLoading(false);
   };
@@ -42,7 +46,7 @@ export default function SuggestLinksButton({
         target_doc_type: sg?.doc_type,
       });
     } catch {
-      toast({ title: "Failed to link", variant: "error" });
+      toast({ title: message("feedback.failedToLink"), variant: "error" });
     }
   };
 

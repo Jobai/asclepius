@@ -1,3 +1,5 @@
+import { useUiFormat } from "@/lib/formatting";
+import { useTranslation } from "react-i18next";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/api/client";
@@ -80,13 +82,14 @@ import {
 const PAGE_SIZE = 20;
 
 function ReportBadge({ status }: { status: Study["report_status"] }) {
+  const { t: ui } = useTranslation("common");
   return status === "attached" ? (
     <Badge variant="success">
-      <FileText className="h-3 w-3" /> Attached
+      <FileText className="h-3 w-3" /> {ui("status.attached")}
     </Badge>
   ) : (
     <Badge variant="warning">
-      <FileX2 className="h-3 w-3" /> Pending
+      <FileX2 className="h-3 w-3" /> {ui("status.pending")}
     </Badge>
   );
 }
@@ -407,14 +410,18 @@ const CELL_CLASSES: Partial<Record<ImagingColumnKey, string>> = {
   date_added: "text-muted-foreground tabular-nums",
 };
 
-function cellContent(key: ImagingColumnKey, s: Study): React.ReactNode {
+function cellContent(
+  key: ImagingColumnKey,
+  s: Study,
+  format: ReturnType<typeof useUiFormat>,
+): React.ReactNode {
   switch (key) {
     case "modality":
       return modalityLabel(s.modality);
     case "body_part":
       return niceCase(s.body_part) || "Unknown";
     case "study_date":
-      return s.study_date || "";
+      return s.study_date ? format.formatDate(s.study_date) : "";
     case "facility":
       return s.facility_name || "";
     case "doctor":
@@ -422,7 +429,7 @@ function cellContent(key: ImagingColumnKey, s: Study): React.ReactNode {
     case "report_status":
       return <ReportBadge status={s.report_status} />;
     case "date_added":
-      return s.date_added ? s.date_added.slice(0, 10) : "—";
+      return s.date_added ? format.formatDateTime(s.date_added) : "—";
   }
 }
 
@@ -441,6 +448,8 @@ function ImagingTable({
   toggleSort: (k: string) => void;
   navigate: (p: string) => void;
 }) {
+  const format = useUiFormat();
+  const { t: ui } = useTranslation("common");
   const prefs = useColumnPrefs("imaging", IMAGING_DEFAULTS);
   const ordered = [
     ...prefs.order.filter((k) => IMAGING_COLUMNS.some((c) => c.key === k)),
@@ -455,10 +464,10 @@ function ImagingTable({
 
   const columns: ColumnSpec<Study>[] = visibleCols.map((c) => ({
     key: c.key,
-    header: c.label,
+    header: ui(c.labelKey),
     width: c.width,
     sortable: true,
-    cell: (s) => cellContent(c.key, s),
+    cell: (s) => cellContent(c.key, s, format),
     cellClassName: CELL_CLASSES[c.key],
   }));
 
@@ -491,7 +500,7 @@ function ImagingTable({
           </div>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">
             {[
-              s.study_date,
+              s.study_date ? format.formatDate(s.study_date) : null,
               s.patient_name,
               `${s.num_series} series · ${s.num_images} images`,
             ]

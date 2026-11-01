@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { LogOut, Moon, Sun } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,6 +25,7 @@ export interface SideNavProps {
  * layer to separate chrome from content.
  */
 export default function SideNav({ collapsed, className }: SideNavProps) {
+  const { t: ui } = useTranslation("common");
   const { user, logout } = useAuth();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
@@ -55,7 +57,7 @@ export default function SideNav({ collapsed, className }: SideNavProps) {
             <Link
               key={item.path}
               to={item.path}
-              title={collapsed ? item.label : undefined}
+              title={collapsed ? ui(item.labelKey) : undefined}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                 collapsed && "justify-center px-0",
@@ -65,7 +67,7 @@ export default function SideNav({ collapsed, className }: SideNavProps) {
               )}
             >
               <Icon className="h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span>{item.label}</span>}
+              {!collapsed && <span>{ui(item.labelKey)}</span>}
             </Link>
           );
         })}
@@ -89,8 +91,8 @@ export default function SideNav({ collapsed, className }: SideNavProps) {
                 <Link
                   key={item.path}
                   to={item.path}
-                  title={item.label}
-                  aria-label={item.label}
+                  title={ui(item.labelKey)}
+                  aria-label={ui(item.labelKey)}
                   className={cn(
                     "rounded-md p-2 transition-colors",
                     isActive
@@ -103,11 +105,7 @@ export default function SideNav({ collapsed, className }: SideNavProps) {
               );
             })}
             <IconButton
-              label={
-                theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
-              }
+              label={theme === "dark" ? ui("ui.lightMode") : ui("ui.darkMode")}
               size="sm"
               onClick={toggleTheme}
             >
@@ -118,7 +116,9 @@ export default function SideNav({ collapsed, className }: SideNavProps) {
               )}
             </IconButton>
             <IconButton
-              label={`Logout (${user?.display_name || user?.username || ""})`}
+              label={ui("ui.logout", {
+                name: user?.display_name || user?.username || "",
+              })}
               size="sm"
               onClick={logout}
             >

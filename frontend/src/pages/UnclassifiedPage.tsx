@@ -1,12 +1,16 @@
+import { useUiFormat } from "@/lib/formatting";
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { AlertCircle } from "lucide-react";
 import Select from "@/components/ui/Select";
-import { formatDocType, getBestDate } from "@/lib/utils";
+import { getBestDate } from "@/lib/utils";
 
 export default function UnclassifiedPage() {
+  const { formatDocType, formatDate } = useUiFormat();
+  useTranslation("common");
   const { user } = useAuth();
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,8 +61,7 @@ export default function UnclassifiedPage() {
                   {doc.original_filename}
                 </Link>
                 <p className="text-sm text-muted-foreground">
-                  {formatDocType(doc.doc_type)} |{" "}
-                  {getBestDate(doc) || "No date"}
+                  {formatDocType(doc.doc_type)} | {formatDate(getBestDate(doc))}
                 </p>
                 {doc.ocr_text && (
                   <p className="mt-1 max-w-lg truncate text-xs text-muted-foreground">

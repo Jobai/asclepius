@@ -1,3 +1,5 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useState } from "react";
 import api from "@/api/client";
 import { getErrorMessage } from "@/lib/errors";
@@ -179,10 +181,11 @@ function TreeItem({
 }
 
 export default function FileBrowserPage() {
+  const renderMessage = useMessage();
   const confirm = useConfirm();
   const [tree, setTree] = useState<TreeNode | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<UiMessage | null>(null);
   const [filter, setFilter] = useState("");
   const [breadcrumb, setBreadcrumb] = useState<string[]>([]);
   const [moveDialog, setMoveDialog] = useState<{
@@ -206,7 +209,7 @@ export default function FileBrowserPage() {
         setBreadcrumb([]);
       }
     } catch (err: any) {
-      setError(getErrorMessage(err, "Failed to load vault tree"));
+      setError(getErrorMessage(err, message("feedback.failedToLoadVaultTree")));
     } finally {
       setLoading(false);
     }
@@ -218,9 +221,10 @@ export default function FileBrowserPage() {
 
   const handleDelete = async (path: string, name: string) => {
     const ok = await confirm({
-      title: `Delete ${name}?`,
-      description:
-        "This will also remove the associated document record if one exists. This cannot be undone.",
+      title: message("feedback.delete9b216", { value0: String(name) }),
+      description: message(
+        "feedback.thisWillAlsoRemoveTheAssociatedDocumentRecordIfOne",
+      ),
       variant: "destructive",
     });
     if (!ok) return;
@@ -230,7 +234,7 @@ export default function FileBrowserPage() {
         breadcrumb.length > 0 ? breadcrumb.join("/") : undefined;
       fetchTree(currentPath);
     } catch (err: any) {
-      setError(getErrorMessage(err, "Failed to delete file"));
+      setError(getErrorMessage(err, message("feedback.failedToDeleteFile")));
     }
   };
 
@@ -254,7 +258,7 @@ export default function FileBrowserPage() {
         breadcrumb.length > 0 ? breadcrumb.join("/") : undefined;
       fetchTree(currentPath);
     } catch (err: any) {
-      setError(getErrorMessage(err, "Move failed"));
+      setError(getErrorMessage(err, message("feedback.moveFailed")));
     } finally {
       setMoving(false);
     }
@@ -332,7 +336,11 @@ export default function FileBrowserPage() {
           </p>
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">From</label>
-            <Input value={moveDialog.path} readOnly className="bg-muted/30 font-mono" />
+            <Input
+              value={moveDialog.path}
+              readOnly
+              className="bg-muted/30 font-mono"
+            />
           </div>
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">To</label>
@@ -370,7 +378,7 @@ export default function FileBrowserPage() {
       {/* Error */}
       {error && (
         <div className="rounded-md bg-destructive-soft p-3 text-sm text-destructive">
-          {error}
+          {renderMessage(error ?? undefined)}
         </div>
       )}
 

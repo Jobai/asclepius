@@ -1,8 +1,8 @@
 # English/German UI localization implementation plan
 
-Status: Steps 1–3 implemented (localization foundation, backend account
-preferences, language selectors and synchronization, API types, and tests).
-Steps 4–6 and feature-wide UI migration remain pending.
+Status: Steps 1–4 implemented (localization foundation, account preferences,
+language selectors, shared UI/formatting, reactive messages, API types, and tests).
+Steps 5–6 and feature-wide UI migration remain pending.
 See `frontend/src/i18n/README.md` for usage and coverage inventory.
 
 ## 1. Outcome and scope

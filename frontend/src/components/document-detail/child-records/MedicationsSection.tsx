@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useRef, useState } from "react";
 import api from "@/api/client";
 import { Pill, Trash2, Plus } from "lucide-react";
@@ -127,18 +128,19 @@ export function MedicationsSection({
 
   const handleDelete = async (medId: number) => {
     const ok = await confirm({
-      title: "Delete this medication?",
-      description:
-        "The medication row will be removed. The parent document is left untouched.",
+      title: message("feedback.deleteThisMedication"),
+      description: message(
+        "feedback.theMedicationRowWillBeRemovedTheParentDocumentIs",
+      ),
       variant: "destructive",
-      confirmText: "Delete",
+      confirmText: message("feedback.delete"),
     });
     if (!ok) return;
     try {
       await api.delete(`/medications/${medId}`);
       onUpdated?.();
     } catch {
-      toast({ title: "Failed to delete", variant: "error" });
+      toast({ title: message("feedback.failedToDelete"), variant: "error" });
     }
   };
 

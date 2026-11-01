@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { LogOut, Moon, Sun } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,6 +26,7 @@ export interface NavDrawerProps {
  * destinations, not corner furniture.
  */
 export default function NavDrawer({ open, onOpenChange }: NavDrawerProps) {
+  const { t: ui } = useTranslation("common");
   const { user, logout } = useAuth();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
@@ -44,7 +46,7 @@ export default function NavDrawer({ open, onOpenChange }: NavDrawerProps) {
         )}
       >
         <Icon className="h-4 w-4 flex-shrink-0" />
-        <span>{item.label}</span>
+        <span>{ui(item.labelKey)}</span>
       </Link>
     );
   };
@@ -53,7 +55,7 @@ export default function NavDrawer({ open, onOpenChange }: NavDrawerProps) {
     <Sheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Navigation"
+      title={ui("ui.navigation")}
       hideTitle
       hideCloseButton
       side="left"
@@ -89,11 +91,7 @@ export default function NavDrawer({ open, onOpenChange }: NavDrawerProps) {
           </a>
           <div className="flex items-center gap-1">
             <IconButton
-              label={
-                theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
-              }
+              label={theme === "dark" ? ui("ui.lightMode") : ui("ui.darkMode")}
               onClick={toggleTheme}
             >
               {theme === "dark" ? (
@@ -103,7 +101,9 @@ export default function NavDrawer({ open, onOpenChange }: NavDrawerProps) {
               )}
             </IconButton>
             <IconButton
-              label={`Logout (${user?.display_name || user?.username || ""})`}
+              label={ui("ui.logout", {
+                name: user?.display_name || user?.username || "",
+              })}
               onClick={logout}
             >
               <LogOut className="h-4 w-4" />

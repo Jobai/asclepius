@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -79,8 +80,10 @@ export default function DocumentViewer({
       if (list.length === 1) {
         await api.post(`/documents/${id}/relink`, { vault_path: list[0] });
         toast({
-          title: "Relinked automatically",
-          description: `Found a matching file at ${list[0]}`,
+          title: message("feedback.relinkedAutomatically"),
+          description: message("feedback.foundAMatchingFileAt", {
+            value0: String(list[0]),
+          }),
           variant: "success",
         });
         setFileMissing(false);
@@ -118,11 +121,11 @@ export default function DocumentViewer({
     setBusy(true);
     try {
       await api.post(`/documents/${id}/relink`, { vault_path: vaultPath });
-      toast({ title: "Relinked", variant: "success" });
+      toast({ title: message("feedback.relinked"), variant: "success" });
       onReloaded?.();
     } catch (e: any) {
       toast({
-        title: "Relink failed",
+        title: message("feedback.relinkFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -180,11 +183,11 @@ export default function DocumentViewer({
       await api.post(`/documents/${id}/replace-file`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast({ title: "File replaced", variant: "success" });
+      toast({ title: message("feedback.fileReplaced"), variant: "success" });
       onReloaded?.();
     } catch (e: any) {
       toast({
-        title: "Upload failed",
+        title: message("feedback.uploadFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });

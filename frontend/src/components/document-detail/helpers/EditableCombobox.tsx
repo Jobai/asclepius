@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { message } from "@/i18n/messages";
 import { useRef, useState } from "react";
 import { Pencil, Plus, Search, X } from "lucide-react";
 import api from "@/api/client";
@@ -47,6 +49,7 @@ export function EditableCombobox({
    * Without it, only the doc-only path is offered. */
   currentEntityId?: number | null;
 }) {
+  const { t: ui } = useTranslation("common");
   const { toast } = useToast();
   const confirm = useConfirm();
   const [editing, setEditing] = useState(false);
@@ -104,7 +107,7 @@ export function EditableCombobox({
     } catch (err: any) {
       const d = getErrorMessage(err, "Failed to save");
       toast({
-        title: typeof d === "string" ? d : "Failed to save",
+        title: typeof d === "string" ? d : message("feedback.failedToSave"),
         variant: "error",
       });
     } finally {
@@ -139,13 +142,37 @@ export function EditableCombobox({
     const isMerge = !!(targetEntityId && targetEntityId !== currentEntityId);
     const ok = await confirm({
       title: isMerge
-        ? `Merge "${fromLabel}" into "${newDisplay}"?`
-        : `Rename "${fromLabel}" to "${newDisplay}"?`,
+        ? message("feedback.mergeInto", {
+            value0: String(fromLabel),
+            value1: String(newDisplay),
+          })
+        : message("feedback.renameTo", {
+            value0: String(fromLabel),
+            value1: String(newDisplay),
+          }),
       description: isMerge
-        ? `Every document, encounter and other record currently labelled "${fromLabel}" will be relabelled "${newDisplay}". The "${fromLabel}" ${singular} record will be deleted and its aliases moved onto "${newDisplay}". This affects all linked records, not just the current document.`
-        : `The ${singular} record currently called "${fromLabel}" will be renamed to "${newDisplay}". Every document, encounter and other record linked to it will display the new name. This affects all linked records, not just the current document.`,
-      confirmText: isMerge ? "Merge all" : "Rename all",
-      cancelText: "Cancel",
+        ? message(
+            "feedback.everyDocumentEncounterAndOtherRecordCurrentlyLabelledWillBe",
+            {
+              value0: String(fromLabel),
+              value1: String(newDisplay),
+              value2: String(fromLabel),
+              value3: String(singular),
+              value4: String(newDisplay),
+            },
+          )
+        : message(
+            "feedback.theRecordCurrentlyCalledWillBeRenamedToEveryDocument",
+            {
+              value0: String(singular),
+              value1: String(fromLabel),
+              value2: String(newDisplay),
+            },
+          ),
+      confirmText: isMerge
+        ? message("feedback.mergeAll")
+        : message("feedback.renameAll"),
+      cancelText: message("feedback.cancel"),
       variant: "destructive",
     });
     if (!ok) return;
@@ -184,7 +211,7 @@ export function EditableCombobox({
     } catch (err: any) {
       const d = getErrorMessage(err, "Failed to apply");
       toast({
-        title: typeof d === "string" ? d : "Failed to apply",
+        title: typeof d === "string" ? d : message("feedback.failedToApply"),
         variant: "error",
       });
     } finally {
@@ -276,10 +303,10 @@ export function EditableCombobox({
               variant="danger"
               title="Delete this field's saved value"
             >
-              Delete
+              {ui("actions.delete")}
             </ActionButton>
             <IconButton
-              label="Close"
+              label={ui("actions.close")}
               onClick={() => {
                 setEditing(false);
                 setQuery("");
@@ -432,7 +459,7 @@ export function EditableCombobox({
                         disabled={saving}
                         className="rounded px-2 py-1 text-left text-[11px] text-muted-foreground hover:bg-accent"
                       >
-                        Cancel
+                        {ui("actions.cancel")}
                       </button>
                     </div>
                   </div>
@@ -457,7 +484,7 @@ export function EditableCombobox({
       <span className="flex min-w-0 items-center gap-1.5 font-medium">
         {value || (
           <span className="text-muted-foreground/50 italic group-hover:text-primary text-xs coarse:opacity-70">
-            click to edit
+            {ui("ui.clickEdit")}
           </span>
         )}
         <Pencil

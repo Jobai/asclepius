@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import api from "@/api/client";
 import { getErrorMessage } from "@/lib/errors";
@@ -21,7 +22,7 @@ export function useShares() {
       setShares(res.data);
     } catch (err: any) {
       toast({
-        title: "Could not load shares",
+        title: message("feedback.couldNotLoadShares"),
         description: getErrorMessage(err),
         variant: "error",
       });

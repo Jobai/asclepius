@@ -8,14 +8,16 @@ import React, {
 import * as Dialog from "@radix-ui/react-dialog";
 import { AlertTriangle, X } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { useTranslation } from "react-i18next";
+import { useMessage, type UiMessage } from "@/i18n/messages";
 
 type Variant = "default" | "destructive";
 
 export interface ConfirmOptions {
-  title: string;
-  description?: string;
-  confirmText?: string;
-  cancelText?: string;
+  title: UiMessage;
+  description?: UiMessage;
+  confirmText?: UiMessage;
+  cancelText?: UiMessage;
   variant?: Variant;
 }
 
@@ -29,6 +31,8 @@ interface PendingState {
 }
 
 export function ConfirmProvider({ children }: { children: React.ReactNode }) {
+  const renderMessage = useMessage();
+  const { t } = useTranslation("common");
   const [pending, setPending] = useState<PendingState | null>(null);
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
 
@@ -83,18 +87,18 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
               )}
               <div className="flex-1 min-w-0">
                 <Dialog.Title className="text-base font-semibold">
-                  {pending?.opts.title}
+                  {renderMessage(pending?.opts.title)}
                 </Dialog.Title>
                 {pending?.opts.description && (
                   <Dialog.Description className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">
-                    {pending.opts.description}
+                    {renderMessage(pending.opts.description)}
                   </Dialog.Description>
                 )}
               </div>
               <Dialog.Close
                 onClick={() => close(false)}
                 className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
-                aria-label="Close"
+                aria-label={t("actions.close")}
               >
                 <X className="h-4 w-4" />
               </Dialog.Close>
@@ -110,7 +114,9 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
                 onClick={() => close(false)}
                 autoFocus
               >
-                {pending?.opts.cancelText || "Cancel"}
+                {pending?.opts.cancelText
+                  ? renderMessage(pending.opts.cancelText)
+                  : t("actions.cancel")}
               </Button>
               <Button
                 variant={destructive ? "danger" : "primary"}
@@ -118,8 +124,9 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
                 className="w-full sm:w-auto"
                 onClick={() => close(true)}
               >
-                {pending?.opts.confirmText ||
-                  (destructive ? "Delete" : "Confirm")}
+                {pending?.opts.confirmText
+                  ? renderMessage(pending.opts.confirmText)
+                  : t(destructive ? "actions.delete" : "actions.confirm")}
               </Button>
             </div>
           </Dialog.Content>

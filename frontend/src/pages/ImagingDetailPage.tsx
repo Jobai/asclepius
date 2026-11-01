@@ -1,3 +1,4 @@
+import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "@/api/client";
@@ -86,7 +87,10 @@ export default function ImagingDetailPage() {
         setLinkedDocs(dRes.data.links || []);
       }
     } catch {
-      toast({ title: "Failed to load imaging study", variant: "error" });
+      toast({
+        title: message("feedback.failedToLoadImagingStudy"),
+        variant: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -103,9 +107,10 @@ export default function ImagingDetailPage() {
   const handleDelete = async () => {
     if (!doc?.id) return;
     const ok = await confirm({
-      title: "Delete this imaging study?",
-      description:
-        "All DICOM frames, the report PDF (if any), bundle files and related links will be removed. This cannot be undone.",
+      title: message("feedback.deleteThisImagingStudy"),
+      description: message(
+        "feedback.allDicomFramesTheReportPdfIfAnyBundleFiles",
+      ),
       variant: "destructive",
     });
     if (!ok) return;
@@ -114,7 +119,7 @@ export default function ImagingDetailPage() {
       navigate("/imaging");
     } catch (e: any) {
       toast({
-        title: "Delete failed",
+        title: message("feedback.deleteFailed"),
         description: getErrorMessage(e),
         variant: "error",
       });
@@ -208,7 +213,9 @@ export default function ImagingDetailPage() {
                 patientId={doc.patient_id}
                 currentEventId={doc.event_id}
                 onUpdate={(eventId) =>
-                  setDoc((prev) => (prev ? { ...prev, event_id: eventId } : prev))
+                  setDoc((prev) =>
+                    prev ? { ...prev, event_id: eventId } : prev,
+                  )
                 }
               />
               <NotesEditor docId={doc.id} initialNotes={doc.user_notes || ""} />

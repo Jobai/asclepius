@@ -1,3 +1,5 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { KeyRound } from "lucide-react";
@@ -23,10 +25,11 @@ type DeliveryInfo = {
  *    polling state machine takes over.
  */
 export default function ShareVerifyPage() {
+  const renderMessage = useMessage();
   const { token } = useParams<{ token: string }>();
   const [code, setCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<UiMessage | null>(null);
   const [info, setInfo] = useState<DeliveryInfo | null>(null);
 
   useEffect(() => {
@@ -51,7 +54,7 @@ export default function ShareVerifyPage() {
     if (!token) return;
     const trimmed = code.trim();
     if (!/^\d{4,8}$/.test(trimmed)) {
-      setError("Enter the 6-digit code.");
+      setError(message("feedback.enterTheDigitCode"));
       return;
     }
     setSubmitting(true);
@@ -73,16 +76,14 @@ export default function ShareVerifyPage() {
       const status = err?.response?.status;
       if (status === 422 || status === 401) {
         setError(
-          "Invalid or expired code. Use the latest code you received, or request a fresh one.",
+          message("feedback.invalidOrExpiredCodeUseTheLatestCodeYouReceived"),
         );
       } else if (status === 410) {
-        setError(
-          "This share link is no longer active. Ask the sender for a new link.",
-        );
+        setError(message("feedback.thisShareLinkIsNoLongerActiveAskTheSender"));
       } else if (status === 429) {
-        setError("Too many attempts. Wait and try again.");
+        setError(message("feedback.tooManyAttemptsWaitAndTryAgain"));
       } else {
-        setError("Verification failed. Please retry.");
+        setError(message("feedback.verificationFailedPleaseRetry"));
       }
     } finally {
       setSubmitting(false);
@@ -124,7 +125,11 @@ export default function ShareVerifyPage() {
           >
             Verify and continue
           </Button>
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && (
+            <p className="text-sm text-destructive">
+              {renderMessage(error ?? undefined)}
+            </p>
+          )}
         </form>
         <p className="text-xs text-muted-foreground border-t pt-4">
           If your code was rejected, ask the sender to issue a new one.

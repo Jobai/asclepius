@@ -23,18 +23,16 @@ export function parseBackendTs(ts: string | null | undefined): number | null {
   return Number.isFinite(ms) ? ms : null;
 }
 
-/**
- * Format a backend timestamp as a localized absolute date+time using the
- * runtime's default locale formatting (``Date.prototype.toLocaleString()``).
- * Returns the raw input back when it can't be parsed, and ``""`` for empty
- * input. This matches the majority inline copies (``formatLocal`` /
- * ``formatAbsolute``).
- */
-export function formatDateTime(ts: string | null | undefined): string {
+/** Format a backend UTC timestamp in the explicit locale and existing timezone. */
+export function formatDateTime(
+  ts: string | null | undefined,
+  locale = "en-GB",
+  options?: Intl.DateTimeFormatOptions,
+): string {
   if (!ts) return "";
   const ms = parseBackendTs(ts);
   if (ms == null) return ts;
-  return new Date(ms).toLocaleString();
+  return new Date(ms).toLocaleString(locale, options);
 }
 
 /**
@@ -42,20 +40,31 @@ export function formatDateTime(ts: string | null | undefined): string {
  * ``45s`` · ``12m`` · ``3h 20m`` · ``2d`` · ``5d 4h``. Mirrors the
  * SessionsTab formatter that feeds the relative-time labels.
  */
-export function formatDuration(seconds: number): string {
+export function formatDuration(seconds: number, locale = "en-GB"): string {
+  const unit = (value: number, unit: string) =>
+    new Intl.NumberFormat(locale, {
+      style: "unit",
+      unit,
+      unitDisplay: "narrow",
+      maximumFractionDigits: 0,
+      useGrouping: false,
+    }).format(value);
   const s = Math.max(0, Math.round(seconds));
-  if (s < 60) return `${s}s`;
+  if (s < 60) return unit(s, "second");
   const min = Math.round(s / 60);
-  if (min < 60) return `${min}m`;
+  if (min < 60) return unit(min, "minute");
   const hr = Math.floor(s / 3600);
   if (hr < 24) {
     const m = Math.round((s - hr * 3600) / 60);
-    return m > 0 ? `${hr}h ${m}m` : `${hr}h`;
+    return m > 0
+      ? `${unit(hr, "hour")} ${unit(m, "minute")}`
+      : unit(hr, "hour");
   }
   const days = Math.floor(s / 86400);
   const remHr = Math.round((s - days * 86400) / 3600);
-  if (days < 7 && remHr > 0) return `${days}d ${remHr}h`;
-  return `${days}d`;
+  if (days < 7 && remHr > 0)
+    return `${unit(days, "day")} ${unit(remHr, "hour")}`;
+  return unit(days, "day");
 }
 
 /**
@@ -72,15 +81,20 @@ export function formatDuration(seconds: number): string {
 export function formatRelative(
   ts: string | null | undefined,
   direction: "past" | "future" = "past",
+  locale = "en-GB",
+  labels = { expired: "expired", justNow: "just now" },
 ): string {
   const ms = parseBackendTs(ts);
   if (ms == null) return "";
-  if (direction === "future") {
-    const delta = (ms - Date.now()) / 1000;
-    if (delta <= 0) return "expired";
-    return `in ${formatDuration(delta)}`;
-  }
-  const delta = (Date.now() - ms) / 1000;
-  if (delta < 0) return "just now";
-  return `${formatDuration(delta)} ago`;
+  const delta = (ms - Date.now()) / 1000;
+  if (direction === "future" && delta <= 0) return labels.expired;
+  if (direction === "past" && delta > 0) return labels.justNow;
+  const abs = Math.abs(delta);
+  const unit =
+    abs < 60 ? "second" : abs < 3600 ? "minute" : abs < 86400 ? "hour" : "day";
+  const divisor = { second: 1, minute: 60, hour: 3600, day: 86400 }[unit];
+  return new Intl.RelativeTimeFormat(locale, {
+    numeric: "always",
+    style: "short",
+  }).format(Math.round(delta / divisor), unit);
 }

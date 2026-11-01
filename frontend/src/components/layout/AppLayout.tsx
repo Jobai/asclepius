@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Outlet, useLocation } from "react-router-dom";
 import SideNav from "@/components/layout/SideNav";
 import NavDrawer from "@/components/layout/NavDrawer";
@@ -34,7 +35,14 @@ function PageSkeleton() {
  * mobile URL-bar collapse), with per-history-entry scroll restoration.
  */
 export default function AppLayout() {
+  const { t: ui } = useTranslation("common");
   const location = useLocation();
+  useEffect(() => {
+    document.title = `${pageTitleFor(location.pathname, ui)} · Asclepius`;
+    return () => {
+      document.title = "Asclepius";
+    };
+  }, [location.pathname, ui]);
   const { isDesktop } = useBreakpoint();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
@@ -63,7 +71,7 @@ export default function AppLayout() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar
-          title={pageTitleFor(location.pathname)}
+          title={pageTitleFor(location.pathname, ui)}
           onOpenDrawer={() => setDrawerOpen(true)}
           onToggleSidebar={toggleSidebar}
         />

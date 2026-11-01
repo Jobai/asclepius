@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useMemo, useRef, useState } from "react";
 import {
   ChevronDown,
@@ -13,6 +14,7 @@ import MultiSelect from "@/components/ui/MultiSelect";
 import Sheet from "@/components/ui/Sheet";
 import { useDoctors, useFacilities, useSpecialties } from "@/hooks/data";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
+import { formatDocType, statusLabel } from "@/lib/utils";
 import { COLUMNS, DOC_TYPES, type ColumnKey } from "./columns";
 
 export interface DocumentFiltersValue {
@@ -35,13 +37,13 @@ export interface DocumentFiltersProps extends DocumentFiltersValue {
 }
 
 const STATUS_OPTIONS = [
-  { value: "__blank__", label: "(blank)" },
-  { value: "done", label: "Done" },
-  { value: "processing", label: "Processing" },
-  { value: "pending", label: "Pending" },
-  { value: "needs_review", label: "Needs Review" },
-  { value: "failed", label: "Failed" },
-  { value: "cancelled", label: "Cancelled" },
+  "__blank__",
+  "done",
+  "processing",
+  "pending",
+  "needs_review",
+  "failed",
+  "cancelled",
 ];
 
 interface ChipSpec {
@@ -51,13 +53,14 @@ interface ChipSpec {
 }
 
 function FilterChip({ chip }: { chip: ChipSpec }) {
+  const { t: ui } = useTranslation("common");
   return (
     <span className="inline-flex max-w-full items-center gap-1 rounded-full border bg-secondary px-2.5 py-1 text-xs">
       <span className="truncate">{chip.label}</span>
       <button
         type="button"
         onClick={chip.onRemove}
-        aria-label={`Remove filter: ${chip.label}`}
+        aria-label={ui("ui.removeFilter", { name: chip.label })}
         className="rounded-full p-0.5 text-muted-foreground hover:bg-accent hover:text-foreground coarse:p-1"
       >
         <X className="h-3 w-3" />
@@ -90,6 +93,7 @@ export default function DocumentFilters({
   onVisibleColsChange,
   onUploadClick,
 }: DocumentFiltersProps) {
+  const { t: ui } = useTranslation("common");
   const { data: specialtiesData } = useSpecialties();
   const { data: doctorsData } = useDoctors();
   const { data: facilitiesData } = useFacilities();
@@ -139,14 +143,14 @@ export default function DocumentFilters({
       "type",
       "Type",
       typeFilter,
-      (v) => (v === "__blank__" ? "(blank)" : v.replace(/_/g, " ")),
+      (v) => (v === "__blank__" ? ui("status.blank") : formatDocType(v)),
       () => onChange({ typeFilter: [] }),
     );
     group(
       "status",
       "Status",
       statusFilter,
-      (v) => STATUS_OPTIONS.find((o) => o.value === v)?.label ?? v,
+      (v) => (v === "__blank__" ? ui("status.blank") : statusLabel(v)),
       () => onChange({ statusFilter: [] }),
     );
     group(
@@ -154,7 +158,7 @@ export default function DocumentFilters({
       "Specialty",
       specialtyFilter,
       (v) => {
-        if (v === "__blank__") return "(blank)";
+        if (v === "__blank__") return ui("status.blank");
         const s = specialties.find(
           (x: any) => (x.canonical_code || x.canonical_display) === v,
         );
@@ -167,7 +171,7 @@ export default function DocumentFilters({
       "Doctor",
       doctorFilter,
       (v) => {
-        if (v === "__blank__") return "(blank)";
+        if (v === "__blank__") return ui("status.blank");
         const d = doctors.find((x) => String(x.id) === v);
         return d?.canonical_display || d?.name || v;
       },
@@ -178,7 +182,7 @@ export default function DocumentFilters({
       "Facility",
       facilityFilter,
       (v) => {
-        if (v === "__blank__") return "(blank)";
+        if (v === "__blank__") return ui("status.blank");
         const f = facilities.find((x) => String(x.id) === v);
         return f?.canonical_display || f?.name || v;
       },
@@ -211,6 +215,7 @@ export default function DocumentFilters({
     doctors,
     facilities,
     onChange,
+    ui,
   ]);
 
   // The five multi-selects, shared between the desktop toolbar and the
@@ -220,10 +225,10 @@ export default function DocumentFilters({
       <MultiSelect
         label="Type"
         options={[
-          { value: "__blank__", label: "(blank)" },
+          { value: "__blank__", label: ui("status.blank") },
           ...DOC_TYPES.map((t) => ({
             value: t,
-            label: t.replace(/_/g, " "),
+            label: formatDocType(t),
           })),
         ]}
         selected={typeFilter}
@@ -232,7 +237,11 @@ export default function DocumentFilters({
 
       <MultiSelect
         label="Status"
-        options={STATUS_OPTIONS}
+        options={STATUS_OPTIONS.map((value) => ({
+          value,
+          label:
+            value === "__blank__" ? ui("status.blank") : statusLabel(value),
+        }))}
         selected={statusFilter}
         onChange={(v: string[]) => onChange({ statusFilter: v })}
         searchable={false}
@@ -241,7 +250,7 @@ export default function DocumentFilters({
       <MultiSelect
         label="Specialty"
         options={[
-          { value: "__blank__", label: "(blank)" },
+          { value: "__blank__", label: ui("status.blank") },
           ...specialties.map((s: any) => ({
             value: s.canonical_code || s.canonical_display,
             label: s.canonical_display || s.canonical_code,
@@ -254,7 +263,7 @@ export default function DocumentFilters({
       <MultiSelect
         label="Doctor"
         options={[
-          { value: "__blank__", label: "(blank)" },
+          { value: "__blank__", label: ui("status.blank") },
           ...doctors.map((d: any) => ({
             value: String(d.id),
             label: d.canonical_display || d.name,
@@ -267,7 +276,7 @@ export default function DocumentFilters({
       <MultiSelect
         label="Facility"
         options={[
-          { value: "__blank__", label: "(blank)" },
+          { value: "__blank__", label: ui("status.blank") },
           ...facilities.map((f: any) => ({
             value: String(f.id),
             label: f.canonical_display || f.name,
@@ -392,7 +401,7 @@ export default function DocumentFilters({
                       onVisibleColsChange(next);
                     }}
                   />
-                  <span>{c.label}</span>
+                  <span>{ui(c.labelKey)}</span>
                 </label>
               ))}
               <div className="mt-1 border-t pt-1">

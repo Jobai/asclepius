@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton, SkeletonRows } from "@/components/ui/Skeleton";
@@ -87,10 +88,15 @@ export default function ResponsiveTable<T>({
   renderCard,
   className,
 }: ResponsiveTableProps<T>) {
+  const { t: ui } = useTranslation("common");
   if (loading) {
     return (
       <div className={cn("rounded-lg border", className)}>
-        <SkeletonRows rows={loadingRows} cols={Math.min(columns.length, 5)} className="hidden md:block" />
+        <SkeletonRows
+          rows={loadingRows}
+          cols={Math.min(columns.length, 5)}
+          className="hidden md:block"
+        />
         <div className="space-y-3 p-3 md:hidden" aria-hidden>
           {Array.from({ length: Math.min(loadingRows, 6) }, (_, i) => (
             <Skeleton key={i} className="h-20 w-full" />
@@ -106,8 +112,7 @@ export default function ResponsiveTable<T>({
 
   const isSelected = (row: T) => selectedIds?.has(getRowId(row)) ?? false;
   const cardSelectable = mobileSelectable ?? selectable;
-  const allSelected =
-    rows.length > 0 && rows.every((row) => isSelected(row));
+  const allSelected = rows.length > 0 && rows.every((row) => isSelected(row));
 
   const titleCol = columns.find((c) => mobileRole(c) === "title");
   const subtitleCol = columns.find((c) => mobileRole(c) === "subtitle");
@@ -142,7 +147,8 @@ export default function ResponsiveTable<T>({
               key={c.key}
               className="inline-flex min-w-0 items-baseline gap-1 text-xs text-muted-foreground"
             >
-              {(c.mobile?.label ?? (typeof c.header === "string" ? c.header : null)) && (
+              {(c.mobile?.label ??
+                (typeof c.header === "string" ? c.header : null)) && (
                 <span className="shrink-0 opacity-70">
                   {c.mobile?.label ?? (c.header as string)}
                 </span>
@@ -163,7 +169,10 @@ export default function ResponsiveTable<T>({
           <colgroup>
             {selectable && <col style={{ width: "32px" }} />}
             {columns.map((c) => (
-              <col key={c.key} style={c.width ? { width: c.width } : undefined} />
+              <col
+                key={c.key}
+                style={c.width ? { width: c.width } : undefined}
+              />
             ))}
           </colgroup>
           <thead className="sticky top-0 z-sticky bg-surface text-surface-foreground">
@@ -175,12 +184,12 @@ export default function ResponsiveTable<T>({
                       type="checkbox"
                       checked={allSelected}
                       onChange={onToggleSelectAll}
-                      aria-label="Select all on this page"
+                      aria-label={ui("ui.selectPage")}
                       className="h-4 w-4 accent-primary align-middle"
                     />
                   </th>
                 ) : (
-                  <th className="px-2 py-2" aria-label="Select" />
+                  <th className="px-2 py-2" aria-label={ui("actions.select")} />
                 ))}
               {columns.map((c) => (
                 <th
@@ -233,7 +242,7 @@ export default function ResponsiveTable<T>({
                         type="checkbox"
                         checked={isSelected(row)}
                         onChange={() => onToggleSelect?.(id)}
-                        aria-label={rowSelectLabel?.(row) ?? "Select row"}
+                        aria-label={rowSelectLabel?.(row) ?? ui("ui.selectRow")}
                         className="h-4 w-4 accent-primary"
                       />
                     </td>
@@ -286,7 +295,7 @@ export default function ResponsiveTable<T>({
                     checked={selected}
                     onChange={() => onToggleSelect?.(id)}
                     onClick={(e) => e.stopPropagation()}
-                    aria-label={rowSelectLabel?.(row) ?? "Select row"}
+                    aria-label={rowSelectLabel?.(row) ?? ui("ui.selectRow")}
                     className="mt-1 h-5 w-5 shrink-0 accent-primary"
                   />
                 )}
