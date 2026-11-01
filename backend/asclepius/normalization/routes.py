@@ -1,9 +1,10 @@
 """Normalization API routes."""
 
 import logging
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, StringConstraints
 
 import aiosqlite
 from asclepius.auth.session import get_current_user, require_role
@@ -103,6 +104,13 @@ class AliasCreate(BaseModel):
 class NormUpdate(BaseModel):
     canonical_code: str | None = None
     canonical_display: str | None = None
+    display_names: (
+        dict[
+            Literal["en", "de"],
+            Annotated[str, StringConstraints(strip_whitespace=True, max_length=250)] | None,
+        ]
+        | None
+    ) = None
 
 
 class MergeRequest(BaseModel):
@@ -159,9 +167,7 @@ async def get_norm(
     return result
 
 
-@router.patch(
-    "/{norm_type}/{norm_id}", dependencies=[Depends(require_role("admin", "editor"))]
-)
+@router.patch("/{norm_type}/{norm_id}", dependencies=[Depends(require_role("admin", "editor"))])
 async def update_norm(
     norm_type: str,
     norm_id: int,
@@ -171,8 +177,14 @@ async def update_norm(
 ):
     tables = _validate_type(norm_type)
     svc = NormService(db, tables)
+    if body.display_names is not None and norm_type in ("doctors", "facilities"):
+        raise HTTPException(status_code=422, detail="Proper names do not have translated labels")
+    if not await svc.get_with_aliases(norm_id):
+        raise HTTPException(status_code=404, detail="Not found")
     try:
-        return await svc.update(norm_id, body.canonical_code, body.canonical_display)
+        return await svc.update(
+            norm_id, body.canonical_code, body.canonical_display, body.display_names
+        )
     except aiosqlite.IntegrityError as e:
         msg = str(e)
         # Most common: UNIQUE constraint on canonical_code when another entry
@@ -240,9 +252,7 @@ async def confirm_aliases(
     return {"ok": True}
 
 
-@router.post(
-    "/{norm_type}/merge", dependencies=[Depends(require_role("admin", "editor"))]
-)
+@router.post("/{norm_type}/merge", dependencies=[Depends(require_role("admin", "editor"))])
 async def merge_norms(
     norm_type: str,
     body: MergeRequest,
@@ -298,9 +308,7 @@ async def merge_norms_batch(
     }
 
 
-@router.delete(
-    "/{norm_type}/{norm_id}", dependencies=[Depends(require_role("admin", "editor"))]
-)
+@router.delete("/{norm_type}/{norm_id}", dependencies=[Depends(require_role("admin", "editor"))])
 async def delete_norm(
     norm_type: str,
     norm_id: int,
@@ -339,9 +347,7 @@ async def list_linked_documents(
     return await svc.list_documents(norm_id, accessible)
 
 
-@router.post(
-    "/{norm_type}/auto-merge", dependencies=[Depends(require_role("admin", "editor"))]
-)
+@router.post("/{norm_type}/auto-merge", dependencies=[Depends(require_role("admin", "editor"))])
 async def auto_merge_proposals(
     norm_type: str,
     current_user: dict = Depends(get_current_user),

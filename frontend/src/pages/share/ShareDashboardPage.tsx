@@ -1,3 +1,4 @@
+import { specialtyLabel } from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -118,9 +119,7 @@ export default function ShareDashboardPage() {
                           <Calendar className="h-3 w-3" /> {d.event_date}
                         </span>
                       )}
-                      {d.specialty_display && (
-                        <span>{d.specialty_display}</span>
-                      )}
+                      {d.specialty_display && <span>{specialtyLabel(d)}</span>}
                       {d.facility_name && <span>{d.facility_name}</span>}
                     </div>
                     {d.summary_en && (

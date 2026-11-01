@@ -1,3 +1,4 @@
+import type { TermDisplayNames } from "@/lib/terminology";
 import React, {
   createContext,
   useContext,
@@ -44,6 +45,7 @@ interface ShareDocument {
   summary_original: string | null;
   doctor_name: string | null;
   facility_name: string | null;
+  specialty_display_names?: TermDisplayNames;
   specialty_display: string | null;
   language_source: string | null;
   page_count: number | null;

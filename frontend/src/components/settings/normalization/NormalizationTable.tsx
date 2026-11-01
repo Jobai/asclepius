@@ -1,3 +1,5 @@
+import { termMessage, type TermMessage } from "@/i18n/messages";
+import type { NormType } from "./types";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import type { UiMessage } from "@/i18n/messages";
 import { type NormItem } from "./types";
@@ -7,6 +9,8 @@ import NormalizationRow, {
 } from "./NormalizationRow";
 
 export interface NormalizationTableProps {
+  normType: NormType;
+  onDisplayNamesSaved: (item: NormItem) => void;
   normItems: NormItem[];
   detail: any;
   expandedId: number | null;
@@ -25,10 +29,10 @@ export interface NormalizationTableProps {
   onToggleSelectAll: () => void;
   onToggleSelect: (id: number) => void;
   onToggleExpand: (id: number) => void;
-  onViewDocuments: (id: number, name: string) => void;
+  onViewDocuments: (id: number, name: string | TermMessage) => void;
   onSetShowMergeFor: (id: number | null) => void;
   onCancelMerge: () => void;
-  onDelete: (id: number, name: string) => void;
+  onDelete: (id: number, name: string | TermMessage) => void;
   onStartEdit: () => void;
   onCancelEdit: () => void;
   onEditCodeChange: (v: string) => void;
@@ -46,6 +50,8 @@ export interface NormalizationTableProps {
 }
 
 export default function NormalizationTable({
+  normType,
+  onDisplayNamesSaved,
   normItems,
   detail,
   expandedId,
@@ -96,6 +102,8 @@ export default function NormalizationTable({
   /** Per-item props shared by the table row (md+) and the card (below md). */
   const itemProps = (item: NormItem): NormalizationRowProps => ({
     item,
+    normType,
+    onDisplayNamesSaved,
     normItems,
     detail,
     expanded: expandedId === item.id,
@@ -113,15 +121,11 @@ export default function NormalizationTable({
     onToggleSelect: () => onToggleSelect(item.id),
     onToggleExpand: () => onToggleExpand(item.id),
     onViewDocuments: () =>
-      onViewDocuments(
-        item.id,
-        item.canonical_display || item.name || `#${item.id}`,
-      ),
+      onViewDocuments(item.id, termMessage(item, `#${item.id}`)),
     onToggleMerge: () =>
       onSetShowMergeFor(showMergeFor === item.id ? null : item.id),
     onCancelMerge,
-    onDelete: () =>
-      onDelete(item.id, item.canonical_display || item.name || `#${item.id}`),
+    onDelete: () => onDelete(item.id, termMessage(item, `#${item.id}`)),
     onStartEdit,
     onCancelEdit,
     onEditCodeChange,

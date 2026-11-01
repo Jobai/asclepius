@@ -1,3 +1,4 @@
+import { specialtyLabel } from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { statusLabel } from "@/lib/utils";
@@ -188,6 +189,7 @@ export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
         <EditableCombobox
           label={tx("common:columns.specialty")}
           value={doc.specialty_display || doc.specialty_original}
+          displayValue={specialtyLabel(doc)}
           field="specialty_original"
           docId={doc.id}
           onSave={onSave}

@@ -1,3 +1,4 @@
+import { labLabel } from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { Link } from "react-router-dom";
@@ -163,7 +164,7 @@ export function RowsTable({
                   <div className="min-w-0 flex-1 space-y-0.5">
                     <div className="flex items-center gap-1.5 text-sm">
                       <span className="min-w-0 truncate font-medium">
-                        {lr.test_name_canonical || lr.test_name_original}
+                        {labLabel(lr)}
                       </span>
                       {lr.is_abnormal && (
                         <AlertTriangle
@@ -315,9 +316,7 @@ export function RowsTable({
                         className="w-full rounded border bg-background px-1.5 py-0.5 text-sm"
                       />
                     ) : (
-                      <span>
-                        {lr.test_name_canonical || lr.test_name_original}
-                      </span>
+                      <span>{labLabel(lr)}</span>
                     )}
                   </td>
                   <td
@@ -340,7 +339,7 @@ export function RowsTable({
                         className="w-24 rounded border bg-background px-1.5 py-0.5 text-sm"
                       />
                     ) : (
-                      (lr.value ?? lr.value_text ?? "—")
+                      formatClinicalResult(lr)
                     )}
                   </td>
                   <td className="px-3 py-1.5 text-muted-foreground">

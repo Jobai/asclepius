@@ -543,5 +543,12 @@
         }
       }
     }
+  },
+  "terminology": {
+    "title": "Preferred display names",
+    "help": "Shown in the selected UI language. Leave a name empty to use the canonical name. Codes, aliases and original report text stay the same.",
+    "en": "English",
+    "de": "German",
+    "save": "Save display names"
   }
 }

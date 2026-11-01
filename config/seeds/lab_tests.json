@@ -38,7 +38,11 @@
         "alias": "Hemoglobina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hemoglobin",
+      "de": "Hämoglobin"
+    }
   },
   {
     "canonical_code": "hematocrit",
@@ -71,7 +75,11 @@
         "alias": "Hematocrito",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hematocrit",
+      "de": "Hämatokrit"
+    }
   },
   {
     "canonical_code": "wbc",
@@ -128,7 +136,11 @@
         "alias": "Glóbulos blancos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "White Blood Cell Count",
+      "de": "Leukozyten"
+    }
   },
   {
     "canonical_code": "rbc",
@@ -185,7 +197,11 @@
         "alias": "Glóbulos rojos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Red Blood Cell Count",
+      "de": "Erythrozyten"
+    }
   },
   {
     "canonical_code": "platelets",
@@ -226,7 +242,11 @@
         "alias": "Plaquetas",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Platelet Count",
+      "de": "Thrombozyten"
+    }
   },
   {
     "canonical_code": "mcv",
@@ -275,7 +295,11 @@
         "alias": "VCM",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Mean Corpuscular Volume",
+      "de": "Mittleres Erythrozytenvolumen"
+    }
   },
   {
     "canonical_code": "mch",
@@ -320,7 +344,11 @@
         "alias": "HCM",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Mean Corpuscular Hemoglobin",
+      "de": "Mittleres Erythrozyten-Hämoglobin"
+    }
   },
   {
     "canonical_code": "mchc",
@@ -365,7 +393,11 @@
         "alias": "CHCM",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Mean Corpuscular Hemoglobin Concentration",
+      "de": "Mittlere Erythrozyten-Hämoglobinkonzentration"
+    }
   },
   {
     "canonical_code": "rdw",
@@ -414,7 +446,11 @@
         "alias": "ADE",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Red Cell Distribution Width",
+      "de": "Erythrozytenverteilungsbreite"
+    }
   },
   {
     "canonical_code": "mpv",
@@ -459,7 +495,11 @@
         "alias": "VPM",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Mean Platelet Volume",
+      "de": "Mittleres Thrombozytenvolumen"
+    }
   },
   {
     "canonical_code": "neutrophils",
@@ -496,7 +536,11 @@
         "alias": "Neutrófilos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Neutrophils",
+      "de": "Neutrophile"
+    }
   },
   {
     "canonical_code": "lymphocytes",
@@ -529,7 +573,11 @@
         "alias": "Linfocitos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lymphocytes",
+      "de": "Lymphozyten"
+    }
   },
   {
     "canonical_code": "monocytes",
@@ -562,7 +610,11 @@
         "alias": "Monocitos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Monocytes",
+      "de": "Monozyten"
+    }
   },
   {
     "canonical_code": "eosinophils",
@@ -599,7 +651,11 @@
         "alias": "Eosinófilos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Eosinophils",
+      "de": "Eosinophile"
+    }
   },
   {
     "canonical_code": "basophils",
@@ -636,7 +692,11 @@
         "alias": "Basófilos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Basophils",
+      "de": "Basophile"
+    }
   },
   {
     "canonical_code": "reticulocytes",
@@ -673,7 +733,11 @@
         "alias": "Reticulocitos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Reticulocyte Count",
+      "de": "Retikulozyten"
+    }
   },
   {
     "canonical_code": "total-cholesterol",
@@ -710,7 +774,11 @@
         "alias": "Colesterol total",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Total Cholesterol",
+      "de": "Gesamtcholesterin"
+    }
   },
   {
     "canonical_code": "hdl-cholesterol",
@@ -747,7 +815,11 @@
         "alias": "Colesterol HDL",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "HDL Cholesterol",
+      "de": "HDL-Cholesterin"
+    }
   },
   {
     "canonical_code": "ldl-cholesterol",
@@ -784,7 +856,11 @@
         "alias": "Colesterol LDL",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "LDL Cholesterol",
+      "de": "LDL-Cholesterin"
+    }
   },
   {
     "canonical_code": "triglycerides",
@@ -817,7 +893,11 @@
         "alias": "Triglicéridos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Triglycerides",
+      "de": "Triglyzeride"
+    }
   },
   {
     "canonical_code": "vldl-cholesterol",
@@ -850,7 +930,11 @@
         "alias": "Colesterol VLDL",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "VLDL Cholesterol",
+      "de": "VLDL-Cholesterin"
+    }
   },
   {
     "canonical_code": "lipoprotein-a",
@@ -883,7 +967,11 @@
         "alias": "Lipoproteína(a)",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lipoprotein(a)",
+      "de": "Lipoprotein(a)"
+    }
   },
   {
     "canonical_code": "apolipoprotein-a1",
@@ -920,7 +1008,11 @@
         "alias": "Apolipoproteína A1",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Apolipoprotein A1",
+      "de": "Apolipoprotein A1"
+    }
   },
   {
     "canonical_code": "apolipoprotein-b",
@@ -957,7 +1049,11 @@
         "alias": "Apolipoproteína B",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Apolipoprotein B",
+      "de": "Apolipoprotein B"
+    }
   },
   {
     "canonical_code": "glucose-fasting",
@@ -1002,7 +1098,11 @@
         "alias": "Glucemia basal",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Glucose, Fasting",
+      "de": "Nüchternglukose"
+    }
   },
   {
     "canonical_code": "glucose-random",
@@ -1047,7 +1147,11 @@
         "alias": "Glucemia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Glucose, Random",
+      "de": "Gelegenheitsglukose"
+    }
   },
   {
     "canonical_code": "hba1c",
@@ -1104,7 +1208,11 @@
         "alias": "HbA1c",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hemoglobin A1c",
+      "de": "Glykiertes Hämoglobin (HbA1c)"
+    }
   },
   {
     "canonical_code": "insulin",
@@ -1141,7 +1249,11 @@
         "alias": "Insulina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Insulin",
+      "de": "Insulin"
+    }
   },
   {
     "canonical_code": "c-peptide",
@@ -1174,7 +1286,11 @@
         "alias": "Péptido C",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "C-Peptide",
+      "de": "C-Peptid"
+    }
   },
   {
     "canonical_code": "uric-acid",
@@ -1211,7 +1327,11 @@
         "alias": "Ácido úrico",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Uric Acid",
+      "de": "Harnsäure"
+    }
   },
   {
     "canonical_code": "lactate",
@@ -1260,7 +1380,11 @@
         "alias": "Ácido láctico",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lactate",
+      "de": "Laktat"
+    }
   },
   {
     "canonical_code": "ammonia",
@@ -1301,7 +1425,11 @@
         "alias": "Amoníaco",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ammonia",
+      "de": "Ammoniak"
+    }
   },
   {
     "canonical_code": "homocysteine",
@@ -1334,7 +1462,11 @@
         "alias": "Homocisteína",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Homocysteine",
+      "de": "Homocystein"
+    }
   },
   {
     "canonical_code": "fructosamine",
@@ -1363,7 +1495,11 @@
         "alias": "Fructosamina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Fructosamine",
+      "de": "Fruktosamin"
+    }
   },
   {
     "canonical_code": "bun",
@@ -1420,7 +1556,11 @@
         "alias": "Urea",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Blood Urea Nitrogen",
+      "de": "Harnstoff-Stickstoff"
+    }
   },
   {
     "canonical_code": "total-protein",
@@ -1461,7 +1601,11 @@
         "alias": "Proteínas totales",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Total Protein",
+      "de": "Gesamteiweiß"
+    }
   },
   {
     "canonical_code": "albumin",
@@ -1498,7 +1642,11 @@
         "alias": "Albúmina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Albumin",
+      "de": "Albumin"
+    }
   },
   {
     "canonical_code": "globulin",
@@ -1527,7 +1675,11 @@
         "alias": "Globulina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Globulin",
+      "de": "Globulin"
+    }
   },
   {
     "canonical_code": "ag-ratio",
@@ -1564,7 +1716,11 @@
         "alias": "Cociente albúmina/globulina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Albumin/Globulin Ratio",
+      "de": "Albumin-Globulin-Quotient"
+    }
   },
   {
     "canonical_code": "alt",
@@ -1641,7 +1797,11 @@
         "alias": "Alanina aminotransferasa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Alanine Aminotransferase",
+      "de": "Alanin-Aminotransferase"
+    }
   },
   {
     "canonical_code": "ast",
@@ -1718,7 +1878,11 @@
         "alias": "Aspartato aminotransferasa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Aspartate Aminotransferase",
+      "de": "Aspartat-Aminotransferase"
+    }
   },
   {
     "canonical_code": "ggt",
@@ -1783,7 +1947,11 @@
         "alias": "Gamma-glutamil transferasa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Gamma-Glutamyl Transferase",
+      "de": "Gamma-Glutamyltransferase"
+    }
   },
   {
     "canonical_code": "alp",
@@ -1836,7 +2004,11 @@
         "alias": "FA",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Alkaline Phosphatase",
+      "de": "Alkalische Phosphatase"
+    }
   },
   {
     "canonical_code": "bilirubin-total",
@@ -1873,7 +2045,11 @@
         "alias": "Bilirrubina total",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bilirubin, Total",
+      "de": "Gesamtbilirubin"
+    }
   },
   {
     "canonical_code": "bilirubin-direct",
@@ -1926,7 +2102,11 @@
         "alias": "Bilirrubina conjugada",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bilirubin, Direct",
+      "de": "Direktes Bilirubin"
+    }
   },
   {
     "canonical_code": "bilirubin-indirect",
@@ -1975,7 +2155,11 @@
         "alias": "Bilirrubina no conjugada",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bilirubin, Indirect",
+      "de": "Indirektes Bilirubin"
+    }
   },
   {
     "canonical_code": "ldh",
@@ -2028,7 +2212,11 @@
         "alias": "Lactato deshidrogenasa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lactate Dehydrogenase",
+      "de": "Laktatdehydrogenase"
+    }
   },
   {
     "canonical_code": "prealbumin",
@@ -2077,7 +2265,11 @@
         "alias": "Transtiretina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Prealbumin",
+      "de": "Präalbumin"
+    }
   },
   {
     "canonical_code": "cholinesterase",
@@ -2130,7 +2322,11 @@
         "alias": "Pseudocolinesterasa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cholinesterase",
+      "de": "Cholinesterase"
+    }
   },
   {
     "canonical_code": "creatinine",
@@ -2167,7 +2363,11 @@
         "alias": "Creatinina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Creatinine",
+      "de": "Kreatinin"
+    }
   },
   {
     "canonical_code": "egfr",
@@ -2232,7 +2432,11 @@
         "alias": "Tasa de filtración glomerular",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Estimated GFR",
+      "de": "Geschätzte glomeruläre Filtrationsrate (eGFR)"
+    }
   },
   {
     "canonical_code": "urea",
@@ -2265,7 +2469,11 @@
         "alias": "Urea",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Urea",
+      "de": "Harnstoff"
+    }
   },
   {
     "canonical_code": "cystatin-c",
@@ -2298,7 +2506,11 @@
         "alias": "Cistatina C",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cystatin C",
+      "de": "Cystatin C"
+    }
   },
   {
     "canonical_code": "microalbumin",
@@ -2343,7 +2555,11 @@
         "alias": "Microalbuminuria",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Microalbumin, Urine",
+      "de": "Mikroalbumin im Urin"
+    }
   },
   {
     "canonical_code": "urine-protein",
@@ -2396,7 +2612,11 @@
         "alias": "Proteinuria",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Protein, Urine",
+      "de": "Urinprotein"
+    }
   },
   {
     "canonical_code": "urine-creatinine",
@@ -2429,7 +2649,11 @@
         "alias": "Creatinina en orina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Creatinine, Urine",
+      "de": "Kreatinin im Urin"
+    }
   },
   {
     "canonical_code": "acr",
@@ -2478,7 +2702,11 @@
         "alias": "CAC",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Albumin/Creatinine Ratio",
+      "de": "Albumin-Kreatinin-Quotient"
+    }
   },
   {
     "canonical_code": "urine-specific-gravity",
@@ -2519,7 +2747,11 @@
         "alias": "Gravedad específica orina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Specific Gravity, Urine",
+      "de": "Spezifisches Gewicht des Urins"
+    }
   },
   {
     "canonical_code": "urine-ph",
@@ -2560,7 +2792,11 @@
         "alias": "pH en orina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "pH, Urine",
+      "de": "Urin-pH"
+    }
   },
   {
     "canonical_code": "sodium",
@@ -2609,7 +2845,11 @@
         "alias": "Natremia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Sodium",
+      "de": "Natrium"
+    }
   },
   {
     "canonical_code": "potassium",
@@ -2658,7 +2898,11 @@
         "alias": "Kalemia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Potassium",
+      "de": "Kalium"
+    }
   },
   {
     "canonical_code": "chloride",
@@ -2703,7 +2947,11 @@
         "alias": "Cloro",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Chloride",
+      "de": "Chlorid"
+    }
   },
   {
     "canonical_code": "calcium",
@@ -2760,7 +3008,11 @@
         "alias": "Calcemia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Calcium",
+      "de": "Kalzium"
+    }
   },
   {
     "canonical_code": "magnesium",
@@ -2809,7 +3061,11 @@
         "alias": "Magnesemia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Magnesium",
+      "de": "Magnesium"
+    }
   },
   {
     "canonical_code": "phosphate",
@@ -2862,7 +3118,11 @@
         "alias": "Fosfatemia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Phosphate",
+      "de": "Phosphat"
+    }
   },
   {
     "canonical_code": "bicarbonate",
@@ -2899,7 +3159,11 @@
         "alias": "Bicarbonato",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bicarbonate",
+      "de": "Bicarbonat"
+    }
   },
   {
     "canonical_code": "anion-gap",
@@ -2932,7 +3196,11 @@
         "alias": "Brecha aniónica",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Anion Gap",
+      "de": "Anionenlücke"
+    }
   },
   {
     "canonical_code": "tsh",
@@ -2985,7 +3253,11 @@
         "alias": "Tirotropina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Thyroid Stimulating Hormone",
+      "de": "Thyreotropin (TSH)"
+    }
   },
   {
     "canonical_code": "free-t4",
@@ -3042,7 +3314,11 @@
         "alias": "Tiroxina libre",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Free T4",
+      "de": "Freies Thyroxin (fT4)"
+    }
   },
   {
     "canonical_code": "free-t3",
@@ -3099,7 +3375,11 @@
         "alias": "Triyodotironina libre",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Free T3",
+      "de": "Freies Trijodthyronin (fT3)"
+    }
   },
   {
     "canonical_code": "total-t4",
@@ -3148,7 +3428,11 @@
         "alias": "Tiroxina total",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Total T4",
+      "de": "Gesamt-Thyroxin (T4)"
+    }
   },
   {
     "canonical_code": "total-t3",
@@ -3197,7 +3481,11 @@
         "alias": "Triyodotironina total",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Total T3",
+      "de": "Gesamt-Trijodthyronin (T3)"
+    }
   },
   {
     "canonical_code": "anti-tpo",
@@ -3250,7 +3538,11 @@
         "alias": "Anticuerpos anti-peroxidasa tiroidea",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Anti-TPO Antibodies",
+      "de": "Thyreoperoxidase-Antikörper"
+    }
   },
   {
     "canonical_code": "anti-tg",
@@ -3303,7 +3595,11 @@
         "alias": "Anticuerpos anti-tiroglobulina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Anti-Thyroglobulin Antibodies",
+      "de": "Thyreoglobulin-Antikörper"
+    }
   },
   {
     "canonical_code": "thyroglobulin",
@@ -3336,7 +3632,11 @@
         "alias": "Tiroglobulina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Thyroglobulin",
+      "de": "Thyreoglobulin"
+    }
   },
   {
     "canonical_code": "iron",
@@ -3389,7 +3689,11 @@
         "alias": "Hierro sérico",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Iron",
+      "de": "Eisen"
+    }
   },
   {
     "canonical_code": "ferritin",
@@ -3418,7 +3722,11 @@
         "alias": "Ferritina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ferritin",
+      "de": "Ferritin"
+    }
   },
   {
     "canonical_code": "tibc",
@@ -3467,7 +3775,11 @@
         "alias": "CTFH",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Total Iron Binding Capacity",
+      "de": "Totale Eisenbindungskapazität"
+    }
   },
   {
     "canonical_code": "transferrin",
@@ -3496,7 +3808,11 @@
         "alias": "Transferrina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Transferrin",
+      "de": "Transferrin"
+    }
   },
   {
     "canonical_code": "transferrin-saturation",
@@ -3545,7 +3861,11 @@
         "alias": "IST",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Transferrin Saturation",
+      "de": "Transferrinsättigung"
+    }
   },
   {
     "canonical_code": "soluble-transferrin-receptor",
@@ -3586,7 +3906,11 @@
         "alias": "Receptor soluble de transferrina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Soluble Transferrin Receptor",
+      "de": "Löslicher Transferrinrezeptor"
+    }
   },
   {
     "canonical_code": "pt",
@@ -3639,7 +3963,11 @@
         "alias": "Tiempo de protrombina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Prothrombin Time",
+      "de": "Prothrombinzeit"
+    }
   },
   {
     "canonical_code": "inr",
@@ -3688,7 +4016,11 @@
         "alias": "Razón normalizada internacional",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "International Normalized Ratio",
+      "de": "International normalisierte Ratio (INR)"
+    }
   },
   {
     "canonical_code": "aptt",
@@ -3745,7 +4077,11 @@
         "alias": "Tiempo de tromboplastina parcial activado",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Activated Partial Thromboplastin Time",
+      "de": "Aktivierte partielle Thromboplastinzeit"
+    }
   },
   {
     "canonical_code": "fibrinogen",
@@ -3778,7 +4114,11 @@
         "alias": "Fibrinógeno",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Fibrinogen",
+      "de": "Fibrinogen"
+    }
   },
   {
     "canonical_code": "d-dimer",
@@ -3819,7 +4159,11 @@
         "alias": "D-dímero",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "D-Dimer",
+      "de": "D-Dimer"
+    }
   },
   {
     "canonical_code": "antithrombin-iii",
@@ -3864,7 +4208,11 @@
         "alias": "Antitrombina III",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Antithrombin III",
+      "de": "Antithrombin III"
+    }
   },
   {
     "canonical_code": "protein-c",
@@ -3893,7 +4241,11 @@
         "alias": "Proteína C",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Protein C",
+      "de": "Protein C"
+    }
   },
   {
     "canonical_code": "protein-s",
@@ -3930,7 +4282,11 @@
         "alias": "Proteína S",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Protein S",
+      "de": "Protein S"
+    }
   },
   {
     "canonical_code": "bleeding-time",
@@ -3971,7 +4327,11 @@
         "alias": "Tiempo de sangría",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bleeding Time",
+      "de": "Blutungszeit"
+    }
   },
   {
     "canonical_code": "thrombin-time",
@@ -4012,7 +4372,11 @@
         "alias": "Tiempo de trombina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Thrombin Time",
+      "de": "Thrombinzeit"
+    }
   },
   {
     "canonical_code": "troponin-i",
@@ -4049,7 +4413,11 @@
         "alias": "Troponina I",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Troponin I",
+      "de": "Troponin I"
+    }
   },
   {
     "canonical_code": "troponin-t",
@@ -4090,7 +4458,11 @@
         "alias": "Troponina T",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Troponin T",
+      "de": "Troponin T"
+    }
   },
   {
     "canonical_code": "ck",
@@ -4147,7 +4519,11 @@
         "alias": "Creatina quinasa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Creatine Kinase",
+      "de": "Kreatinkinase"
+    }
   },
   {
     "canonical_code": "ck-mb",
@@ -4184,7 +4560,11 @@
         "alias": "CK-MB",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Creatine Kinase-MB",
+      "de": "CK-MB"
+    }
   },
   {
     "canonical_code": "bnp",
@@ -4237,7 +4617,11 @@
         "alias": "Péptido natriurético tipo B",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "B-type Natriuretic Peptide",
+      "de": "B-Typ-natriuretisches Peptid (BNP)"
+    }
   },
   {
     "canonical_code": "nt-probnp",
@@ -4270,7 +4654,11 @@
         "alias": "NT-proBNP",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "NT-proBNP",
+      "de": "NT-proBNP"
+    }
   },
   {
     "canonical_code": "myoglobin",
@@ -4299,7 +4687,11 @@
         "alias": "Mioglobina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Myoglobin",
+      "de": "Myoglobin"
+    }
   },
   {
     "canonical_code": "ldh-cardiac",
@@ -4348,7 +4740,11 @@
         "alias": "Lactato deshidrogenasa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lactate Dehydrogenase (Cardiac)",
+      "de": "Laktatdehydrogenase (kardial)"
+    }
   },
   {
     "canonical_code": "crp",
@@ -4401,7 +4797,11 @@
         "alias": "Proteína C reactiva",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "C-Reactive Protein",
+      "de": "C-reaktives Protein (CRP)"
+    }
   },
   {
     "canonical_code": "esr",
@@ -4454,7 +4854,11 @@
         "alias": "Velocidad de sedimentación globular",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Erythrocyte Sedimentation Rate",
+      "de": "Blutsenkungsgeschwindigkeit (BSG)"
+    }
   },
   {
     "canonical_code": "procalcitonin",
@@ -4503,7 +4907,11 @@
         "alias": "PCT",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Procalcitonin",
+      "de": "Procalcitonin"
+    }
   },
   {
     "canonical_code": "il6",
@@ -4552,7 +4960,11 @@
         "alias": "Interleucina 6",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Interleukin-6",
+      "de": "Interleukin-6"
+    }
   },
   {
     "canonical_code": "complement-c3",
@@ -4593,7 +5005,11 @@
         "alias": "Complemento C3",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Complement C3",
+      "de": "Komplement C3"
+    }
   },
   {
     "canonical_code": "complement-c4",
@@ -4634,7 +5050,11 @@
         "alias": "Complemento C4",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Complement C4",
+      "de": "Komplement C4"
+    }
   },
   {
     "canonical_code": "vitamin-d",
@@ -4691,7 +5111,11 @@
         "alias": "25-OH vitamina D",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vitamin D, 25-Hydroxy",
+      "de": "25-Hydroxy-Vitamin D"
+    }
   },
   {
     "canonical_code": "vitamin-b12",
@@ -4744,7 +5168,11 @@
         "alias": "Cobalamina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vitamin B12",
+      "de": "Vitamin B12"
+    }
   },
   {
     "canonical_code": "folate",
@@ -4797,7 +5225,11 @@
         "alias": "Folato",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Folate",
+      "de": "Folat"
+    }
   },
   {
     "canonical_code": "vitamin-a",
@@ -4846,7 +5278,11 @@
         "alias": "Retinol",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vitamin A",
+      "de": "Vitamin A"
+    }
   },
   {
     "canonical_code": "vitamin-e",
@@ -4895,7 +5331,11 @@
         "alias": "Alfa-tocoferol",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vitamin E",
+      "de": "Vitamin E"
+    }
   },
   {
     "canonical_code": "vitamin-b1",
@@ -4944,7 +5384,11 @@
         "alias": "Tiamina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vitamin B1",
+      "de": "Vitamin B1"
+    }
   },
   {
     "canonical_code": "vitamin-b6",
@@ -4997,7 +5441,11 @@
         "alias": "Piridoxina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vitamin B6",
+      "de": "Vitamin B6"
+    }
   },
   {
     "canonical_code": "vitamin-k",
@@ -5046,7 +5494,11 @@
         "alias": "Filoquinona",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vitamin K",
+      "de": "Vitamin K"
+    }
   },
   {
     "canonical_code": "cortisol",
@@ -5087,7 +5539,11 @@
         "alias": "Cortisol",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cortisol",
+      "de": "Kortisol"
+    }
   },
   {
     "canonical_code": "acth",
@@ -5152,7 +5608,11 @@
         "alias": "Corticotropina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Adrenocorticotropic Hormone",
+      "de": "Adrenocorticotropes Hormon (ACTH)"
+    }
   },
   {
     "canonical_code": "testosterone",
@@ -5189,7 +5649,11 @@
         "alias": "Testosterona",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Testosterone",
+      "de": "Testosteron"
+    }
   },
   {
     "canonical_code": "estradiol",
@@ -5238,7 +5702,11 @@
         "alias": "Estradiol",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Estradiol",
+      "de": "Estradiol"
+    }
   },
   {
     "canonical_code": "progesterone",
@@ -5267,7 +5735,11 @@
         "alias": "Progesterona",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Progesterone",
+      "de": "Progesteron"
+    }
   },
   {
     "canonical_code": "lh",
@@ -5316,7 +5788,11 @@
         "alias": "Hormona luteinizante",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Luteinizing Hormone",
+      "de": "Luteinisierendes Hormon (LH)"
+    }
   },
   {
     "canonical_code": "fsh",
@@ -5365,7 +5841,11 @@
         "alias": "Hormona foliculoestimulante",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Follicle Stimulating Hormone",
+      "de": "Follikelstimulierendes Hormon (FSH)"
+    }
   },
   {
     "canonical_code": "prolactin",
@@ -5406,7 +5886,11 @@
         "alias": "Prolactina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Prolactin",
+      "de": "Prolaktin"
+    }
   },
   {
     "canonical_code": "dhea-s",
@@ -5459,7 +5943,11 @@
         "alias": "Sulfato de dehidroepiandrosterona",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "DHEA-Sulfate",
+      "de": "Dehydroepiandrosteronsulfat (DHEA-S)"
+    }
   },
   {
     "canonical_code": "growth-hormone",
@@ -5528,7 +6016,11 @@
         "alias": "Somatotropina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Growth Hormone",
+      "de": "Wachstumshormon"
+    }
   },
   {
     "canonical_code": "igf1",
@@ -5581,7 +6073,11 @@
         "alias": "Somatomedina C",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Insulin-like Growth Factor 1",
+      "de": "Insulinähnlicher Wachstumsfaktor 1 (IGF-1)"
+    }
   },
   {
     "canonical_code": "pth",
@@ -5642,7 +6138,11 @@
         "alias": "Hormona paratiroidea",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Parathyroid Hormone",
+      "de": "Parathormon (PTH)"
+    }
   },
   {
     "canonical_code": "aldosterone",
@@ -5671,7 +6171,11 @@
         "alias": "Aldosterona",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Aldosterone",
+      "de": "Aldosteron"
+    }
   },
   {
     "canonical_code": "renin",
@@ -5724,7 +6228,11 @@
         "alias": "Actividad de renina plasmática",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Renin",
+      "de": "Renin"
+    }
   },
   {
     "canonical_code": "beta-hcg",
@@ -5781,7 +6289,11 @@
         "alias": "Gonadotropina coriónica humana",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Beta-hCG",
+      "de": "Beta-HCG"
+    }
   },
   {
     "canonical_code": "psa",
@@ -5834,7 +6346,11 @@
         "alias": "Antígeno prostático específico",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Prostate-Specific Antigen",
+      "de": "Prostataspezifisches Antigen (PSA)"
+    }
   },
   {
     "canonical_code": "cea",
@@ -5883,7 +6399,11 @@
         "alias": "Antígeno carcinoembrionario",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Carcinoembryonic Antigen",
+      "de": "Karzinoembryonales Antigen (CEA)"
+    }
   },
   {
     "canonical_code": "ca125",
@@ -5936,7 +6456,11 @@
         "alias": "CA 125",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "CA-125",
+      "de": "CA-125"
+    }
   },
   {
     "canonical_code": "ca19-9",
@@ -5973,7 +6497,11 @@
         "alias": "CA 19-9",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "CA 19-9",
+      "de": "CA 19-9"
+    }
   },
   {
     "canonical_code": "ca15-3",
@@ -6010,7 +6538,11 @@
         "alias": "CA 15-3",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "CA 15-3",
+      "de": "CA 15-3"
+    }
   },
   {
     "canonical_code": "afp",
@@ -6059,7 +6591,11 @@
         "alias": "Alfa-fetoproteína",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Alpha-Fetoprotein",
+      "de": "Alpha-Fetoprotein (AFP)"
+    }
   },
   {
     "canonical_code": "beta2-microglobulin",
@@ -6096,7 +6632,11 @@
         "alias": "Beta-2-microglobulina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Beta-2 Microglobulin",
+      "de": "Beta-2-Mikroglobulin"
+    }
   },
   {
     "canonical_code": "calcitonin",
@@ -6129,7 +6669,11 @@
         "alias": "Calcitonina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Calcitonin",
+      "de": "Calcitonin"
+    }
   },
   {
     "canonical_code": "chromogranin-a",
@@ -6170,7 +6714,11 @@
         "alias": "Cromogranina A",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Chromogranin A",
+      "de": "Chromogranin A"
+    }
   },
   {
     "canonical_code": "ana",
@@ -6219,7 +6767,11 @@
         "alias": "Anticuerpos antinucleares",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Antinuclear Antibodies",
+      "de": "Antinukleäre Antikörper (ANA)"
+    }
   },
   {
     "canonical_code": "anti-dsdna",
@@ -6272,7 +6824,11 @@
         "alias": "Anti-dsDNA",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Anti-dsDNA Antibodies",
+      "de": "Antikörper gegen Doppelstrang-DNA"
+    }
   },
   {
     "canonical_code": "rheumatoid-factor",
@@ -6321,7 +6877,11 @@
         "alias": "FR",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Rheumatoid Factor",
+      "de": "Rheumafaktor"
+    }
   },
   {
     "canonical_code": "anti-ccp",
@@ -6374,7 +6934,11 @@
         "alias": "Anticuerpos anti-péptido citrulinado cíclico",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Anti-CCP Antibodies",
+      "de": "Antikörper gegen zyklische citrullinierte Peptide (Anti-CCP)"
+    }
   },
   {
     "canonical_code": "anca",
@@ -6431,7 +6995,11 @@
         "alias": "Anticuerpos anticitoplasma de neutrófilos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Anti-Neutrophil Cytoplasmic Antibodies",
+      "de": "Antineutrophile zytoplasmatische Antikörper (ANCA)"
+    }
   },
   {
     "canonical_code": "anti-phospholipid",
@@ -6472,7 +7040,11 @@
         "alias": "Anticuerpos antifosfolípidos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Anti-Phospholipid Antibodies",
+      "de": "Antiphospholipid-Antikörper"
+    }
   },
   {
     "canonical_code": "igg",
@@ -6521,7 +7093,11 @@
         "alias": "Inmunoglobulina G",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Immunoglobulin G",
+      "de": "Immunglobulin G"
+    }
   },
   {
     "canonical_code": "iga",
@@ -6570,7 +7146,11 @@
         "alias": "Inmunoglobulina A",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Immunoglobulin A",
+      "de": "Immunglobulin A"
+    }
   },
   {
     "canonical_code": "igm",
@@ -6619,7 +7199,11 @@
         "alias": "Inmunoglobulina M",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Immunoglobulin M",
+      "de": "Immunglobulin M"
+    }
   },
   {
     "canonical_code": "hiv-ab-ag",
@@ -6676,7 +7260,11 @@
         "alias": "VIH Ac/Ag",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "HIV Ab/Ag Combo",
+      "de": "HIV-Antikörper-/Antigen-Kombinationstest"
+    }
   },
   {
     "canonical_code": "hbsag",
@@ -6725,7 +7313,11 @@
         "alias": "Antígeno de superficie hepatitis B",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hepatitis B Surface Antigen",
+      "de": "Hepatitis-B-Oberflächenantigen (HBsAg)"
+    }
   },
   {
     "canonical_code": "anti-hbs",
@@ -6778,7 +7370,11 @@
         "alias": "Anticuerpos anti-HBs",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Anti-HBs Antibodies",
+      "de": "Hepatitis-B-Oberflächenantikörper (Anti-HBs)"
+    }
   },
   {
     "canonical_code": "anti-hbc",
@@ -6831,7 +7427,11 @@
         "alias": "Anticuerpos anti-HBc",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Anti-HBc Antibodies",
+      "de": "Hepatitis-B-Core-Antikörper (Anti-HBc)"
+    }
   },
   {
     "canonical_code": "hcv-ab",
@@ -6884,7 +7484,11 @@
         "alias": "Anticuerpos anti-VHC",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hepatitis C Antibody",
+      "de": "Hepatitis-C-Antikörper"
+    }
   },
   {
     "canonical_code": "rpr-vdrl",
@@ -6953,7 +7557,11 @@
         "alias": "Serología sífilis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "RPR/VDRL (Syphilis Screen)",
+      "de": "Syphilis-Suchtest (RPR/VDRL)"
+    }
   },
   {
     "canonical_code": "blood-culture",
@@ -6986,7 +7594,11 @@
         "alias": "Hemocultivo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Blood Culture",
+      "de": "Blutkultur"
+    }
   },
   {
     "canonical_code": "urine-culture",
@@ -7023,7 +7635,11 @@
         "alias": "Urocultivo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Urine Culture",
+      "de": "Urinkultur"
+    }
   },
   {
     "canonical_code": "cmv-igg",
@@ -7072,7 +7688,11 @@
         "alias": "Citomegalovirus IgG",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "CMV IgG",
+      "de": "Zytomegalievirus-IgG"
+    }
   },
   {
     "canonical_code": "ebv-panel",
@@ -7129,7 +7749,11 @@
         "alias": "Virus de Epstein-Barr",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "EBV Panel",
+      "de": "Epstein-Barr-Virus-Serologie"
+    }
   },
   {
     "canonical_code": "urine-glucose",
@@ -7174,7 +7798,11 @@
         "alias": "Glucosuria",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Glucose, Urine",
+      "de": "Glukose im Urin"
+    }
   },
   {
     "canonical_code": "urine-protein-dip",
@@ -7211,7 +7839,11 @@
         "alias": "Proteínas en orina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Protein, Urine (Dipstick)",
+      "de": "Eiweiß im Urin (Teststreifen)"
+    }
   },
   {
     "canonical_code": "urine-blood",
@@ -7264,7 +7896,11 @@
         "alias": "Hematuria",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Blood, Urine",
+      "de": "Blut im Urin"
+    }
   },
   {
     "canonical_code": "urine-leukocyte-esterase",
@@ -7297,7 +7933,11 @@
         "alias": "Esterasa leucocitaria",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Leukocyte Esterase, Urine",
+      "de": "Leukozytenesterase im Urin"
+    }
   },
   {
     "canonical_code": "urine-nitrite",
@@ -7330,7 +7970,11 @@
         "alias": "Nitritos en orina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Nitrite, Urine",
+      "de": "Nitrit im Urin"
+    }
   },
   {
     "canonical_code": "urine-ketones",
@@ -7375,7 +8019,11 @@
         "alias": "Cetonuria",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ketones, Urine",
+      "de": "Ketone im Urin"
+    }
   },
   {
     "canonical_code": "urine-bilirubin",
@@ -7408,7 +8056,11 @@
         "alias": "Bilirrubina en orina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bilirubin, Urine",
+      "de": "Bilirubin im Urin"
+    }
   },
   {
     "canonical_code": "urine-urobilinogen",
@@ -7441,7 +8093,11 @@
         "alias": "Urobilinógeno en orina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Urobilinogen, Urine",
+      "de": "Urobilinogen im Urin"
+    }
   },
   {
     "canonical_code": "blood-ph",
@@ -7490,7 +8146,11 @@
         "alias": "pH arterial",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "pH, Blood",
+      "de": "Blut-pH"
+    }
   },
   {
     "canonical_code": "po2",
@@ -7543,7 +8203,11 @@
         "alias": "Presión parcial de oxígeno",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Partial Pressure of Oxygen",
+      "de": "Sauerstoffpartialdruck"
+    }
   },
   {
     "canonical_code": "pco2",
@@ -7596,7 +8260,11 @@
         "alias": "Presión parcial de CO2",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Partial Pressure of Carbon Dioxide",
+      "de": "Kohlendioxidpartialdruck"
+    }
   },
   {
     "canonical_code": "hco3-blood",
@@ -7649,7 +8317,11 @@
         "alias": "Bicarbonato",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bicarbonate, Blood Gas",
+      "de": "Bicarbonat (Blutgasanalyse)"
+    }
   },
   {
     "canonical_code": "base-excess",
@@ -7702,7 +8374,11 @@
         "alias": "EB",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Base Excess",
+      "de": "Basenüberschuss"
+    }
   },
   {
     "canonical_code": "oxygen-saturation",
@@ -7759,7 +8435,11 @@
         "alias": "SaO2",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Oxygen Saturation",
+      "de": "Sauerstoffsättigung"
+    }
   },
   {
     "canonical_code": "amylase",
@@ -7792,7 +8472,11 @@
         "alias": "Amilasa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Amylase",
+      "de": "Amylase"
+    }
   },
   {
     "canonical_code": "lipase",
@@ -7821,7 +8505,11 @@
         "alias": "Lipasa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lipase",
+      "de": "Lipase"
+    }
   },
   {
     "canonical_code": "elastase",
@@ -7874,7 +8562,11 @@
         "alias": "Elastasa fecal",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pancreatic Elastase",
+      "de": "Pankreas-Elastase"
+    }
   },
   {
     "canonical_code": "zinc",
@@ -7907,7 +8599,11 @@
         "alias": "Zinc",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Zinc",
+      "de": "Zink"
+    }
   },
   {
     "canonical_code": "copper",
@@ -7944,7 +8640,11 @@
         "alias": "Cobre",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Copper",
+      "de": "Kupfer"
+    }
   },
   {
     "canonical_code": "selenium",
@@ -7977,6 +8677,10 @@
         "alias": "Selenio",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Selenium",
+      "de": "Selen"
+    }
   }
 ]

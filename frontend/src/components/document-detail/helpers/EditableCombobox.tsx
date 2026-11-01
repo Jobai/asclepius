@@ -1,3 +1,4 @@
+import { sortTerms, termLabel, termMatches } from "@/lib/terminology";
 import { enumLabel } from "@/lib/labels";
 import type { MessageKey } from "@/i18n/messages";
 import { Trans as FeatureTrans } from "react-i18next";
@@ -32,6 +33,7 @@ export function EditableCombobox({
   onSave,
   normType,
   currentEntityId,
+  displayValue,
 }: {
   label: string;
   value: any;
@@ -45,6 +47,7 @@ export function EditableCombobox({
    * document only or to every document linked to the current entity.
    * Without it, only the doc-only path is offered. */
   currentEntityId?: number | null;
+  displayValue?: string;
 }) {
   const { t: tx } = useFeatureTranslation([
     "common",
@@ -88,7 +91,7 @@ export function EditableCombobox({
       : normType === "facilities"
         ? facilities
         : specialties;
-  const options = Array.isArray(source.data) ? source.data : [];
+  const options = sortTerms(Array.isArray(source.data) ? source.data : []);
   const loadingOptions = source.loading;
 
   // Close on outside click
@@ -266,13 +269,13 @@ export function EditableCombobox({
   const q = query.trim().toLowerCase();
   const filtered = q
     ? options.filter((o: any) => {
-        const d = (displayOf(o) || "").toLowerCase();
-        const c = (o.canonical_code || "").toLowerCase();
-        return d.includes(q) || c.includes(q);
+        return termMatches(o, q);
       })
     : options;
-  const exactMatch = filtered.some(
-    (o: any) => displayOf(o).toLowerCase() === q,
+  const exactMatch = filtered.some((o: any) =>
+    [displayOf(o), ...Object.values(o.display_names || {})].some(
+      (name) => String(name).toLowerCase() === q,
+    ),
   );
   const canCreate = q.length > 0 && !exactMatch;
 
@@ -361,7 +364,7 @@ export function EditableCombobox({
                         disabled={saving}
                         className={`flex w-full items-center justify-between gap-2 px-3 py-1.5 text-left text-xs hover:bg-accent ${isCurrent ? "bg-accent/40" : ""}`}
                       >
-                        <span className="truncate">{d}</span>
+                        <span className="truncate">{termLabel(opt) || d}</span>
                         {opt.canonical_code && (
                           <span className="text-[10px] font-mono text-muted-foreground truncate">
                             {opt.canonical_code}
@@ -503,7 +506,7 @@ export function EditableCombobox({
     >
       <span className="text-muted-foreground">{label}</span>
       <span className="flex min-w-0 items-center gap-1.5 font-medium">
-        {value || (
+        {displayValue || value || (
           <span className="text-muted-foreground/50 italic group-hover:text-primary text-xs coarse:opacity-70">
             {ui("ui.clickEdit")}
           </span>

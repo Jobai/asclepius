@@ -1,3 +1,4 @@
+import { medicationLabel } from "@/lib/terminology";
 import type { MessageKey } from "@/i18n/messages";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
@@ -90,8 +91,7 @@ function MedicationRow({
     <div className="space-y-1">
       <div className="flex items-center gap-2">
         <span className="text-sm font-semibold flex-1 truncate">
-          {med.active_ingredient_original ||
-            med.brand_name ||
+          {medicationLabel(med) ||
             tx("clinical:features.medicationsSection.medication")}
         </span>
         <MedFormBadge form={med.form} />

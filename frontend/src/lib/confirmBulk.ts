@@ -1,11 +1,16 @@
 import type { ConfirmOptions } from "../contexts/ConfirmContext";
-import { message, type UiMessage } from "@/i18n/messages";
+import {
+  message,
+  type UiMessage,
+  type TermMessage,
+  type TranslatedMessage,
+} from "@/i18n/messages";
 
 export const BULK_CONFIRM_THRESHOLD = 10;
 
 export interface BulkConfirmOpts {
   count: number;
-  targetLabel?: string;
+  targetLabel?: string | TermMessage | TranslatedMessage;
   action: "reprocess" | "regenerateFilename" | "merge";
   description: UiMessage;
   confirmText?: UiMessage;

@@ -1,3 +1,4 @@
+import { specialtyLabel } from "@/lib/terminology";
 import { useUiFormat } from "@/lib/formatting";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
@@ -82,7 +83,7 @@ export default function DocumentTable({
           );
         case "specialty":
           return (doc: any) => {
-            const s = doc.specialty_original || "";
+            const s = specialtyLabel(doc);
             return <span title={s}>{s || "-"}</span>;
           };
         case "date_added":

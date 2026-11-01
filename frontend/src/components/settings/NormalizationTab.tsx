@@ -90,6 +90,8 @@ export default function NormalizationTab() {
       />
 
       <NormalizationTable
+        normType={n.normType}
+        onDisplayNamesSaved={n.handleDisplayNamesSaved}
         normItems={n.normItems}
         detail={n.detail}
         expandedId={n.expandedId}

@@ -3485,6 +3485,10 @@ export interface components {
       canonical_code?: string | null;
       /** Canonical Display */
       canonical_display?: string | null;
+      /** Display Names */
+      display_names?: {
+        [key: string]: string | null;
+      } | null;
     };
     /** PatientAccessGrant */
     PatientAccessGrant: {

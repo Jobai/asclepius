@@ -163,8 +163,7 @@ def _parse_proposals(text: str, name_to_ids: dict[str, int] | None = None) -> li
             recovered = _coerce_label_dict(obj, name_to_ids)
             if recovered:
                 logger.info(
-                    "auto_merge parser: recovered dict-of-lists response "
-                    "(%d keys → %d proposals)",
+                    "auto_merge parser: recovered dict-of-lists response (%d keys → %d proposals)",
                     len(obj),
                     len(recovered),
                 )
@@ -311,6 +310,12 @@ async def _fetch_entries(
 
     for row in rows:
         row["aliases"] = alias_map.get(row["id"], [])
+    from .display_names import TERM_TABLES, attach_display_names
+
+    for term_type, (table, _, _) in TERM_TABLES.items():
+        if table == main_table:
+            await attach_display_names(db, rows, term_type)
+            break
     return rows
 
 

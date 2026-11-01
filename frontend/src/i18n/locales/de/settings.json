@@ -543,5 +543,12 @@
         }
       }
     }
+  },
+  "terminology": {
+    "title": "Bevorzugte Anzeigenamen",
+    "help": "Werden in der gewählten Oberflächensprache angezeigt. Ohne Übersetzung wird der kanonische Name verwendet. Codes, Synonyme und ursprüngliche Befundtexte bleiben erhalten.",
+    "en": "Englisch",
+    "de": "Deutsch",
+    "save": "Anzeigenamen speichern"
   }
 }

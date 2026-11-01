@@ -1,3 +1,10 @@
+import {
+  sortTerms,
+  termLabel,
+  termMatches,
+  labLabel,
+  type TermDisplayNames,
+} from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -15,6 +22,7 @@ import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 type LabRow = {
   id?: number;
   test_name_original?: string | null;
+  test_display_names?: TermDisplayNames;
   test_name_canonical?: string | null;
   canonical_code?: string | null;
   norm_lab_test_id?: number | null;
@@ -83,21 +91,19 @@ function TestPicker({
   // Filter client-side — the normalization table is bounded (seeded list,
   // plus user-added aliases) so pulling it once and matching in JS is fast.
   const options = useMemo(() => {
-    const list = Array.isArray(labTests) ? labTests : [];
+    const list = sortTerms(Array.isArray(labTests) ? labTests : []);
     const q = query.trim().toLowerCase();
     if (!q) return list;
-    return list.filter(
-      (o: any) =>
-        (o.canonical_display || "").toLowerCase().includes(q) ||
-        (o.canonical_code || "").toLowerCase().includes(q),
-    );
-  }, [labTests, query]);
+    return list.filter((o: any) => termMatches(o, q));
+  }, [labTests, query, tx]);
 
   useOnClickOutside(rootRef, () => setOpen(false), open);
 
   const q = query.trim().toLowerCase();
-  const exact = options.some(
-    (o: any) => (o.canonical_display || "").toLowerCase() === q,
+  const exact = options.some((o: any) =>
+    [o.canonical_display, ...Object.values(o.display_names || {})].some(
+      (name) => String(name).toLowerCase() === q,
+    ),
   );
   const canCreate = q.length > 0 && !exact;
 
@@ -149,7 +155,7 @@ function TestPicker({
                     }}
                     className={`flex w-full items-center justify-between gap-2 px-3 py-1.5 text-left text-xs hover:bg-accent ${isCurrent ? "bg-accent/40" : ""}`}
                   >
-                    <span className="truncate">{d}</span>
+                    <span className="truncate">{termLabel(opt) || d}</span>
                     {opt.canonical_code && (
                       <span className="text-[10px] font-mono text-muted-foreground truncate">
                         {opt.canonical_code}
@@ -529,9 +535,7 @@ export default function LabResultsEditor({
                   className={lr.is_abnormal ? "text-destructive" : ""}
                 >
                   <td className="py-1 pr-2">
-                    <div className="font-medium">
-                      {lr.test_name_canonical || lr.test_name_original || ""}
-                    </div>
+                    <div className="font-medium">{labLabel(lr) || ""}</div>
                     {lr.test_name_canonical &&
                       lr.test_name_original &&
                       lr.test_name_canonical !== lr.test_name_original && (
@@ -623,7 +627,7 @@ export default function LabResultsEditor({
             >
               <div className="flex items-center gap-2">
                 <span className="min-w-0 flex-1 truncate font-medium">
-                  {lr.test_name_canonical || lr.test_name_original || ""}
+                  {labLabel(lr) || ""}
                 </span>
                 {lr.is_abnormal && (
                   <Badge variant="destructive" size="sm">

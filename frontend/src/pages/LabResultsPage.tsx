@@ -1,3 +1,4 @@
+import { termMessage } from "@/i18n/messages";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useMemo, useState } from "react";
@@ -147,7 +148,13 @@ export default function LabResultsPage() {
       description: message(
         "feedback.onWillBeRemovedTheSourceDocumentIsUntouched",
         {
-          value0: String(row.test_name_canonical || row.test_name_original),
+          value0: termMessage(
+            {
+              display_names: row.test_display_names,
+              canonical_display: row.test_name_canonical,
+            },
+            row.test_name_original,
+          ),
           value1: String(
             row.value != null
               ? ` = ${row.value}${row.unit ? " " + row.unit : ""}`

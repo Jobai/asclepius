@@ -36,6 +36,44 @@ Each canonical entry has:
 - **Standard code** (where applicable) -- LOINC, ICD-10, or ATC code
 - **Aliases** -- multiple alternative names in different languages
 
+### Preferred names and UI language
+
+Lab tests, specialties, diagnoses and medication ingredients have separate
+preferred English and German names. Changing the UI language updates names in
+normalization, clinical lists, charts, selection fields and doctor shares.
+Canonical IDs and codes, original report text, values, units and brand names
+keep their existing meaning and representation. Doctors and facilities retain
+their proper names.
+
+Expand an entry in **Settings → Document Analysis → Normalization** to edit its
+**Preferred display names**. Each language is independent. Clearing a name uses
+the canonical display name as the fallback; if there is no normalized term, the
+original report wording is shown. Search accepts either language and aliases.
+The preferred names are display metadata, not additional extraction aliases.
+
+All 518 bundled terms include explicit preferred names. On the first startup
+after upgrading, a versioned migration fills names for matching existing
+canonical codes, including legacy underscore spellings. It does not replace
+canonical data or existing preferred names. Later startups preserve edits and
+cleared names. Custom terms continue to use their canonical name until an editor
+adds preferred names. No provider request or document reprocessing is needed.
+
+When entries are merged, the target's preferred names win conflicts. Missing
+languages are copied from the source and source preferred names are retained as
+aliases so they remain searchable. Deleting an entry removes its preferred names.
+
+API responses remain language-independent: normalization entries add
+`display_names` (`en`/`de`) and list entries add `search_terms` (aliases).
+Clinical rows add `test_display_names`, `specialty_display_names`,
+`diagnosis_display_names` or `medication_display_names` alongside existing fields.
+Both languages are returned in the original request; changing UI language does
+not fetch translations. Editors can update one or both names with
+`PATCH /api/normalization/{type}/{id}` and a `display_names` object. Omitted
+languages are unchanged; `null` or an empty name clears a language. Only `en`
+and `de` are accepted, with at most 250 characters per name. Optional
+`display_names` objects in configured seed JSON files override bundled defaults
+per canonical code during the initial backfill.
+
 ### Doctors and facilities
 
 Doctors and facilities use the same normalization system as medical concepts. The existing `doctors` and `facilities` tables have been extended with `canonical_code` and `canonical_display` columns, and new alias tables (`doctor_aliases`, `facility_aliases`) enable the same alias management, merge, and review workflows.

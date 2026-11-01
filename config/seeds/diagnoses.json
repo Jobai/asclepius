@@ -56,7 +56,11 @@
         "alias": "Presión arterial alta",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Essential Hypertension",
+      "de": "Essentielle Hypertonie"
+    }
   },
   {
     "canonical_code": "coronary-artery-disease",
@@ -111,7 +115,11 @@
         "alias": "Cardiopatía isquémica",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Coronary Artery Disease",
+      "de": "Koronare Herzkrankheit"
+    }
   },
   {
     "canonical_code": "heart-failure",
@@ -158,7 +166,11 @@
         "alias": "Insuficiencia cardíaca",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Heart Failure",
+      "de": "Herzinsuffizienz"
+    }
   },
   {
     "canonical_code": "atrial-fibrillation",
@@ -201,7 +213,11 @@
         "alias": "Fibrilación auricular",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Atrial Fibrillation",
+      "de": "Vorhofflimmern"
+    }
   },
   {
     "canonical_code": "myocardial-infarction",
@@ -256,7 +272,11 @@
         "alias": "Ataque al corazón",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Myocardial Infarction",
+      "de": "Herzinfarkt"
+    }
   },
   {
     "canonical_code": "angina-pectoris",
@@ -303,7 +323,11 @@
         "alias": "Angina de pecho",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Angina Pectoris",
+      "de": "Angina pectoris"
+    }
   },
   {
     "canonical_code": "deep-vein-thrombosis",
@@ -350,7 +374,11 @@
         "alias": "TVP",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Deep Vein Thrombosis",
+      "de": "Tiefe Venenthrombose"
+    }
   },
   {
     "canonical_code": "pulmonary-embolism",
@@ -385,7 +413,11 @@
         "alias": "Embolia pulmonar",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pulmonary Embolism",
+      "de": "Lungenembolie"
+    }
   },
   {
     "canonical_code": "aortic-stenosis",
@@ -424,7 +456,11 @@
         "alias": "Estenosis aórtica",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Aortic Stenosis",
+      "de": "Aortenklappenstenose"
+    }
   },
   {
     "canonical_code": "mitral-valve-prolapse",
@@ -455,7 +491,11 @@
         "alias": "Prolapso de la válvula mitral",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Mitral Valve Prolapse",
+      "de": "Mitralklappenprolaps"
+    }
   },
   {
     "canonical_code": "peripheral-artery-disease",
@@ -494,7 +534,11 @@
         "alias": "Enfermedad arterial periférica",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Peripheral Artery Disease",
+      "de": "Periphere arterielle Verschlusskrankheit"
+    }
   },
   {
     "canonical_code": "cardiomyopathy",
@@ -529,7 +573,11 @@
         "alias": "Cardiomiopatía",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cardiomyopathy",
+      "de": "Kardiomyopathie"
+    }
   },
   {
     "canonical_code": "pericarditis",
@@ -560,7 +608,11 @@
         "alias": "Pericarditis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pericarditis",
+      "de": "Perikarditis"
+    }
   },
   {
     "canonical_code": "endocarditis",
@@ -599,7 +651,11 @@
         "alias": "Endocarditis infecciosa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Infective Endocarditis",
+      "de": "Infektiöse Endokarditis"
+    }
   },
   {
     "canonical_code": "hypotension",
@@ -646,7 +702,11 @@
         "alias": "Presión arterial baja",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hypotension",
+      "de": "Hypotonie"
+    }
   },
   {
     "canonical_code": "varicose-veins",
@@ -693,7 +753,11 @@
         "alias": "Venas varicosas",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Varicose Veins",
+      "de": "Krampfadern"
+    }
   },
   {
     "canonical_code": "aortic-aneurysm",
@@ -724,7 +788,11 @@
         "alias": "Aneurisma aórtico",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Aortic Aneurysm",
+      "de": "Aortenaneurysma"
+    }
   },
   {
     "canonical_code": "stroke",
@@ -775,7 +843,11 @@
         "alias": "Ictus",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cerebrovascular Accident",
+      "de": "Schlaganfall"
+    }
   },
   {
     "canonical_code": "transient-ischemic-attack",
@@ -826,7 +898,11 @@
         "alias": "AIT",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Transient Ischemic Attack",
+      "de": "Transitorische ischämische Attacke"
+    }
   },
   {
     "canonical_code": "carotid-stenosis",
@@ -857,7 +933,11 @@
         "alias": "Estenosis carotídea",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Carotid Artery Stenosis",
+      "de": "Karotisstenose"
+    }
   },
   {
     "canonical_code": "type-1-diabetes",
@@ -916,7 +996,11 @@
         "alias": "Diabetes juvenil",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Type 1 Diabetes Mellitus",
+      "de": "Diabetes mellitus Typ 1"
+    }
   },
   {
     "canonical_code": "type-2-diabetes",
@@ -971,7 +1055,11 @@
         "alias": "Diabetes del adulto",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Type 2 Diabetes Mellitus",
+      "de": "Diabetes mellitus Typ 2"
+    }
   },
   {
     "canonical_code": "hypothyroidism",
@@ -1010,7 +1098,11 @@
         "alias": "Hipotiroidismo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hypothyroidism",
+      "de": "Hypothyreose"
+    }
   },
   {
     "canonical_code": "hyperthyroidism",
@@ -1045,7 +1137,11 @@
         "alias": "Hipertiroidismo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hyperthyroidism",
+      "de": "Hyperthyreose"
+    }
   },
   {
     "canonical_code": "graves-disease",
@@ -1084,7 +1180,11 @@
         "alias": "Enfermedad de Graves",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Graves Disease",
+      "de": "Morbus Basedow"
+    }
   },
   {
     "canonical_code": "hashimoto-thyroiditis",
@@ -1119,7 +1219,11 @@
         "alias": "Tiroiditis de Hashimoto",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hashimoto Thyroiditis",
+      "de": "Hashimoto-Thyreoiditis"
+    }
   },
   {
     "canonical_code": "hyperlipidemia",
@@ -1174,7 +1278,11 @@
         "alias": "Colesterol alto",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hyperlipidemia",
+      "de": "Hyperlipidämie"
+    }
   },
   {
     "canonical_code": "obesity",
@@ -1209,7 +1317,11 @@
         "alias": "Obesidad",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Obesity",
+      "de": "Adipositas"
+    }
   },
   {
     "canonical_code": "metabolic-syndrome",
@@ -1240,7 +1352,11 @@
         "alias": "Síndrome metabólico",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Metabolic Syndrome",
+      "de": "Metabolisches Syndrom"
+    }
   },
   {
     "canonical_code": "gout",
@@ -1283,7 +1399,11 @@
         "alias": "Artritis gotosa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Gout",
+      "de": "Gicht"
+    }
   },
   {
     "canonical_code": "osteoporosis",
@@ -1318,7 +1438,11 @@
         "alias": "Osteoporosis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Osteoporosis",
+      "de": "Osteoporose"
+    }
   },
   {
     "canonical_code": "vitamin-d-deficiency",
@@ -1353,7 +1477,11 @@
         "alias": "Deficiencia de vitamina D",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vitamin D Deficiency",
+      "de": "Vitamin-D-Mangel"
+    }
   },
   {
     "canonical_code": "iron-deficiency",
@@ -1388,7 +1516,11 @@
         "alias": "Deficiencia de hierro",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Iron Deficiency",
+      "de": "Eisenmangel"
+    }
   },
   {
     "canonical_code": "hyperparathyroidism",
@@ -1419,7 +1551,11 @@
         "alias": "Hiperparatiroidismo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hyperparathyroidism",
+      "de": "Hyperparathyreoidismus"
+    }
   },
   {
     "canonical_code": "addison-disease",
@@ -1470,7 +1606,11 @@
         "alias": "Insuficiencia suprarrenal",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Addison Disease",
+      "de": "Morbus Addison"
+    }
   },
   {
     "canonical_code": "asthma",
@@ -1517,7 +1657,11 @@
         "alias": "Asma bronquial",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Asthma",
+      "de": "Asthma bronchiale"
+    }
   },
   {
     "canonical_code": "copd",
@@ -1568,7 +1712,11 @@
         "alias": "Enfermedad pulmonar obstructiva crónica",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Chronic Obstructive Pulmonary Disease",
+      "de": "Chronisch obstruktive Lungenerkrankung (COPD)"
+    }
   },
   {
     "canonical_code": "pneumonia",
@@ -1607,7 +1755,11 @@
         "alias": "Pulmonía",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pneumonia",
+      "de": "Pneumonie"
+    }
   },
   {
     "canonical_code": "acute-bronchitis",
@@ -1638,7 +1790,11 @@
         "alias": "Bronquitis aguda",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Acute Bronchitis",
+      "de": "Akute Bronchitis"
+    }
   },
   {
     "canonical_code": "chronic-bronchitis",
@@ -1665,7 +1821,11 @@
         "alias": "Bronquitis crónica",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Chronic Bronchitis",
+      "de": "Chronische Bronchitis"
+    }
   },
   {
     "canonical_code": "sinusitis",
@@ -1704,7 +1864,11 @@
         "alias": "Sinusitis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Sinusitis",
+      "de": "Sinusitis"
+    }
   },
   {
     "canonical_code": "allergic-rhinitis",
@@ -1755,7 +1919,11 @@
         "alias": "Fiebre del heno",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Allergic Rhinitis",
+      "de": "Allergische Rhinitis"
+    }
   },
   {
     "canonical_code": "obstructive-sleep-apnea",
@@ -1806,7 +1974,11 @@
         "alias": "SAOS",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Obstructive Sleep Apnea",
+      "de": "Obstruktive Schlafapnoe"
+    }
   },
   {
     "canonical_code": "pulmonary-fibrosis",
@@ -1841,7 +2013,11 @@
         "alias": "Fibrosis pulmonar",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pulmonary Fibrosis",
+      "de": "Lungenfibrose"
+    }
   },
   {
     "canonical_code": "pleural-effusion",
@@ -1872,7 +2048,11 @@
         "alias": "Derrame pleural",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pleural Effusion",
+      "de": "Pleuraerguss"
+    }
   },
   {
     "canonical_code": "tuberculosis",
@@ -1915,7 +2095,11 @@
         "alias": "TBC",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Tuberculosis",
+      "de": "Tuberkulose"
+    }
   },
   {
     "canonical_code": "influenza",
@@ -1958,7 +2142,11 @@
         "alias": "Influenza",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Influenza",
+      "de": "Grippe"
+    }
   },
   {
     "canonical_code": "gerd",
@@ -2021,7 +2209,11 @@
         "alias": "Acidez estomacal",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Gastroesophageal Reflux Disease",
+      "de": "Gastroösophageale Refluxkrankheit"
+    }
   },
   {
     "canonical_code": "gastritis",
@@ -2056,7 +2248,11 @@
         "alias": "Gastritis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Gastritis",
+      "de": "Gastritis"
+    }
   },
   {
     "canonical_code": "peptic-ulcer",
@@ -2111,7 +2307,11 @@
         "alias": "Úlcera gástrica",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Peptic Ulcer Disease",
+      "de": "Peptische Ulkuskrankheit"
+    }
   },
   {
     "canonical_code": "irritable-bowel-syndrome",
@@ -2166,7 +2366,11 @@
         "alias": "Colon irritable",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Irritable Bowel Syndrome",
+      "de": "Reizdarmsyndrom"
+    }
   },
   {
     "canonical_code": "crohn-disease",
@@ -2213,7 +2417,11 @@
         "alias": "Enfermedad de Crohn",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Crohn Disease",
+      "de": "Morbus Crohn"
+    }
   },
   {
     "canonical_code": "ulcerative-colitis",
@@ -2252,7 +2460,11 @@
         "alias": "Colitis ulcerosa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ulcerative Colitis",
+      "de": "Colitis ulcerosa"
+    }
   },
   {
     "canonical_code": "celiac-disease",
@@ -2299,7 +2511,11 @@
         "alias": "Celiaquía",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Celiac Disease",
+      "de": "Zöliakie"
+    }
   },
   {
     "canonical_code": "diverticulitis",
@@ -2330,7 +2546,11 @@
         "alias": "Diverticulitis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Diverticulitis",
+      "de": "Divertikulitis"
+    }
   },
   {
     "canonical_code": "cholelithiasis",
@@ -2381,7 +2601,11 @@
         "alias": "Cálculos biliares",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cholelithiasis",
+      "de": "Cholelithiasis"
+    }
   },
   {
     "canonical_code": "nafld",
@@ -2436,7 +2660,11 @@
         "alias": "Hígado graso",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Non-Alcoholic Fatty Liver Disease",
+      "de": "Nichtalkoholische Fettlebererkrankung"
+    }
   },
   {
     "canonical_code": "hepatitis-b",
@@ -2467,7 +2695,11 @@
         "alias": "Hepatitis B",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hepatitis B",
+      "de": "Hepatitis B"
+    }
   },
   {
     "canonical_code": "hepatitis-c",
@@ -2498,7 +2730,11 @@
         "alias": "Hepatitis C",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hepatitis C",
+      "de": "Hepatitis C"
+    }
   },
   {
     "canonical_code": "cirrhosis",
@@ -2545,7 +2781,11 @@
         "alias": "Cirrosis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Liver Cirrhosis",
+      "de": "Leberzirrhose"
+    }
   },
   {
     "canonical_code": "pancreatitis",
@@ -2580,7 +2820,11 @@
         "alias": "Pancreatitis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pancreatitis",
+      "de": "Pankreatitis"
+    }
   },
   {
     "canonical_code": "hemorrhoids",
@@ -2615,7 +2859,11 @@
         "alias": "Almorranas",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hemorrhoids",
+      "de": "Hämorrhoiden"
+    }
   },
   {
     "canonical_code": "osteoarthritis",
@@ -2666,7 +2914,11 @@
         "alias": "Osteoartritis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Osteoarthritis",
+      "de": "Arthrose"
+    }
   },
   {
     "canonical_code": "rheumatoid-arthritis",
@@ -2713,7 +2965,11 @@
         "alias": "AR",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Rheumatoid Arthritis",
+      "de": "Rheumatoide Arthritis"
+    }
   },
   {
     "canonical_code": "low-back-pain",
@@ -2772,7 +3028,11 @@
         "alias": "Dolor lumbar",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Low Back Pain",
+      "de": "Kreuzschmerzen"
+    }
   },
   {
     "canonical_code": "disc-herniation",
@@ -2823,7 +3083,11 @@
         "alias": "Hernia de disco",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Intervertebral Disc Herniation",
+      "de": "Bandscheibenvorfall"
+    }
   },
   {
     "canonical_code": "fibromyalgia",
@@ -2854,7 +3118,11 @@
         "alias": "Fibromialgia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Fibromyalgia",
+      "de": "Fibromyalgie"
+    }
   },
   {
     "canonical_code": "carpal-tunnel-syndrome",
@@ -2889,7 +3157,11 @@
         "alias": "Síndrome del túnel carpiano",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Carpal Tunnel Syndrome",
+      "de": "Karpaltunnelsyndrom"
+    }
   },
   {
     "canonical_code": "rotator-cuff-tear",
@@ -2928,7 +3200,11 @@
         "alias": "Desgarro del manguito rotador",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Rotator Cuff Injury",
+      "de": "Rotatorenmanschettenverletzung"
+    }
   },
   {
     "canonical_code": "tendinitis",
@@ -2963,7 +3239,11 @@
         "alias": "Tendinitis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Tendinitis",
+      "de": "Tendinitis"
+    }
   },
   {
     "canonical_code": "plantar-fasciitis",
@@ -2998,7 +3278,11 @@
         "alias": "Fascitis plantar",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Plantar Fasciitis",
+      "de": "Plantarfasziitis"
+    }
   },
   {
     "canonical_code": "scoliosis",
@@ -3029,7 +3313,11 @@
         "alias": "Escoliosis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Scoliosis",
+      "de": "Skoliose"
+    }
   },
   {
     "canonical_code": "migraine",
@@ -3064,7 +3352,11 @@
         "alias": "Jaqueca",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Migraine",
+      "de": "Migräne"
+    }
   },
   {
     "canonical_code": "tension-headache",
@@ -3107,7 +3399,11 @@
         "alias": "Dolor de cabeza tensional",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Tension-Type Headache",
+      "de": "Spannungskopfschmerz"
+    }
   },
   {
     "canonical_code": "epilepsy",
@@ -3138,7 +3434,11 @@
         "alias": "Epilepsia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Epilepsy",
+      "de": "Epilepsie"
+    }
   },
   {
     "canonical_code": "parkinson-disease",
@@ -3181,7 +3481,11 @@
         "alias": "Enfermedad de Parkinson",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Parkinson Disease",
+      "de": "Morbus Parkinson"
+    }
   },
   {
     "canonical_code": "alzheimer-disease",
@@ -3240,7 +3544,11 @@
         "alias": "Demencia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Alzheimer Disease",
+      "de": "Morbus Alzheimer"
+    }
   },
   {
     "canonical_code": "multiple-sclerosis",
@@ -3287,7 +3595,11 @@
         "alias": "EM",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Multiple Sclerosis",
+      "de": "Multiple Sklerose"
+    }
   },
   {
     "canonical_code": "peripheral-neuropathy",
@@ -3326,7 +3638,11 @@
         "alias": "Neuropatía periférica",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Peripheral Neuropathy",
+      "de": "Periphere Neuropathie"
+    }
   },
   {
     "canonical_code": "sciatica",
@@ -3365,7 +3681,11 @@
         "alias": "Ciática",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Sciatica",
+      "de": "Ischialgie"
+    }
   },
   {
     "canonical_code": "bppv",
@@ -3424,7 +3744,11 @@
         "alias": "VPPB",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Benign Paroxysmal Positional Vertigo",
+      "de": "Benigner paroxysmaler Lagerungsschwindel"
+    }
   },
   {
     "canonical_code": "bell-palsy",
@@ -3475,7 +3799,11 @@
         "alias": "Parálisis facial",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bell Palsy",
+      "de": "Idiopathische Fazialisparese (Bell-Parese)"
+    }
   },
   {
     "canonical_code": "depression",
@@ -3538,7 +3866,11 @@
         "alias": "Trastorno depresivo mayor",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Major Depressive Disorder",
+      "de": "Major Depression"
+    }
   },
   {
     "canonical_code": "anxiety-disorder",
@@ -3593,7 +3925,11 @@
         "alias": "Ansiedad",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Generalized Anxiety Disorder",
+      "de": "Generalisierte Angststörung"
+    }
   },
   {
     "canonical_code": "panic-disorder",
@@ -3640,7 +3976,11 @@
         "alias": "Ataques de pánico",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Panic Disorder",
+      "de": "Panikstörung"
+    }
   },
   {
     "canonical_code": "ptsd",
@@ -3687,7 +4027,11 @@
         "alias": "TEPT",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Post-Traumatic Stress Disorder",
+      "de": "Posttraumatische Belastungsstörung"
+    }
   },
   {
     "canonical_code": "bipolar-disorder",
@@ -3726,7 +4070,11 @@
         "alias": "Trastorno bipolar",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bipolar Disorder",
+      "de": "Bipolare Störung"
+    }
   },
   {
     "canonical_code": "adhd",
@@ -3777,7 +4125,11 @@
         "alias": "TDAH",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Attention Deficit Hyperactivity Disorder",
+      "de": "Aufmerksamkeitsdefizit-Hyperaktivitätsstörung"
+    }
   },
   {
     "canonical_code": "insomnia",
@@ -3816,7 +4168,11 @@
         "alias": "Insomnio",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Insomnia",
+      "de": "Insomnie"
+    }
   },
   {
     "canonical_code": "ocd",
@@ -3859,7 +4215,11 @@
         "alias": "TOC",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Obsessive-Compulsive Disorder",
+      "de": "Zwangsstörung"
+    }
   },
   {
     "canonical_code": "schizophrenia",
@@ -3886,7 +4246,11 @@
         "alias": "Esquizofrenia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Schizophrenia",
+      "de": "Schizophrenie"
+    }
   },
   {
     "canonical_code": "eating-disorder",
@@ -3941,7 +4305,11 @@
         "alias": "TCA",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Eating Disorder",
+      "de": "Essstörung"
+    }
   },
   {
     "canonical_code": "urinary-tract-infection",
@@ -4000,7 +4368,11 @@
         "alias": "Cistitis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Urinary Tract Infection",
+      "de": "Harnwegsinfekt"
+    }
   },
   {
     "canonical_code": "kidney-stones",
@@ -4055,7 +4427,11 @@
         "alias": "Piedras en el riñón",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Nephrolithiasis",
+      "de": "Nephrolithiasis"
+    }
   },
   {
     "canonical_code": "chronic-kidney-disease",
@@ -4110,7 +4486,11 @@
         "alias": "Insuficiencia renal crónica",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Chronic Kidney Disease",
+      "de": "Chronische Nierenerkrankung"
+    }
   },
   {
     "canonical_code": "benign-prostatic-hyperplasia",
@@ -4169,7 +4549,11 @@
         "alias": "HPB",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Benign Prostatic Hyperplasia",
+      "de": "Benigne Prostatahyperplasie"
+    }
   },
   {
     "canonical_code": "prostatitis",
@@ -4204,7 +4588,11 @@
         "alias": "Prostatitis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Prostatitis",
+      "de": "Prostatitis"
+    }
   },
   {
     "canonical_code": "urinary-incontinence",
@@ -4239,7 +4627,11 @@
         "alias": "Incontinencia urinaria",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Urinary Incontinence",
+      "de": "Harninkontinenz"
+    }
   },
   {
     "canonical_code": "overactive-bladder",
@@ -4274,7 +4666,11 @@
         "alias": "Vejiga hiperactiva",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Overactive Bladder",
+      "de": "Überaktive Blase"
+    }
   },
   {
     "canonical_code": "pyelonephritis",
@@ -4309,7 +4705,11 @@
         "alias": "Pielonefritis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pyelonephritis",
+      "de": "Pyelonephritis"
+    }
   },
   {
     "canonical_code": "hematuria",
@@ -4352,7 +4752,11 @@
         "alias": "Sangre en la orina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hematuria",
+      "de": "Hämaturie"
+    }
   },
   {
     "canonical_code": "renal-cyst",
@@ -4383,7 +4787,11 @@
         "alias": "Quiste renal",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Renal Cyst",
+      "de": "Nierenzyste"
+    }
   },
   {
     "canonical_code": "atopic-dermatitis",
@@ -4434,7 +4842,11 @@
         "alias": "Eccema",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Atopic Dermatitis",
+      "de": "Neurodermitis"
+    }
   },
   {
     "canonical_code": "psoriasis",
@@ -4469,7 +4881,11 @@
         "alias": "Psoriasis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Psoriasis",
+      "de": "Psoriasis"
+    }
   },
   {
     "canonical_code": "acne",
@@ -4528,7 +4944,11 @@
         "alias": "Granos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Acne Vulgaris",
+      "de": "Akne vulgaris"
+    }
   },
   {
     "canonical_code": "urticaria",
@@ -4567,7 +4987,11 @@
         "alias": "Ronchas",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Urticaria",
+      "de": "Urtikaria"
+    }
   },
   {
     "canonical_code": "fungal-skin-infection",
@@ -4626,7 +5050,11 @@
         "alias": "Tiña",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Dermatophytosis",
+      "de": "Dermatophytose"
+    }
   },
   {
     "canonical_code": "herpes-zoster",
@@ -4673,7 +5101,11 @@
         "alias": "Culebrilla",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Herpes Zoster",
+      "de": "Herpes zoster"
+    }
   },
   {
     "canonical_code": "melanoma",
@@ -4720,7 +5152,11 @@
         "alias": "Melanoma maligno",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Melanoma",
+      "de": "Melanom"
+    }
   },
   {
     "canonical_code": "basal-cell-carcinoma",
@@ -4755,7 +5191,11 @@
         "alias": "Carcinoma basocelular",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Basal Cell Carcinoma",
+      "de": "Basalzellkarzinom"
+    }
   },
   {
     "canonical_code": "rosacea",
@@ -4790,7 +5230,11 @@
         "alias": "Rosácea",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Rosacea",
+      "de": "Rosazea"
+    }
   },
   {
     "canonical_code": "vitiligo",
@@ -4821,7 +5265,11 @@
         "alias": "Vitíligo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vitiligo",
+      "de": "Vitiligo"
+    }
   },
   {
     "canonical_code": "pcos",
@@ -4872,7 +5320,11 @@
         "alias": "SOP",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Polycystic Ovary Syndrome",
+      "de": "Polyzystisches Ovarialsyndrom"
+    }
   },
   {
     "canonical_code": "endometriosis",
@@ -4899,7 +5351,11 @@
         "alias": "Endometriosis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Endometriosis",
+      "de": "Endometriose"
+    }
   },
   {
     "canonical_code": "uterine-fibroids",
@@ -4950,7 +5406,11 @@
         "alias": "Miomas uterinos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Uterine Fibroids",
+      "de": "Uterusmyome"
+    }
   },
   {
     "canonical_code": "menopause",
@@ -4997,7 +5457,11 @@
         "alias": "Climaterio",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Menopause",
+      "de": "Menopause"
+    }
   },
   {
     "canonical_code": "vaginitis",
@@ -5036,7 +5500,11 @@
         "alias": "Vaginitis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vaginitis",
+      "de": "Vaginitis"
+    }
   },
   {
     "canonical_code": "cervical-dysplasia",
@@ -5071,7 +5539,11 @@
         "alias": "Displasia cervical",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cervical Dysplasia",
+      "de": "Zervikale Dysplasie"
+    }
   },
   {
     "canonical_code": "premenstrual-syndrome",
@@ -5118,7 +5590,11 @@
         "alias": "SPM",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Premenstrual Syndrome",
+      "de": "Prämenstruelles Syndrom"
+    }
   },
   {
     "canonical_code": "ovarian-cyst",
@@ -5149,7 +5625,11 @@
         "alias": "Quiste ovárico",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ovarian Cyst",
+      "de": "Ovarialzyste"
+    }
   },
   {
     "canonical_code": "glaucoma",
@@ -5180,7 +5660,11 @@
         "alias": "Glaucoma",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Glaucoma",
+      "de": "Glaukom"
+    }
   },
   {
     "canonical_code": "cataract",
@@ -5215,7 +5699,11 @@
         "alias": "Catarata",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cataract",
+      "de": "Katarakt"
+    }
   },
   {
     "canonical_code": "macular-degeneration",
@@ -5266,7 +5754,11 @@
         "alias": "DMAE",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Age-Related Macular Degeneration",
+      "de": "Altersbedingte Makuladegeneration"
+    }
   },
   {
     "canonical_code": "diabetic-retinopathy",
@@ -5293,7 +5785,11 @@
         "alias": "Retinopatía diabética",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Diabetic Retinopathy",
+      "de": "Diabetische Retinopathie"
+    }
   },
   {
     "canonical_code": "conjunctivitis",
@@ -5336,7 +5832,11 @@
         "alias": "Ojo rojo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Conjunctivitis",
+      "de": "Konjunktivitis"
+    }
   },
   {
     "canonical_code": "otitis-media",
@@ -5383,7 +5883,11 @@
         "alias": "Infección de oído",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Otitis Media",
+      "de": "Mittelohrentzündung"
+    }
   },
   {
     "canonical_code": "tonsillitis",
@@ -5430,7 +5934,11 @@
         "alias": "Anginas",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Tonsillitis",
+      "de": "Tonsillitis"
+    }
   },
   {
     "canonical_code": "hearing-loss",
@@ -5481,7 +5989,11 @@
         "alias": "Hipoacusia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hearing Loss",
+      "de": "Schwerhörigkeit"
+    }
   },
   {
     "canonical_code": "tinnitus",
@@ -5528,7 +6040,11 @@
         "alias": "Zumbido de oídos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Tinnitus",
+      "de": "Tinnitus"
+    }
   },
   {
     "canonical_code": "deviated-septum",
@@ -5567,7 +6083,11 @@
         "alias": "Desviación del tabique nasal",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Deviated Nasal Septum",
+      "de": "Nasenseptumdeviation"
+    }
   },
   {
     "canonical_code": "covid-19",
@@ -5618,7 +6138,11 @@
         "alias": "Enfermedad por coronavirus",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "COVID-19",
+      "de": "COVID-19"
+    }
   },
   {
     "canonical_code": "mononucleosis",
@@ -5669,7 +6193,11 @@
         "alias": "Mononucleosis infecciosa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Infectious Mononucleosis",
+      "de": "Infektiöse Mononukleose"
+    }
   },
   {
     "canonical_code": "lyme-disease",
@@ -5716,7 +6244,11 @@
         "alias": "Borreliosis de Lyme",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lyme Disease",
+      "de": "Lyme-Borreliose"
+    }
   },
   {
     "canonical_code": "candidiasis",
@@ -5763,7 +6295,11 @@
         "alias": "Candidiasis",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Candidiasis",
+      "de": "Kandidose"
+    }
   },
   {
     "canonical_code": "hiv",
@@ -5810,7 +6346,11 @@
         "alias": "VIH",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "HIV Infection",
+      "de": "HIV-Infektion"
+    }
   },
   {
     "canonical_code": "hepatitis-a",
@@ -5841,7 +6381,11 @@
         "alias": "Hepatitis A",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hepatitis A",
+      "de": "Hepatitis A"
+    }
   },
   {
     "canonical_code": "malaria",
@@ -5876,7 +6420,11 @@
         "alias": "Paludismo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Malaria",
+      "de": "Malaria"
+    }
   },
   {
     "canonical_code": "breast-cancer",
@@ -5923,7 +6471,11 @@
         "alias": "Cáncer de seno",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Breast Cancer",
+      "de": "Brustkrebs"
+    }
   },
   {
     "canonical_code": "lung-cancer",
@@ -5966,7 +6518,11 @@
         "alias": "Cáncer de pulmón",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lung Cancer",
+      "de": "Lungenkrebs"
+    }
   },
   {
     "canonical_code": "colorectal-cancer",
@@ -6021,7 +6577,11 @@
         "alias": "Cáncer de colon",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Colorectal Cancer",
+      "de": "Darmkrebs"
+    }
   },
   {
     "canonical_code": "prostate-cancer",
@@ -6064,7 +6624,11 @@
         "alias": "Cáncer de próstata",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Prostate Cancer",
+      "de": "Prostatakrebs"
+    }
   },
   {
     "canonical_code": "skin-cancer",
@@ -6099,7 +6663,11 @@
         "alias": "Cáncer de piel",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Skin Cancer",
+      "de": "Hautkrebs"
+    }
   },
   {
     "canonical_code": "thyroid-cancer",
@@ -6138,7 +6706,11 @@
         "alias": "Cáncer de tiroides",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Thyroid Cancer",
+      "de": "Schilddrüsenkrebs"
+    }
   },
   {
     "canonical_code": "lymphoma",
@@ -6173,7 +6745,11 @@
         "alias": "Linfoma",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lymphoma",
+      "de": "Lymphom"
+    }
   },
   {
     "canonical_code": "leukemia",
@@ -6208,7 +6784,11 @@
         "alias": "Leucemia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Leukemia",
+      "de": "Leukämie"
+    }
   },
   {
     "canonical_code": "bladder-cancer",
@@ -6247,7 +6827,11 @@
         "alias": "Cáncer de vejiga",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bladder Cancer",
+      "de": "Blasenkrebs"
+    }
   },
   {
     "canonical_code": "pancreatic-cancer",
@@ -6286,7 +6870,11 @@
         "alias": "Cáncer de páncreas",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pancreatic Cancer",
+      "de": "Bauchspeicheldrüsenkrebs"
+    }
   },
   {
     "canonical_code": "iron-deficiency-anemia",
@@ -6337,7 +6925,11 @@
         "alias": "Anemia por deficiencia de hierro",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Iron Deficiency Anemia",
+      "de": "Eisenmangelanämie"
+    }
   },
   {
     "canonical_code": "b12-deficiency-anemia",
@@ -6388,7 +6980,11 @@
         "alias": "Anemia perniciosa",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vitamin B12 Deficiency Anemia",
+      "de": "Vitamin-B12-Mangelanämie"
+    }
   },
   {
     "canonical_code": "thrombocytopenia",
@@ -6427,7 +7023,11 @@
         "alias": "Plaquetas bajas",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Thrombocytopenia",
+      "de": "Thrombozytopenie"
+    }
   },
   {
     "canonical_code": "polycythemia",
@@ -6462,7 +7062,11 @@
         "alias": "Policitemia vera",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Polycythemia Vera",
+      "de": "Polycythaemia vera"
+    }
   },
   {
     "canonical_code": "thalassemia",
@@ -6505,6 +7109,10 @@
         "alias": "Anemia mediterránea",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Thalassemia",
+      "de": "Thalassämie"
+    }
   }
 ]

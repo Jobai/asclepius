@@ -1,3 +1,4 @@
+import { termLabel, termSearchText } from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { GitMerge, X } from "lucide-react";
 import Button from "@/components/ui/Button";
@@ -61,7 +62,8 @@ export default function BatchMergeBar({
         .filter((n) => !selectedIds.has(n.id))
         .map((n) => ({
           value: String(n.id),
-          label: n.canonical_display,
+          label: termLabel(n),
+          searchText: termSearchText(n),
           hint: n.canonical_code || undefined,
         }))}
     />

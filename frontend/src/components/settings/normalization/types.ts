@@ -1,3 +1,4 @@
+import type { TermDisplayNames } from "@/lib/terminology";
 export const NORM_TYPES = [
   "lab_tests",
   "specialties",
@@ -18,6 +19,8 @@ export interface NormItem {
   id: number;
   canonical_code?: string | null;
   canonical_display: string;
+  display_names?: TermDisplayNames;
+  search_terms?: string[];
   name?: string | null;
   alias_count?: number;
   unreviewed_count?: number;

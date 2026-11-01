@@ -91,7 +91,11 @@
         "alias": "Médico General",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "General Practice",
+      "de": "Allgemeinmedizin"
+    }
   },
   {
     "canonical_code": "internal-medicine",
@@ -141,7 +145,11 @@
         "alias": "Internista",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Internal Medicine",
+      "de": "Innere Medizin"
+    }
   },
   {
     "canonical_code": "cardiology",
@@ -199,7 +207,11 @@
         "alias": "Cardiólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cardiology",
+      "de": "Kardiologie"
+    }
   },
   {
     "canonical_code": "pulmonology",
@@ -273,7 +285,11 @@
         "alias": "Pulmonología",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pulmonology",
+      "de": "Pneumologie"
+    }
   },
   {
     "canonical_code": "gastroenterology",
@@ -335,7 +351,11 @@
         "alias": "Gastroenterólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Gastroenterology",
+      "de": "Gastroenterologie"
+    }
   },
   {
     "canonical_code": "endocrinology",
@@ -429,7 +449,11 @@
         "alias": "Diabetólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Endocrinology",
+      "de": "Endokrinologie"
+    }
   },
   {
     "canonical_code": "nephrology",
@@ -487,7 +511,11 @@
         "alias": "Nefrólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Nephrology",
+      "de": "Nephrologie"
+    }
   },
   {
     "canonical_code": "hepatology",
@@ -545,7 +573,11 @@
         "alias": "Hepatólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hepatology",
+      "de": "Hepatologie"
+    }
   },
   {
     "canonical_code": "rheumatology",
@@ -595,7 +627,11 @@
         "alias": "Reumatólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Rheumatology",
+      "de": "Rheumatologie"
+    }
   },
   {
     "canonical_code": "hematology",
@@ -653,7 +689,11 @@
         "alias": "Hematólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hematology",
+      "de": "Hämatologie"
+    }
   },
   {
     "canonical_code": "oncology",
@@ -727,7 +767,11 @@
         "alias": "Oncólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Oncology",
+      "de": "Onkologie"
+    }
   },
   {
     "canonical_code": "radiation-oncology",
@@ -797,7 +841,11 @@
         "alias": "Radioterapeuta",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Radiation Oncology",
+      "de": "Strahlentherapie"
+    }
   },
   {
     "canonical_code": "neurology",
@@ -855,7 +903,11 @@
         "alias": "Neurólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Neurology",
+      "de": "Neurologie"
+    }
   },
   {
     "canonical_code": "neurosurgery",
@@ -905,7 +957,11 @@
         "alias": "Neurocirujano",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Neurosurgery",
+      "de": "Neurochirurgie"
+    }
   },
   {
     "canonical_code": "psychiatry",
@@ -955,7 +1011,11 @@
         "alias": "Psiquiatra",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Psychiatry",
+      "de": "Psychiatrie"
+    }
   },
   {
     "canonical_code": "psychology",
@@ -1025,7 +1085,11 @@
         "alias": "Psicoterapeuta",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Psychology",
+      "de": "Psychologie"
+    }
   },
   {
     "canonical_code": "dermatology",
@@ -1083,7 +1147,11 @@
         "alias": "Dermatólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Dermatology",
+      "de": "Dermatologie"
+    }
   },
   {
     "canonical_code": "ophthalmology",
@@ -1153,7 +1221,11 @@
         "alias": "Oculista",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ophthalmology",
+      "de": "Augenheilkunde"
+    }
   },
   {
     "canonical_code": "otolaryngology",
@@ -1235,7 +1307,11 @@
         "alias": "ORL",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Otolaryngology",
+      "de": "Hals-Nasen-Ohren-Heilkunde"
+    }
   },
   {
     "canonical_code": "urology",
@@ -1281,7 +1357,11 @@
         "alias": "Urólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Urology",
+      "de": "Urologie"
+    }
   },
   {
     "canonical_code": "gynecology",
@@ -1383,7 +1463,11 @@
         "alias": "Ginecología y Obstetricia",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Gynecology & Obstetrics",
+      "de": "Gynäkologie und Geburtshilfe"
+    }
   },
   {
     "canonical_code": "pediatrics",
@@ -1445,7 +1529,11 @@
         "alias": "Pediatra",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pediatrics",
+      "de": "Pädiatrie"
+    }
   },
   {
     "canonical_code": "neonatology",
@@ -1499,7 +1587,11 @@
         "alias": "Neonatólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Neonatology",
+      "de": "Neonatologie"
+    }
   },
   {
     "canonical_code": "geriatrics",
@@ -1557,7 +1649,11 @@
         "alias": "Geriatra",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Geriatrics",
+      "de": "Geriatrie"
+    }
   },
   {
     "canonical_code": "orthopedics",
@@ -1627,7 +1723,11 @@
         "alias": "Ortopedista",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Orthopedics",
+      "de": "Orthopädie"
+    }
   },
   {
     "canonical_code": "traumatology",
@@ -1685,7 +1785,11 @@
         "alias": "Traumatólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Traumatology",
+      "de": "Unfallchirurgie"
+    }
   },
   {
     "canonical_code": "general-surgery",
@@ -1751,7 +1855,11 @@
         "alias": "Cirujano",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "General Surgery",
+      "de": "Allgemeinchirurgie"
+    }
   },
   {
     "canonical_code": "vascular-surgery",
@@ -1797,7 +1905,11 @@
         "alias": "Cirujano Vascular",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Vascular Surgery",
+      "de": "Gefäßchirurgie"
+    }
   },
   {
     "canonical_code": "cardiac-surgery",
@@ -1867,7 +1979,11 @@
         "alias": "Cirugía Cardiovascular",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cardiac Surgery",
+      "de": "Herzchirurgie"
+    }
   },
   {
     "canonical_code": "thoracic-surgery",
@@ -1917,7 +2033,11 @@
         "alias": "Cirujano Torácico",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Thoracic Surgery",
+      "de": "Thoraxchirurgie"
+    }
   },
   {
     "canonical_code": "plastic-surgery",
@@ -1987,7 +2107,11 @@
         "alias": "Cirugía Estética",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Plastic Surgery",
+      "de": "Plastische Chirurgie"
+    }
   },
   {
     "canonical_code": "anesthesiology",
@@ -2053,7 +2177,11 @@
         "alias": "Anestesista",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Anesthesiology",
+      "de": "Anästhesiologie"
+    }
   },
   {
     "canonical_code": "emergency-medicine",
@@ -2127,7 +2255,11 @@
         "alias": "Urgenciólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Emergency Medicine",
+      "de": "Notfallmedizin"
+    }
   },
   {
     "canonical_code": "intensive-care",
@@ -2201,7 +2333,11 @@
         "alias": "UCI",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Intensive Care Medicine",
+      "de": "Intensivmedizin"
+    }
   },
   {
     "canonical_code": "radiology",
@@ -2271,7 +2407,11 @@
         "alias": "Diagnóstico por Imagen",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Radiology",
+      "de": "Radiologie"
+    }
   },
   {
     "canonical_code": "nuclear-medicine",
@@ -2317,7 +2457,11 @@
         "alias": "Médico Nuclear",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Nuclear Medicine",
+      "de": "Nuklearmedizin"
+    }
   },
   {
     "canonical_code": "pathology",
@@ -2383,7 +2527,11 @@
         "alias": "Anatomía Patológica",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pathology",
+      "de": "Pathologie"
+    }
   },
   {
     "canonical_code": "laboratory-medicine",
@@ -2445,7 +2593,11 @@
         "alias": "Análisis Clínicos",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Laboratory Medicine",
+      "de": "Labormedizin"
+    }
   },
   {
     "canonical_code": "physical-therapy",
@@ -2515,7 +2667,11 @@
         "alias": "Fisioterapeuta",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Physical Therapy",
+      "de": "Physiotherapie"
+    }
   },
   {
     "canonical_code": "rehabilitation-medicine",
@@ -2593,7 +2749,11 @@
         "alias": "Fisiatra",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Rehabilitation Medicine",
+      "de": "Rehabilitationsmedizin"
+    }
   },
   {
     "canonical_code": "dentistry",
@@ -2663,7 +2823,11 @@
         "alias": "Odontólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Dentistry",
+      "de": "Zahnmedizin"
+    }
   },
   {
     "canonical_code": "oral-surgery",
@@ -2733,7 +2897,11 @@
         "alias": "Cirujano Maxilofacial",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Oral Surgery",
+      "de": "Oralchirurgie"
+    }
   },
   {
     "canonical_code": "allergology",
@@ -2827,7 +2995,11 @@
         "alias": "Inmunólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Allergology & Immunology",
+      "de": "Allergologie und Immunologie"
+    }
   },
   {
     "canonical_code": "infectious-disease",
@@ -2893,7 +3065,11 @@
         "alias": "Enfermedades Infecciosas",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Infectious Disease",
+      "de": "Infektiologie"
+    }
   },
   {
     "canonical_code": "sports-medicine",
@@ -2955,7 +3131,11 @@
         "alias": "Médico Deportivo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Sports Medicine",
+      "de": "Sportmedizin"
+    }
   },
   {
     "canonical_code": "pain-medicine",
@@ -3033,7 +3213,11 @@
         "alias": "Algólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pain Medicine",
+      "de": "Schmerzmedizin"
+    }
   },
   {
     "canonical_code": "palliative-care",
@@ -3099,7 +3283,11 @@
         "alias": "Paliativista",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Palliative Care",
+      "de": "Palliativmedizin"
+    }
   },
   {
     "canonical_code": "occupational-medicine",
@@ -3165,7 +3353,11 @@
         "alias": "Salud Laboral",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Occupational Medicine",
+      "de": "Arbeitsmedizin"
+    }
   },
   {
     "canonical_code": "pharmacology",
@@ -3239,6 +3431,10 @@
         "alias": "Farmacólogo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Clinical Pharmacology",
+      "de": "Klinische Pharmakologie"
+    }
   }
 ]

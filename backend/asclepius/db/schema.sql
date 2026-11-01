@@ -256,6 +256,32 @@ CREATE TABLE IF NOT EXISTS chat_history (
 
 -- Normalization tables
 
+-- Preferred display names are UI metadata, not extraction synonyms.
+CREATE TABLE IF NOT EXISTS norm_lab_test_labels (
+    norm_lab_test_id INTEGER NOT NULL REFERENCES norm_lab_tests(id) ON DELETE CASCADE,
+    language TEXT NOT NULL CHECK (language IN ('en', 'de')),
+    label TEXT NOT NULL CHECK (length(trim(label)) BETWEEN 1 AND 250),
+    PRIMARY KEY (norm_lab_test_id, language)
+);
+CREATE TABLE IF NOT EXISTS norm_specialty_labels (
+    norm_specialty_id INTEGER NOT NULL REFERENCES norm_specialties(id) ON DELETE CASCADE,
+    language TEXT NOT NULL CHECK (language IN ('en', 'de')),
+    label TEXT NOT NULL CHECK (length(trim(label)) BETWEEN 1 AND 250),
+    PRIMARY KEY (norm_specialty_id, language)
+);
+CREATE TABLE IF NOT EXISTS norm_diagnosis_labels (
+    norm_diagnosis_id INTEGER NOT NULL REFERENCES norm_diagnoses(id) ON DELETE CASCADE,
+    language TEXT NOT NULL CHECK (language IN ('en', 'de')),
+    label TEXT NOT NULL CHECK (length(trim(label)) BETWEEN 1 AND 250),
+    PRIMARY KEY (norm_diagnosis_id, language)
+);
+CREATE TABLE IF NOT EXISTS norm_medication_labels (
+    norm_medication_id INTEGER NOT NULL REFERENCES norm_medications(id) ON DELETE CASCADE,
+    language TEXT NOT NULL CHECK (language IN ('en', 'de')),
+    label TEXT NOT NULL CHECK (length(trim(label)) BETWEEN 1 AND 250),
+    PRIMARY KEY (norm_medication_id, language)
+);
+
 CREATE TABLE IF NOT EXISTS norm_lab_tests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     canonical_code TEXT UNIQUE NOT NULL,

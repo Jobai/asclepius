@@ -1,3 +1,6 @@
+import { termLabel, termSearchText } from "@/lib/terminology";
+import type { NormType } from "./types";
+import TermDisplayNamesEditor from "./TermDisplayNamesEditor";
 import { Trans as FeatureTrans } from "react-i18next";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
@@ -20,6 +23,8 @@ import Input from "@/components/ui/Input";
 import type { NormItem } from "./types";
 
 export interface NormalizationRowProps {
+  normType: NormType;
+  onDisplayNamesSaved: (item: NormItem) => void;
   item: NormItem;
   normItems: NormItem[];
   /** Detail payload from /normalization/<type>/<id>; only populated when expanded. */
@@ -153,7 +158,7 @@ function MergeForm({
             ns="settings"
             i18nKey="features.normalizationRow.mergePart0Part0Into"
             components={{ part0: <strong /> }}
-            values={{ value0: item.canonical_display }}
+            values={{ value0: termLabel(item) }}
           />
         </span>
         <div className="w-full md:w-auto md:min-w-[240px] md:max-w-xs">
@@ -172,7 +177,8 @@ function MergeForm({
               .filter((n) => n.id !== item.id)
               .map((n) => ({
                 value: String(n.id),
-                label: n.canonical_display,
+                label: termLabel(n),
+                searchText: termSearchText(n),
                 hint: n.canonical_code || undefined,
               }))}
           />
@@ -226,6 +232,8 @@ function MergeForm({
 /** Expanded content (canonical-entry edit form + alias management), shared
  *  between the table's detail row and the card. */
 function ExpandedDetail({
+  normType,
+  onDisplayNamesSaved,
   item,
   detail,
   editing,
@@ -246,6 +254,8 @@ function ExpandedDetail({
   onConfirmAll,
 }: Pick<
   NormalizationRowProps,
+  | "normType"
+  | "onDisplayNamesSaved"
   | "item"
   | "detail"
   | "editing"
@@ -353,6 +363,15 @@ function ExpandedDetail({
           </div>
         )}
       </div>
+
+      {normType !== "doctors" && normType !== "facilities" && (
+        <TermDisplayNamesEditor
+          key={detail.id}
+          item={detail}
+          normType={normType}
+          onSaved={onDisplayNamesSaved}
+        />
+      )}
 
       {/* Aliases */}
       <div className="space-y-2">
@@ -496,7 +515,7 @@ export default function NormalizationRow(props: NormalizationRowProps) {
               checked={selected}
               onChange={onToggleSelect}
               aria-label={tx("settings:features.normalizationRow.select", {
-                value0: item.canonical_display || item.id,
+                value0: termLabel(item) || item.id,
               })}
             />
           </label>
@@ -514,9 +533,9 @@ export default function NormalizationRow(props: NormalizationRowProps) {
         </td>
         <td
           className="px-3 py-1.5 font-medium max-w-[360px] truncate"
-          title={item.canonical_display}
+          title={termLabel(item)}
         >
-          {item.canonical_display}
+          {termLabel(item)}
         </td>
         <td className="px-3 py-1.5 text-muted-foreground whitespace-nowrap">
           {item.alias_count || 0}{" "}
@@ -610,12 +629,12 @@ export function NormalizationCard(props: NormalizationRowProps) {
             checked={selected}
             onChange={onToggleSelect}
             aria-label={tx("settings:features.normalizationRow.select", {
-              value0: item.canonical_display || item.id,
+              value0: termLabel(item) || item.id,
             })}
           />
         </label>
         <div className="min-w-0 flex-1">
-          <div className="font-medium">{item.canonical_display}</div>
+          <div className="font-medium">{termLabel(item)}</div>
           {item.canonical_code && (
             <div className="truncate font-mono text-xs text-muted-foreground">
               {item.canonical_code}

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import aiosqlite
 
+from asclepius.normalization.display_names import attach_display_names
 from asclepius.util.dates import BEST_DATE_SQL, BEST_DATE_SQL_WITH_CREATED
 
 # ``require_document_access`` now lives in :mod:`asclepius.authz` (the single
@@ -41,7 +42,11 @@ async def get_document(db: aiosqlite.Connection, doc_id: int) -> dict | None:
     row = await cursor.fetchone()
     if not row:
         return None
-    return dict(row)
+    item = dict(row)
+    await attach_display_names(
+        db, [item], "specialties", "norm_specialty_id", "specialty_display_names"
+    )
+    return item
 
 
 _SORT_COLUMNS: dict[str, str] = {
@@ -184,19 +189,24 @@ async def list_documents(
 
     # Fuzzy search across multiple columns using LIKE
     if q:
-        search_term = f"%{q}%"
+        search_term = f"%{q.casefold()}%"
         conditions.append(
-            """(d.original_filename LIKE ? COLLATE NOCASE
-                OR d.doc_type LIKE ? COLLATE NOCASE
-                OR doc.name LIKE ? COLLATE NOCASE
-                OR f.name LIKE ? COLLATE NOCASE
-                OR d.summary_en LIKE ? COLLATE NOCASE
-                OR d.summary_original LIKE ? COLLATE NOCASE
-                OR d.specialty_original LIKE ? COLLATE NOCASE
-                OR d.ocr_text LIKE ? COLLATE NOCASE
-                OR p.display_name LIKE ? COLLATE NOCASE)"""
+            """(unicode_casefold(d.original_filename) LIKE ? COLLATE NOCASE
+                OR unicode_casefold(d.doc_type) LIKE ? COLLATE NOCASE
+                OR unicode_casefold(doc.name) LIKE ? COLLATE NOCASE
+                OR unicode_casefold(f.name) LIKE ? COLLATE NOCASE
+                OR unicode_casefold(d.summary_en) LIKE ? COLLATE NOCASE
+                OR unicode_casefold(d.summary_original) LIKE ? COLLATE NOCASE
+                OR unicode_casefold(d.specialty_original) LIKE ? COLLATE NOCASE
+                OR unicode_casefold(d.ocr_text) LIKE ? COLLATE NOCASE
+                OR unicode_casefold(p.display_name) LIKE ? COLLATE NOCASE
+                OR unicode_casefold(ns.canonical_display) LIKE ? COLLATE NOCASE
+                OR EXISTS (SELECT 1 FROM norm_specialty_labels l
+                           WHERE l.norm_specialty_id = d.norm_specialty_id AND unicode_casefold(l.label) LIKE ?)
+                OR EXISTS (SELECT 1 FROM norm_specialty_aliases a
+                           WHERE a.norm_specialty_id = d.norm_specialty_id AND unicode_casefold(a.alias) LIKE ?))"""
         )
-        params.extend([search_term] * 9)
+        params.extend([search_term] * 12)
 
     where = "WHERE " + " AND ".join(conditions) if conditions else ""
 
@@ -237,6 +247,9 @@ async def list_documents(
 
     rows = await cursor.fetchall()
     items = [dict(r) for r in rows]
+    await attach_display_names(
+        db, items, "specialties", "norm_specialty_id", "specialty_display_names"
+    )
 
     # Get total count
     count_params = params[:-2]  # remove limit/offset
@@ -354,7 +367,18 @@ async def get_related_records(db: aiosqlite.Connection, table: str, doc_id: int)
         )
     else:
         cursor = await db.execute(f"SELECT * FROM {table} WHERE document_id = ?", (doc_id,))
-    return [dict(r) for r in await cursor.fetchall()]
+    items = [dict(r) for r in await cursor.fetchall()]
+    fields = {
+        "lab_results": [("lab_tests", "norm_lab_test_id", "test_display_names")],
+        "encounters": [
+            ("specialties", "norm_specialty_id", "specialty_display_names"),
+            ("diagnoses", "norm_diagnosis_id", "diagnosis_display_names"),
+        ],
+        "medications": [("medications", "norm_medication_id", "medication_display_names")],
+    }
+    for term_type, id_field, output_field in fields.get(table, []):
+        await attach_display_names(db, items, term_type, id_field, output_field)
+    return items
 
 
 async def get_document_sections(db: aiosqlite.Connection, doc_id: int) -> list[dict]:

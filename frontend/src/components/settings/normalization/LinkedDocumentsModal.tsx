@@ -1,10 +1,11 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { Loader2, Trash2 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Sheet from "@/components/ui/Sheet";
 
 export interface LinkedDocumentsModalProps {
-  subjectName: string;
+  subjectName: UiMessage;
   loading: boolean;
   documents: any[] | null;
   onClose: () => void;
@@ -28,6 +29,7 @@ export default function LinkedDocumentsModal({
     "share",
     "errors",
   ]);
+  const renderMessage = useMessage();
   return (
     <Sheet
       open
@@ -35,7 +37,7 @@ export default function LinkedDocumentsModal({
         if (!o) onClose();
       }}
       title={tx("settings:features.linkedDocumentsModal.documentsReferencing", {
-        value0: subjectName,
+        value0: renderMessage(subjectName),
       })}
       contentClassName="sm:max-w-2xl"
     >
@@ -55,7 +57,7 @@ export default function LinkedDocumentsModal({
             <Button size="sm" variant="danger" onClick={onDelete}>
               <Trash2 className="h-3 w-3" />{" "}
               {tx("settings:features.linkedDocumentsModal.delete")}
-              {subjectName}"
+              {renderMessage(subjectName)}"
             </Button>
             <Button size="sm" variant="secondary" onClick={onClose}>
               {tx("common:feedback.cancel")}

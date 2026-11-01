@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import aiosqlite
 
+from asclepius.normalization.display_names import attach_display_names
 from asclepius.share.tokens import generate_share_token, hash_token, utcnow_iso
 
 # ── Share row helpers ────────────────────────────────────────────
@@ -71,7 +72,11 @@ async def share_documents(db: aiosqlite.Connection, share_id: int) -> list[dict]
                     d.id DESC""",
         (share_id,),
     )
-    return [dict(r) for r in await cursor.fetchall()]
+    items = [dict(r) for r in await cursor.fetchall()]
+    await attach_display_names(
+        db, items, "specialties", "norm_specialty_id", "specialty_display_names"
+    )
+    return items
 
 
 async def share_has_document(db: aiosqlite.Connection, share_id: int, document_id: int) -> bool:

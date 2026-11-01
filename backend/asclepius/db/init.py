@@ -8,6 +8,7 @@ from pathlib import Path
 import aiosqlite
 
 from asclepius.db.connection import open_db
+from asclepius.normalization.display_names import seed_display_names
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ async def initialize_database(db_path: str) -> None:
 
     async with open_db(db_path) as db:
         # Execute schema
-        schema_sql = SCHEMA_PATH.read_text()
+        schema_sql = SCHEMA_PATH.read_text(encoding="utf-8")
         await db.executescript(schema_sql)
         await db.commit()
 
@@ -39,6 +40,18 @@ async def initialize_database(db_path: str) -> None:
             await _seed_normalization_tables(db)
             await db.commit()
 
+        async def backfill_display_names(connection):
+            await seed_display_names(
+                connection,
+                [
+                    Path(__file__).resolve().parents[3] / "config" / "seeds",
+                    BUNDLED_SEEDS_DIR,
+                    SEEDS_DIR,
+                ],
+            )
+
+        await _ensure_schema_migrations_table(db)
+        await _run_once(db, "preferred_term_display_names_v1", backfill_display_names)
         logger.info("Database initialized at %s", db_path)
 
 
@@ -115,8 +128,7 @@ async def _run_migrations(db: aiosqlite.Connection) -> None:
         # the application always supplies a value at insert time.
         if "otp_delivery" not in cols:
             await db.execute(
-                "ALTER TABLE document_shares "
-                "ADD COLUMN otp_delivery TEXT NOT NULL DEFAULT 'manual'"
+                "ALTER TABLE document_shares ADD COLUMN otp_delivery TEXT NOT NULL DEFAULT 'manual'"
             )
         # consecutive_otp_failures: per-share verify-failure counter for
         # the share-level lockout. INTEGER default 0 is constant-valued

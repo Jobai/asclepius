@@ -1,3 +1,9 @@
+import {
+  medicationLabel,
+  specialtyLabel,
+  labLabel,
+  type TermDisplayNames,
+} from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
@@ -38,6 +44,7 @@ interface ShareDocumentDetail {
   date_received: string | null;
   doctor_name: string | null;
   facility_name: string | null;
+  specialty_display_names?: TermDisplayNames;
   specialty_display: string | null;
   summary_en: string | null;
   summary_original: string | null;
@@ -283,7 +290,7 @@ export default function ShareDocumentPage() {
                   })}
                 </span>
               )}
-              {doc.specialty_display && <span>{doc.specialty_display}</span>}
+              {doc.specialty_display && <span>{specialtyLabel(doc)}</span>}
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
               {doc.doctor_name && (
@@ -455,9 +462,7 @@ export default function ShareDocumentPage() {
                         key={lr.id}
                         className={lr.is_abnormal ? "bg-warning-soft/50" : ""}
                       >
-                        <td className="px-3 py-1.5">
-                          {lr.test_name_canonical || lr.test_name_original}
-                        </td>
+                        <td className="px-3 py-1.5">{labLabel(lr)}</td>
                         <td className="px-3 py-1.5 font-mono">
                           {lr.value ?? lr.value_text ?? ""}
                         </td>
@@ -487,7 +492,7 @@ export default function ShareDocumentPage() {
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
                       <span className="min-w-0 break-words font-medium">
-                        {lr.test_name_canonical || lr.test_name_original}
+                        {labLabel(lr)}
                         {lr.is_abnormal && (
                           <Badge
                             variant="warning"
@@ -527,7 +532,7 @@ export default function ShareDocumentPage() {
                 {doc.medications.map((m: any) => (
                   <li key={m.id} className="flex flex-wrap gap-x-3">
                     <span className="font-medium">
-                      {m.medication_canonical_display ||
+                      {medicationLabel(m) ||
                         m.brand_name ||
                         m.active_ingredient_original}
                     </span>

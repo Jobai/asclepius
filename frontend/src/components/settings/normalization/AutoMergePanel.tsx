@@ -1,3 +1,4 @@
+import { termLabel } from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { GitMerge, Sparkles } from "lucide-react";
 import Button from "@/components/ui/Button";
@@ -85,7 +86,7 @@ export default function AutoMergePanel({
                   >
                     {groupIds.map((id) => (
                       <option key={id} value={id}>
-                        {entryById[id]?.canonical_display || `#${id}`}
+                        {termLabel(entryById[id]) || `#${id}`}
                       </option>
                     ))}
                   </Select>
@@ -116,9 +117,7 @@ export default function AutoMergePanel({
                           checked
                           onChange={() => onToggleSource(idx, sid)}
                         />
-                        <span>
-                          {entryById[sid]?.canonical_display || `#${sid}`}
-                        </span>
+                        <span>{termLabel(entryById[sid]) || `#${sid}`}</span>
                         {entryById[sid]?.canonical_code && (
                           <span className="text-xs text-muted-foreground font-mono">
                             ({entryById[sid].canonical_code})

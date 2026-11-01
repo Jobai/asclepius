@@ -52,7 +52,7 @@ export function createResource<T>(path: string) {
     if (error) throw error;
   }
 
-  return function useResource() {
+  function useResource() {
     const [, setTick] = useState(0);
     useEffect(() => {
       const fn = () => setTick((t) => t + 1);
@@ -69,5 +69,12 @@ export function createResource<T>(path: string) {
       refetch: invalidate,
       reload,
     };
-  };
+  }
+  return Object.assign(useResource, {
+    updateCached(update: (current: T) => T) {
+      if (data === undefined) return;
+      data = update(data);
+      notify();
+    },
+  });
 }

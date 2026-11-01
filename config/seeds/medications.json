@@ -52,7 +52,11 @@
         "alias": "Sortis",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Atorvastatin",
+      "de": "Atorvastatin"
+    }
   },
   {
     "canonical_code": "rosuvastatin",
@@ -107,7 +111,11 @@
         "alias": "Crestor",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Rosuvastatin",
+      "de": "Rosuvastatin"
+    }
   },
   {
     "canonical_code": "simvastatin",
@@ -162,7 +170,11 @@
         "alias": "Zocor",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Simvastatin",
+      "de": "Simvastatin"
+    }
   },
   {
     "canonical_code": "pravastatin",
@@ -213,7 +225,11 @@
         "alias": "Liplat",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pravastatin",
+      "de": "Pravastatin"
+    }
   },
   {
     "canonical_code": "fluvastatin",
@@ -268,7 +284,11 @@
         "alias": "Lescol",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Fluvastatin",
+      "de": "Fluvastatin"
+    }
   },
   {
     "canonical_code": "ramipril",
@@ -323,7 +343,11 @@
         "alias": "Triatec",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ramipril",
+      "de": "Ramipril"
+    }
   },
   {
     "canonical_code": "enalapril",
@@ -374,7 +398,11 @@
         "alias": "Reniten",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Enalapril",
+      "de": "Enalapril"
+    }
   },
   {
     "canonical_code": "lisinopril",
@@ -425,7 +453,11 @@
         "alias": "Zestril",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lisinopril",
+      "de": "Lisinopril"
+    }
   },
   {
     "canonical_code": "perindopril",
@@ -476,7 +508,11 @@
         "alias": "Coversyl",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Perindopril",
+      "de": "Perindopril"
+    }
   },
   {
     "canonical_code": "losartan",
@@ -523,7 +559,11 @@
         "alias": "Cozaar",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Losartan",
+      "de": "Losartan"
+    }
   },
   {
     "canonical_code": "valsartan",
@@ -578,7 +618,11 @@
         "alias": "Diovan",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Valsartan",
+      "de": "Valsartan"
+    }
   },
   {
     "canonical_code": "candesartan",
@@ -637,7 +681,11 @@
         "alias": "Atacand",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Candesartan",
+      "de": "Candesartan"
+    }
   },
   {
     "canonical_code": "irbesartan",
@@ -688,7 +736,11 @@
         "alias": "Aprovel",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Irbesartan",
+      "de": "Irbesartan"
+    }
   },
   {
     "canonical_code": "olmesartan",
@@ -751,7 +803,11 @@
         "alias": "Olmesartan",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Olmesartan",
+      "de": "Olmesartan"
+    }
   },
   {
     "canonical_code": "amlodipine",
@@ -802,7 +858,11 @@
         "alias": "Norvasc",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Amlodipine",
+      "de": "Amlodipin"
+    }
   },
   {
     "canonical_code": "nifedipine",
@@ -853,7 +913,11 @@
         "alias": "Adalat",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Nifedipine",
+      "de": "Nifedipin"
+    }
   },
   {
     "canonical_code": "lercanidipine",
@@ -908,7 +972,11 @@
         "alias": "Zanidip",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lercanidipine",
+      "de": "Lercanidipin"
+    }
   },
   {
     "canonical_code": "bisoprolol",
@@ -963,7 +1031,11 @@
         "alias": "Concor",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bisoprolol",
+      "de": "Bisoprolol"
+    }
   },
   {
     "canonical_code": "metoprolol",
@@ -1030,7 +1102,11 @@
         "alias": "Beloc Zok",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Metoprolol",
+      "de": "Metoprolol"
+    }
   },
   {
     "canonical_code": "nebivolol",
@@ -1089,7 +1165,11 @@
         "alias": "Nebilet",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Nebivolol",
+      "de": "Nebivolol"
+    }
   },
   {
     "canonical_code": "atenolol",
@@ -1136,7 +1216,11 @@
         "alias": "Tenormin",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Atenolol",
+      "de": "Atenolol"
+    }
   },
   {
     "canonical_code": "carvedilol",
@@ -1187,7 +1271,11 @@
         "alias": "Dilatrend",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Carvedilol",
+      "de": "Carvedilol"
+    }
   },
   {
     "canonical_code": "hydrochlorothiazide",
@@ -1246,7 +1334,11 @@
         "alias": "Esidrex",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hydrochlorothiazide",
+      "de": "Hydrochlorothiazid"
+    }
   },
   {
     "canonical_code": "furosemide",
@@ -1297,7 +1389,11 @@
         "alias": "Lasix",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Furosemide",
+      "de": "Furosemid"
+    }
   },
   {
     "canonical_code": "spironolactone",
@@ -1348,7 +1444,11 @@
         "alias": "Aldactone",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Spironolactone",
+      "de": "Spironolacton"
+    }
   },
   {
     "canonical_code": "aspirin",
@@ -1411,7 +1511,11 @@
         "alias": "Aspirin Cardio",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Acetylsalicylic Acid",
+      "de": "Acetylsalicylsäure"
+    }
   },
   {
     "canonical_code": "clopidogrel",
@@ -1466,7 +1570,11 @@
         "alias": "Plavix",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Clopidogrel",
+      "de": "Clopidogrel"
+    }
   },
   {
     "canonical_code": "warfarin",
@@ -1517,7 +1625,11 @@
         "alias": "Sintrom",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Warfarin",
+      "de": "Warfarin"
+    }
   },
   {
     "canonical_code": "rivaroxaban",
@@ -1568,7 +1680,11 @@
         "alias": "Xarelto",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Rivaroxaban",
+      "de": "Rivaroxaban"
+    }
   },
   {
     "canonical_code": "apixaban",
@@ -1619,7 +1735,11 @@
         "alias": "Eliquis",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Apixaban",
+      "de": "Apixaban"
+    }
   },
   {
     "canonical_code": "dabigatran",
@@ -1670,7 +1790,11 @@
         "alias": "Pradaxa",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Dabigatran",
+      "de": "Dabigatran"
+    }
   },
   {
     "canonical_code": "enoxaparin",
@@ -1721,7 +1845,11 @@
         "alias": "Clexane",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Enoxaparin",
+      "de": "Enoxaparin"
+    }
   },
   {
     "canonical_code": "ticagrelor",
@@ -1772,7 +1900,11 @@
         "alias": "Brilique",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ticagrelor",
+      "de": "Ticagrelor"
+    }
   },
   {
     "canonical_code": "metformin",
@@ -1827,7 +1959,11 @@
         "alias": "Glucophage",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Metformin",
+      "de": "Metformin"
+    }
   },
   {
     "canonical_code": "gliclazide",
@@ -1874,7 +2010,11 @@
         "alias": "Diamicron",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Gliclazide",
+      "de": "Gliclazid"
+    }
   },
   {
     "canonical_code": "glimepiride",
@@ -1925,7 +2065,11 @@
         "alias": "Amaryl",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Glimepiride",
+      "de": "Glimepirid"
+    }
   },
   {
     "canonical_code": "sitagliptin",
@@ -1988,7 +2132,11 @@
         "alias": "Januvia",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Sitagliptin",
+      "de": "Sitagliptin"
+    }
   },
   {
     "canonical_code": "empagliflozin",
@@ -2039,7 +2187,11 @@
         "alias": "Jardiance",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Empagliflozin",
+      "de": "Empagliflozin"
+    }
   },
   {
     "canonical_code": "dapagliflozin",
@@ -2094,7 +2246,11 @@
         "alias": "Forxiga",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Dapagliflozin",
+      "de": "Dapagliflozin"
+    }
   },
   {
     "canonical_code": "liraglutide",
@@ -2149,7 +2305,11 @@
         "alias": "Victoza",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Liraglutide",
+      "de": "Liraglutid"
+    }
   },
   {
     "canonical_code": "semaglutide",
@@ -2224,7 +2384,11 @@
         "alias": "Ozempic",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Semaglutide",
+      "de": "Semaglutid"
+    }
   },
   {
     "canonical_code": "insulin-glargine",
@@ -2283,7 +2447,11 @@
         "alias": "Lantus",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Insulin Glargine",
+      "de": "Insulin Glargin"
+    }
   },
   {
     "canonical_code": "insulin-aspart",
@@ -2338,7 +2506,11 @@
         "alias": "NovoRapid",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Insulin Aspart",
+      "de": "Insulin Aspart"
+    }
   },
   {
     "canonical_code": "omeprazole",
@@ -2393,7 +2565,11 @@
         "alias": "Antra",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Omeprazole",
+      "de": "Omeprazol"
+    }
   },
   {
     "canonical_code": "pantoprazole",
@@ -2452,7 +2628,11 @@
         "alias": "Pantozol",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pantoprazole",
+      "de": "Pantoprazol"
+    }
   },
   {
     "canonical_code": "esomeprazole",
@@ -2507,7 +2687,11 @@
         "alias": "Nexium",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Esomeprazole",
+      "de": "Esomeprazol"
+    }
   },
   {
     "canonical_code": "lansoprazole",
@@ -2562,7 +2746,11 @@
         "alias": "Agopton",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lansoprazole",
+      "de": "Lansoprazol"
+    }
   },
   {
     "canonical_code": "ranitidine",
@@ -2613,7 +2801,11 @@
         "alias": "Zantac",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ranitidine",
+      "de": "Ranitidin"
+    }
   },
   {
     "canonical_code": "metoclopramide",
@@ -2664,7 +2856,11 @@
         "alias": "Primperan",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Metoclopramide",
+      "de": "Metoclopramid"
+    }
   },
   {
     "canonical_code": "domperidone",
@@ -2719,7 +2915,11 @@
         "alias": "Motilium",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Domperidone",
+      "de": "Domperidon"
+    }
   },
   {
     "canonical_code": "ondansetron",
@@ -2770,7 +2970,11 @@
         "alias": "Zofran",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ondansetron",
+      "de": "Ondansetron"
+    }
   },
   {
     "canonical_code": "paracetamol",
@@ -2849,7 +3053,11 @@
         "alias": "Panadol",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Paracetamol",
+      "de": "Paracetamol"
+    }
   },
   {
     "canonical_code": "ibuprofen",
@@ -2924,7 +3132,11 @@
         "alias": "Irfen",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ibuprofen",
+      "de": "Ibuprofen"
+    }
   },
   {
     "canonical_code": "naproxen",
@@ -2979,7 +3191,11 @@
         "alias": "Naproxen",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Naproxen",
+      "de": "Naproxen"
+    }
   },
   {
     "canonical_code": "diclofenac",
@@ -3030,7 +3246,11 @@
         "alias": "Voltaren",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Diclofenac",
+      "de": "Diclofenac"
+    }
   },
   {
     "canonical_code": "celecoxib",
@@ -3081,7 +3301,11 @@
         "alias": "Celebrex",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Celecoxib",
+      "de": "Celecoxib"
+    }
   },
   {
     "canonical_code": "tramadol",
@@ -3136,7 +3360,11 @@
         "alias": "Tramal",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Tramadol",
+      "de": "Tramadol"
+    }
   },
   {
     "canonical_code": "codeine",
@@ -3163,7 +3391,11 @@
         "alias": "Codeina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Codeine",
+      "de": "Codein"
+    }
   },
   {
     "canonical_code": "morphine",
@@ -3218,7 +3450,11 @@
         "alias": "MST Continus",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Morphine",
+      "de": "Morphin"
+    }
   },
   {
     "canonical_code": "fentanyl",
@@ -3269,7 +3505,11 @@
         "alias": "Durogesic",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Fentanyl",
+      "de": "Fentanyl"
+    }
   },
   {
     "canonical_code": "pregabalin",
@@ -3320,7 +3560,11 @@
         "alias": "Lyrica",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Pregabalin",
+      "de": "Pregabalin"
+    }
   },
   {
     "canonical_code": "amoxicillin",
@@ -3367,7 +3611,11 @@
         "alias": "Clamoxyl",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Amoxicillin",
+      "de": "Amoxicillin"
+    }
   },
   {
     "canonical_code": "amoxicillin-clavulanate",
@@ -3434,7 +3682,11 @@
         "alias": "Co-Amoxi",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Amoxicillin/Clavulanate",
+      "de": "Amoxicillin/Clavulansäure"
+    }
   },
   {
     "canonical_code": "azithromycin",
@@ -3489,7 +3741,11 @@
         "alias": "Zithromax",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Azithromycin",
+      "de": "Azithromycin"
+    }
   },
   {
     "canonical_code": "ciprofloxacin",
@@ -3540,7 +3796,11 @@
         "alias": "Ciproxin",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ciprofloxacin",
+      "de": "Ciprofloxacin"
+    }
   },
   {
     "canonical_code": "levofloxacin",
@@ -3595,7 +3855,11 @@
         "alias": "Tavanic",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Levofloxacin",
+      "de": "Levofloxacin"
+    }
   },
   {
     "canonical_code": "doxycycline",
@@ -3642,7 +3906,11 @@
         "alias": "Vibracina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Doxycycline",
+      "de": "Doxycyclin"
+    }
   },
   {
     "canonical_code": "cephalexin",
@@ -3689,7 +3957,11 @@
         "alias": "Kefloridina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cephalexin",
+      "de": "Cefalexin"
+    }
   },
   {
     "canonical_code": "ceftriaxone",
@@ -3740,7 +4012,11 @@
         "alias": "Rocephin",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ceftriaxone",
+      "de": "Ceftriaxon"
+    }
   },
   {
     "canonical_code": "trimethoprim-sulfamethoxazole",
@@ -3807,7 +4083,11 @@
         "alias": "Nopil",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Trimethoprim/Sulfamethoxazole",
+      "de": "Trimethoprim/Sulfamethoxazol"
+    }
   },
   {
     "canonical_code": "metronidazole",
@@ -3862,7 +4142,11 @@
         "alias": "Flagyl",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Metronidazole",
+      "de": "Metronidazol"
+    }
   },
   {
     "canonical_code": "clindamycin",
@@ -3913,7 +4197,11 @@
         "alias": "Dalacin",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Clindamycin",
+      "de": "Clindamycin"
+    }
   },
   {
     "canonical_code": "nitrofurantoin",
@@ -3964,7 +4252,11 @@
         "alias": "Furantoina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Nitrofurantoin",
+      "de": "Nitrofurantoin"
+    }
   },
   {
     "canonical_code": "fluconazole",
@@ -4015,7 +4307,11 @@
         "alias": "Diflucan",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Fluconazole",
+      "de": "Fluconazol"
+    }
   },
   {
     "canonical_code": "clarithromycin",
@@ -4070,7 +4366,11 @@
         "alias": "Klacid",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Clarithromycin",
+      "de": "Clarithromycin"
+    }
   },
   {
     "canonical_code": "moxifloxacin",
@@ -4121,7 +4421,11 @@
         "alias": "Avalox",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Moxifloxacin",
+      "de": "Moxifloxacin"
+    }
   },
   {
     "canonical_code": "sertraline",
@@ -4172,7 +4476,11 @@
         "alias": "Zoloft",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Sertraline",
+      "de": "Sertralin"
+    }
   },
   {
     "canonical_code": "escitalopram",
@@ -4231,7 +4539,11 @@
         "alias": "Cipralex",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Escitalopram",
+      "de": "Escitalopram"
+    }
   },
   {
     "canonical_code": "fluoxetine",
@@ -4282,7 +4594,11 @@
         "alias": "Fluctine",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Fluoxetine",
+      "de": "Fluoxetin"
+    }
   },
   {
     "canonical_code": "paroxetine",
@@ -4337,7 +4653,11 @@
         "alias": "Deroxat",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Paroxetine",
+      "de": "Paroxetin"
+    }
   },
   {
     "canonical_code": "venlafaxine",
@@ -4388,7 +4708,11 @@
         "alias": "Efexor",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Venlafaxine",
+      "de": "Venlafaxin"
+    }
   },
   {
     "canonical_code": "duloxetine",
@@ -4439,7 +4763,11 @@
         "alias": "Cymbalta",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Duloxetine",
+      "de": "Duloxetin"
+    }
   },
   {
     "canonical_code": "mirtazapine",
@@ -4490,7 +4818,11 @@
         "alias": "Remeron",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Mirtazapine",
+      "de": "Mirtazapin"
+    }
   },
   {
     "canonical_code": "amitriptyline",
@@ -4541,7 +4873,11 @@
         "alias": "Saroten",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Amitriptyline",
+      "de": "Amitriptylin"
+    }
   },
   {
     "canonical_code": "bupropion",
@@ -4600,7 +4936,11 @@
         "alias": "Wellbutrin",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Bupropion",
+      "de": "Bupropion"
+    }
   },
   {
     "canonical_code": "trazodone",
@@ -4651,7 +4991,11 @@
         "alias": "Trittico",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Trazodone",
+      "de": "Trazodon"
+    }
   },
   {
     "canonical_code": "alprazolam",
@@ -4702,7 +5046,11 @@
         "alias": "Xanax",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Alprazolam",
+      "de": "Alprazolam"
+    }
   },
   {
     "canonical_code": "lorazepam",
@@ -4757,7 +5105,11 @@
         "alias": "Temesta",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lorazepam",
+      "de": "Lorazepam"
+    }
   },
   {
     "canonical_code": "diazepam",
@@ -4808,7 +5160,11 @@
         "alias": "Valium",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Diazepam",
+      "de": "Diazepam"
+    }
   },
   {
     "canonical_code": "zolpidem",
@@ -4859,7 +5215,11 @@
         "alias": "Stilnox",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Zolpidem",
+      "de": "Zolpidem"
+    }
   },
   {
     "canonical_code": "hydroxyzine",
@@ -4914,7 +5274,11 @@
         "alias": "Atarax",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hydroxyzine",
+      "de": "Hydroxyzin"
+    }
   },
   {
     "canonical_code": "levothyroxine",
@@ -4985,7 +5349,11 @@
         "alias": "Eltroxin",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Levothyroxine",
+      "de": "Levothyroxin"
+    }
   },
   {
     "canonical_code": "methimazole",
@@ -5032,7 +5400,11 @@
         "alias": "Tirodril",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Methimazole",
+      "de": "Thiamazol"
+    }
   },
   {
     "canonical_code": "propylthiouracil",
@@ -5063,7 +5435,11 @@
         "alias": "Propiltiouracilo",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Propylthiouracil",
+      "de": "Propylthiouracil"
+    }
   },
   {
     "canonical_code": "salbutamol",
@@ -5122,7 +5498,11 @@
         "alias": "Ventolin",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Salbutamol",
+      "de": "Salbutamol"
+    }
   },
   {
     "canonical_code": "fluticasone",
@@ -5177,7 +5557,11 @@
         "alias": "Axotide",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Fluticasone",
+      "de": "Fluticason"
+    }
   },
   {
     "canonical_code": "budesonide",
@@ -5232,7 +5616,11 @@
         "alias": "Pulmicort",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Budesonide",
+      "de": "Budesonid"
+    }
   },
   {
     "canonical_code": "montelukast",
@@ -5287,7 +5675,11 @@
         "alias": "Singulair",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Montelukast",
+      "de": "Montelukast"
+    }
   },
   {
     "canonical_code": "tiotropium",
@@ -5338,7 +5730,11 @@
         "alias": "Spiriva",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Tiotropium",
+      "de": "Tiotropium"
+    }
   },
   {
     "canonical_code": "formoterol",
@@ -5401,7 +5797,11 @@
         "alias": "Oxis",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Formoterol",
+      "de": "Formoterol"
+    }
   },
   {
     "canonical_code": "ipratropium",
@@ -5452,7 +5852,11 @@
         "alias": "Atrovent",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ipratropium",
+      "de": "Ipratropium"
+    }
   },
   {
     "canonical_code": "theophylline",
@@ -5503,7 +5907,11 @@
         "alias": "Unifyl",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Theophylline",
+      "de": "Theophyllin"
+    }
   },
   {
     "canonical_code": "cetirizine",
@@ -5558,7 +5966,11 @@
         "alias": "Zyrtec",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cetirizine",
+      "de": "Cetirizin"
+    }
   },
   {
     "canonical_code": "loratadine",
@@ -5613,7 +6025,11 @@
         "alias": "Claritine",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Loratadine",
+      "de": "Loratadin"
+    }
   },
   {
     "canonical_code": "desloratadine",
@@ -5668,7 +6084,11 @@
         "alias": "Aerius",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Desloratadine",
+      "de": "Desloratadin"
+    }
   },
   {
     "canonical_code": "fexofenadine",
@@ -5719,7 +6139,11 @@
         "alias": "Telfast",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Fexofenadine",
+      "de": "Fexofenadin"
+    }
   },
   {
     "canonical_code": "levocetirizine",
@@ -5770,7 +6194,11 @@
         "alias": "Xyzal",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Levocetirizine",
+      "de": "Levocetirizin"
+    }
   },
   {
     "canonical_code": "prednisone",
@@ -5821,7 +6249,11 @@
         "alias": "Prednison",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Prednisone",
+      "de": "Prednison"
+    }
   },
   {
     "canonical_code": "prednisolone",
@@ -5872,7 +6304,11 @@
         "alias": "Spiricort",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Prednisolone",
+      "de": "Prednisolon"
+    }
   },
   {
     "canonical_code": "methylprednisolone",
@@ -5939,7 +6375,11 @@
         "alias": "Medrol",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Methylprednisolone",
+      "de": "Methylprednisolon"
+    }
   },
   {
     "canonical_code": "dexamethasone",
@@ -5994,7 +6434,11 @@
         "alias": "Fortecortin",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Dexamethasone",
+      "de": "Dexamethason"
+    }
   },
   {
     "canonical_code": "hydrocortisone",
@@ -6045,7 +6489,11 @@
         "alias": "Actocortina",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Hydrocortisone",
+      "de": "Hydrocortison"
+    }
   },
   {
     "canonical_code": "alendronate",
@@ -6104,7 +6552,11 @@
         "alias": "Fosamax",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Alendronate",
+      "de": "Alendronat"
+    }
   },
   {
     "canonical_code": "risedronate",
@@ -6155,7 +6607,11 @@
         "alias": "Actonel",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Risedronate",
+      "de": "Risedronat"
+    }
   },
   {
     "canonical_code": "denosumab",
@@ -6210,7 +6666,11 @@
         "alias": "Prolia",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Denosumab",
+      "de": "Denosumab"
+    }
   },
   {
     "canonical_code": "levetiracetam",
@@ -6261,7 +6721,11 @@
         "alias": "Keppra",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Levetiracetam",
+      "de": "Levetiracetam"
+    }
   },
   {
     "canonical_code": "valproate",
@@ -6332,7 +6796,11 @@
         "alias": "Orfiril",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Valproate",
+      "de": "Valproat"
+    }
   },
   {
     "canonical_code": "carbamazepine",
@@ -6387,7 +6855,11 @@
         "alias": "Tegretol",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Carbamazepine",
+      "de": "Carbamazepin"
+    }
   },
   {
     "canonical_code": "lamotrigine",
@@ -6438,7 +6910,11 @@
         "alias": "Lamictal",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lamotrigine",
+      "de": "Lamotrigin"
+    }
   },
   {
     "canonical_code": "gabapentin",
@@ -6489,7 +6965,11 @@
         "alias": "Neurontin",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Gabapentin",
+      "de": "Gabapentin"
+    }
   },
   {
     "canonical_code": "tamsulosin",
@@ -6548,7 +7028,11 @@
         "alias": "Omnic",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Tamsulosin",
+      "de": "Tamsulosin"
+    }
   },
   {
     "canonical_code": "finasteride",
@@ -6603,7 +7087,11 @@
         "alias": "Proscar",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Finasteride",
+      "de": "Finasterid"
+    }
   },
   {
     "canonical_code": "dutasteride",
@@ -6654,7 +7142,11 @@
         "alias": "Avodart",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Dutasteride",
+      "de": "Dutasterid"
+    }
   },
   {
     "canonical_code": "ethinylestradiol-levonorgestrel",
@@ -6709,7 +7201,11 @@
         "alias": "Microgynon",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ethinylestradiol/Levonorgestrel",
+      "de": "Ethinylestradiol/Levonorgestrel"
+    }
   },
   {
     "canonical_code": "ethinylestradiol-drospirenone",
@@ -6776,7 +7272,11 @@
         "alias": "Yasmin",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ethinylestradiol/Drospirenone",
+      "de": "Ethinylestradiol/Drospirenon"
+    }
   },
   {
     "canonical_code": "levonorgestrel",
@@ -6847,7 +7347,11 @@
         "alias": "Mirena",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Levonorgestrel",
+      "de": "Levonorgestrel"
+    }
   },
   {
     "canonical_code": "allopurinol",
@@ -6898,7 +7402,11 @@
         "alias": "Zyloric",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Allopurinol",
+      "de": "Allopurinol"
+    }
   },
   {
     "canonical_code": "colchicine",
@@ -6945,7 +7453,11 @@
         "alias": "Colchicine",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Colchicine",
+      "de": "Colchicin"
+    }
   },
   {
     "canonical_code": "methotrexate",
@@ -6984,7 +7496,11 @@
         "alias": "Methotrexat",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Methotrexate",
+      "de": "Methotrexat"
+    }
   },
   {
     "canonical_code": "azathioprine",
@@ -7039,7 +7555,11 @@
         "alias": "Imurek",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Azathioprine",
+      "de": "Azathioprin"
+    }
   },
   {
     "canonical_code": "tacrolimus",
@@ -7102,7 +7622,11 @@
         "alias": "Prograf",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Tacrolimus",
+      "de": "Tacrolimus"
+    }
   },
   {
     "canonical_code": "sildenafil",
@@ -7169,7 +7693,11 @@
         "alias": "Viagra",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Sildenafil",
+      "de": "Sildenafil"
+    }
   },
   {
     "canonical_code": "ferrous-sulfate",
@@ -7220,7 +7748,11 @@
         "alias": "Tardyferon",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Ferrous Sulfate",
+      "de": "Eisensulfat"
+    }
   },
   {
     "canonical_code": "folic-acid",
@@ -7259,7 +7791,11 @@
         "alias": "Acido Folico",
         "language": "es"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Folic Acid",
+      "de": "Folsäure"
+    }
   },
   {
     "canonical_code": "cholecalciferol",
@@ -7326,7 +7862,11 @@
         "alias": "Vi-De 3",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Cholecalciferol",
+      "de": "Colecalciferol"
+    }
   },
   {
     "canonical_code": "calcium-carbonate",
@@ -7381,7 +7921,11 @@
         "alias": "Calcium Sandoz",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Calcium Carbonate",
+      "de": "Calciumcarbonat"
+    }
   },
   {
     "canonical_code": "potassium-chloride",
@@ -7436,7 +7980,11 @@
         "alias": "Slow-K",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Potassium Chloride",
+      "de": "Kaliumchlorid"
+    }
   },
   {
     "canonical_code": "magnesium",
@@ -7483,7 +8031,11 @@
         "alias": "Magnesiocard",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Magnesium",
+      "de": "Magnesium"
+    }
   },
   {
     "canonical_code": "lactulose",
@@ -7538,7 +8090,11 @@
         "alias": "Duphalac",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Lactulose",
+      "de": "Laktulose"
+    }
   },
   {
     "canonical_code": "loperamide",
@@ -7593,7 +8149,11 @@
         "alias": "Imodium",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Loperamide",
+      "de": "Loperamid"
+    }
   },
   {
     "canonical_code": "mebeverine",
@@ -7644,6 +8204,10 @@
         "alias": "Duspatalin",
         "language": "ch"
       }
-    ]
+    ],
+    "display_names": {
+      "en": "Mebeverine",
+      "de": "Mebeverin"
+    }
   }
 ]

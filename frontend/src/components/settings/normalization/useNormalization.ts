@@ -1,5 +1,13 @@
-import { message, type UiMessage } from "@/i18n/messages";
-import { useCallback, useEffect, useState } from "react";
+import { updateNormalizationCache } from "@/hooks/data";
+import { useTranslation } from "react-i18next";
+import { sortTerms } from "@/lib/terminology";
+import {
+  message,
+  termMessage,
+  type TermMessage,
+  type UiMessage,
+} from "@/i18n/messages";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "@/api/client";
 import { getErrorMessage } from "@/lib/errors";
@@ -23,6 +31,7 @@ import { type AutoMergeProposal } from "./AutoMergePanel";
  * effect deps. The tab consumes exactly what it computed before.
  */
 export function useNormalization() {
+  const { i18n } = useTranslation();
   const confirm = useConfirm();
   const { toast } = useToast();
   const location = useLocation();
@@ -64,7 +73,7 @@ export function useNormalization() {
   const [linkedDocs, setLinkedDocs] = useState<any[] | null>(null);
   const [linkedDocsFor, setLinkedDocsFor] = useState<{
     id: number;
-    name: string;
+    name: string | TermMessage;
   } | null>(null);
   const [linkedLoading, setLinkedLoading] = useState(false);
 
@@ -211,7 +220,10 @@ export function useNormalization() {
     }
   };
 
-  const handleViewDocuments = async (id: number, name: string) => {
+  const handleViewDocuments = async (
+    id: number,
+    name: string | TermMessage,
+  ) => {
     setLinkedDocsFor({ id, name });
     setLinkedDocs(null);
     setLinkedLoading(true);
@@ -253,9 +265,11 @@ export function useNormalization() {
     }
   };
 
-  const handleDelete = async (id: number, name: string) => {
+  const handleDelete = async (id: number, name: string | TermMessage) => {
     const ok = await confirm({
-      title: message("feedback.delete", { value0: String(name) }),
+      title: message("feedback.delete", {
+        value0: name,
+      }),
       description: message(
         "feedback.referencesFromDocumentsEncountersImagingAndLabResultsWillBe",
       ),
@@ -290,8 +304,7 @@ export function useNormalization() {
       const targetEntry = autoMergeEntries.find(
         (e: any) => e.id === proposal.target_id,
       );
-      const targetLabel =
-        targetEntry?.canonical_display || `#${proposal.target_id}`;
+      const targetLabel = termMessage(targetEntry, `#${proposal.target_id}`);
       const ok = await confirm(
         buildBulkConfirm({
           count: sources.length,
@@ -441,10 +454,26 @@ export function useNormalization() {
     loadList();
   };
 
+  const handleDisplayNamesSaved = (updated: NormItem) => {
+    updateNormalizationCache(normType, updated);
+    setDetail(updated);
+    setNormItems((items) =>
+      items.map((item) =>
+        item.id === updated.id ? { ...item, ...updated } : item,
+      ),
+    );
+  };
+
+  const localizedItems = useMemo(
+    () => sortTerms(normItems),
+    [normItems, i18n.resolvedLanguage],
+  );
+
   return {
+    handleDisplayNamesSaved,
     normType,
     setNormType,
-    normItems,
+    normItems: localizedItems,
     normFilter,
     setNormFilter,
     searchQuery,

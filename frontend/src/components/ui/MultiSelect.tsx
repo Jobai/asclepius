@@ -8,6 +8,7 @@ import PickerShell, { PickerOption } from "@/components/ui/PickerShell";
 export interface MultiSelectOption {
   value: string;
   label: string;
+  searchText?: string;
 }
 
 export interface MultiSelectProps {
@@ -47,7 +48,9 @@ export default function MultiSelect({
 
   const filtered = search
     ? options.filter((o) =>
-        o.label.toLowerCase().includes(search.toLowerCase()),
+        [o.label, o.searchText || ""].some((text) =>
+          text.toLowerCase().includes(search.toLowerCase()),
+        ),
       )
     : options;
 

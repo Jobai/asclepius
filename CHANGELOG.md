@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Preferred English/German names for all 518 bundled lab tests, specialties,
+  diagnoses and medication ingredients. Names follow the UI language in
+  normalization, clinical views, charts, pickers and doctor shares. Existing
+  databases receive a one-time backfill; editors can change or clear either
+  language without changing canonical codes, aliases or report text. Bilingual
+  and alias search, localized sorting and merge preservation are covered by tests.
+
 - English/German translations across login/setup, patients, documents and viewers,
   clinical views/charts, chat, files, sharing, and settings. Counts, form validation,
   upload outcomes, and prompt-editor help follow the selected UI language while

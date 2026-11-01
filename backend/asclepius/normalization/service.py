@@ -2,6 +2,7 @@
 
 import aiosqlite
 
+from asclepius.normalization.display_names import TERM_TABLES, attach_display_names
 from asclepius.pipeline.entity_matching import canonicalize_code
 
 # Whitelist of valid table and column names for normalization queries.
@@ -60,6 +61,9 @@ class NormService:
         self.main_table = _validate_table(tables["main"])
         self.alias_table = _validate_table(tables["aliases"])
         self.fk_col = _validate_column(tables["fk"])
+        self.term_type = next(
+            (key for key, value in TERM_TABLES.items() if value[0] == self.main_table), None
+        )
         # Support multiple reference tables (for doctors/facilities that are referenced
         # from documents, encounters, etc.) — backward-compatible with single ref_table
         if "ref_tables" in tables:
@@ -83,10 +87,19 @@ class NormService:
     ) -> list[dict]:
         """List all normalization entries with alias/unreviewed counts.
 
-        Uses a single query with JOINs instead of N+1 per-row queries.
+        Batches preferred names and aliases instead of querying per row.
         """
         if search:
-            like = f"%{search}%"
+            like = f"%{search.casefold()}%"
+            label_search = ""
+            params = [like, like, like]
+            if self.term_type:
+                _, labels, fk = TERM_TABLES[self.term_type]
+                label_search = (
+                    f" OR EXISTS (SELECT 1 FROM {labels} l "
+                    f"WHERE l.{fk} = m.id AND unicode_casefold(l.label) LIKE ?)"
+                )
+                params.append(like)
             query = f"""
                 SELECT m.*,
                        COUNT(DISTINCT a_all.id) AS alias_count,
@@ -95,11 +108,11 @@ class NormService:
                 LEFT JOIN {self.alias_table} a_all ON a_all.{self.fk_col} = m.id
                 LEFT JOIN {self.alias_table} a_unrev ON a_unrev.{self.fk_col} = m.id AND a_unrev.auto_mapped = 1
                 LEFT JOIN {self.alias_table} a_search ON a_search.{self.fk_col} = m.id
-                WHERE m.canonical_display LIKE ? OR m.canonical_code LIKE ? OR a_search.alias LIKE ?
+                WHERE unicode_casefold(m.canonical_display) LIKE ? OR unicode_casefold(m.canonical_code) LIKE ? OR unicode_casefold(a_search.alias) LIKE ? {label_search}
                 GROUP BY m.id
                 ORDER BY m.canonical_display
             """
-            cursor = await self.db.execute(query, (like, like, like))
+            cursor = await self.db.execute(query, params)
         else:
             query = f"""
                 SELECT m.*,
@@ -119,6 +132,16 @@ class NormService:
             if filter_unreviewed and item.get("unreviewed_count", 0) == 0:
                 continue
             items.append(item)
+        if self.term_type:
+            await attach_display_names(self.db, items, self.term_type)
+        # Dropdowns search locally, including aliases in either language.
+        by_id = {item["id"]: item for item in items}
+        for item in items:
+            item["search_terms"] = []
+        cursor = await self.db.execute(f"SELECT {self.fk_col}, alias FROM {self.alias_table}")
+        for row in await cursor.fetchall():
+            if row[0] in by_id:
+                by_id[row[0]]["search_terms"].append(row[1])
         return items
 
     async def get_with_aliases(self, norm_id: int) -> dict | None:
@@ -134,10 +157,16 @@ class NormService:
             (norm_id,),
         )
         item["aliases"] = [dict(r) for r in await alias_cursor.fetchall()]
+        if self.term_type:
+            await attach_display_names(self.db, [item], self.term_type)
         return item
 
     async def update(
-        self, norm_id: int, canonical_code: str | None, canonical_display: str | None
+        self,
+        norm_id: int,
+        canonical_code: str | None,
+        canonical_display: str | None,
+        display_names: dict[str, str | None] | None = None,
     ) -> dict:
         updates = {}
         if canonical_code is not None:
@@ -154,7 +183,22 @@ class NormService:
             set_clause = ", ".join(f"{k} = ?" for k in updates)
             values = list(updates.values()) + [norm_id]
             await self.db.execute(f"UPDATE {self.main_table} SET {set_clause} WHERE id = ?", values)
-            await self.db.commit()
+
+        if display_names is not None and self.term_type:
+            _, labels, fk = TERM_TABLES[self.term_type]
+            for language, label in display_names.items():
+                if label:
+                    await self.db.execute(
+                        f"INSERT INTO {labels} ({fk}, language, label) VALUES (?, ?, ?) "
+                        f"ON CONFLICT ({fk}, language) DO UPDATE SET label = excluded.label",
+                        (norm_id, language, label),
+                    )
+                else:
+                    await self.db.execute(
+                        f"DELETE FROM {labels} WHERE {fk} = ? AND language = ?",
+                        (norm_id, language),
+                    )
+        await self.db.commit()
 
         return await self.get_with_aliases(norm_id)
 
@@ -327,6 +371,23 @@ class NormService:
         # Insert the source's own name as an alias on the target, so future extractions
         # of the source name resolve to the target via _upsert_* alias lookup.
         await self._copy_source_name_as_alias(source_id, target_id)
+
+        if self.term_type:
+            _, labels, fk = TERM_TABLES[self.term_type]
+            # The target wins conflicts. Preserve every source name as a
+            # searchable alias, and fill languages missing on the target.
+            await self.db.execute(
+                f"INSERT INTO {self.alias_table} ({self.fk_col}, alias, language, auto_mapped) "
+                f"SELECT ?, l.label, l.language, 0 FROM {labels} l WHERE l.{fk} = ? "
+                f"AND NOT EXISTS (SELECT 1 FROM {self.alias_table} a "
+                f"WHERE a.{self.fk_col} = ? AND a.alias = l.label COLLATE NOCASE)",
+                (target_id, source_id, target_id),
+            )
+            await self.db.execute(
+                f"INSERT OR IGNORE INTO {labels} ({fk}, language, label) "
+                f"SELECT ?, language, label FROM {labels} WHERE {fk} = ?",
+                (target_id, source_id),
+            )
 
         # Move aliases
         await self.db.execute(

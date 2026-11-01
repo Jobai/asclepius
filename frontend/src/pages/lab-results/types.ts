@@ -1,3 +1,4 @@
+import type { TermDisplayNames } from "@/lib/terminology";
 export interface LabRow {
   id: number;
   document_id: number | null;
@@ -7,6 +8,7 @@ export interface LabRow {
   document_missing: number; // SQLite returns 0/1
   patient_id: number;
   test_name_original: string;
+  test_display_names?: TermDisplayNames;
   test_name_canonical: string | null;
   canonical_code: string | null;
   value: number | null;

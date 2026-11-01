@@ -9,6 +9,7 @@ export interface ComboboxOption {
   label: string;
   /** Small secondary text on the same row. */
   hint?: string;
+  searchText?: string;
 }
 
 export interface ComboboxProps {
@@ -69,7 +70,10 @@ export default function Combobox({
     const q = search.trim();
     if (!q) return options;
     return options.filter(
-      (o) => fuzzyMatch(q, o.label) || (o.hint ? fuzzyMatch(q, o.hint) : false),
+      (o) =>
+        fuzzyMatch(q, o.label) ||
+        (o.hint ? fuzzyMatch(q, o.hint) : false) ||
+        (o.searchText ? fuzzyMatch(q, o.searchText) : false),
     );
   }, [options, search]);
 

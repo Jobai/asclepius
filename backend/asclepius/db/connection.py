@@ -30,6 +30,14 @@ async def _apply_pragmas(db: aiosqlite.Connection) -> None:
     immediately under the documented two-container (core + share) deployment.
     """
     db.row_factory = aiosqlite.Row
+    # SQLite's built-in LIKE/NOCASE only fold ASCII; German UI searches
+    # must also match e.g. HÄMOGLOBIN against Hämoglobin.
+    await db.create_function(
+        "unicode_casefold",
+        1,
+        lambda value: value.casefold() if isinstance(value, str) else value,
+        deterministic=True,
+    )
     await db.execute("PRAGMA journal_mode=WAL")
     await db.execute("PRAGMA foreign_keys=ON")
     await db.execute("PRAGMA busy_timeout=5000")

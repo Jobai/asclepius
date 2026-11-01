@@ -1,3 +1,4 @@
+import type { TermDisplayNames } from "@/lib/terminology";
 import { createResource } from "./createResource";
 import type { Patient } from "@/types";
 
@@ -11,6 +12,8 @@ export interface NormEntry {
   id: number;
   canonical_code?: string | null;
   canonical_display: string;
+  display_names?: TermDisplayNames;
+  search_terms?: string[];
   name?: string | null;
   slug?: string | null;
   alias_count?: number;
@@ -35,6 +38,22 @@ export const useDiagnoses = createResource<NormEntry[]>(
 export const useMedications = createResource<NormEntry[]>(
   "/normalization/medications",
 );
+
+/** Keep already loaded pickers in sync after a preferred-name edit. */
+export function updateNormalizationCache(normType: string, updated: NormEntry) {
+  const resources: Partial<Record<string, typeof useLabTests>> = {
+    lab_tests: useLabTests,
+    specialties: useSpecialties,
+    diagnoses: useDiagnoses,
+    medications: useMedications,
+  };
+  const resource = resources[normType];
+  resource?.updateCached((items) =>
+    items.map((item) =>
+      item.id === updated.id ? { ...item, ...updated } : item,
+    ),
+  );
+}
 export const usePatients = createResource<Patient[]>("/patients");
 
 export {

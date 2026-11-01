@@ -1,3 +1,9 @@
+import {
+  sortTerms,
+  termLabel,
+  termMatches,
+  diagnosisLabel,
+} from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useMemo, useRef, useState } from "react";
@@ -21,11 +27,13 @@ import {
  * the same backend.
  */
 function DiagnosisHeading({
+  displayValue,
   value,
   encounterId,
   onSaved,
 }: {
   value: string;
+  displayValue?: string;
   encounterId: number;
   onSaved: () => void;
 }) {
@@ -131,7 +139,7 @@ function DiagnosisHeading({
       className="group flex w-full items-center gap-2 text-left rounded px-1 -mx-1 hover:bg-accent/30"
     >
       <span className="flex-1 text-base font-semibold truncate">
-        {value || (
+        {displayValue || value || (
           <span className="text-muted-foreground italic font-normal">
             {tx("clinical:features.encountersSection.noDiagnosisClickToAdd")}
           </span>
@@ -176,8 +184,8 @@ function IcdCodeSelect({
   // Map the current value back to a diagnosis row (if any) for the
   // display label. Falls back to just the raw code when the user typed
   // a code we don't have in norm_diagnoses.
-  const options = (
-    Array.isArray(diagnoses.data) ? diagnoses.data : []
+  const options = sortTerms(
+    Array.isArray(diagnoses.data) ? diagnoses.data : [],
   ) as any[];
   const codedOptions = useMemo(
     () => options.filter((o: any) => (o.icd10_code || "").trim()),
@@ -216,8 +224,7 @@ function IcdCodeSelect({
   const filtered = q
     ? codedOptions.filter((o: any) => {
         const code = (o.icd10_code || "").toLowerCase();
-        const name = (o.canonical_display || "").toLowerCase();
-        return code.includes(q) || name.includes(q);
+        return code.includes(q) || termMatches(o, q);
       })
     : codedOptions.slice(0, 50);
 
@@ -291,7 +298,7 @@ function IcdCodeSelect({
                     {opt.icd10_code}
                   </span>
                   <span className="truncate text-muted-foreground">
-                    {opt.canonical_display}
+                    {termLabel(opt)}
                   </span>
                 </button>
               );
@@ -304,7 +311,7 @@ function IcdCodeSelect({
 
   // Pill view: compact monospace badge that triggers the search panel.
   // Empty state shows a discreet "+ ICD-10" affordance.
-  const tooltip = currentRow?.canonical_display || undefined;
+  const tooltip = termLabel(currentRow) || undefined;
   return (
     <button
       onClick={() => {
@@ -381,9 +388,16 @@ export function EncountersSection({
             <div className="flex-1 min-w-0">
               <DiagnosisHeading
                 value={enc.diagnosis_original || ""}
+                displayValue={diagnosisLabel(enc)}
                 encounterId={enc.id}
                 onSaved={onUpdated || (() => {})}
               />
+              {enc.diagnosis_original &&
+                diagnosisLabel(enc) !== enc.diagnosis_original && (
+                  <p className="mt-0.5 text-sm text-muted-foreground whitespace-pre-wrap">
+                    {enc.diagnosis_original}
+                  </p>
+                )}
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
               <IcdCodeSelect

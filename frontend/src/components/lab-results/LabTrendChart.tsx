@@ -1,3 +1,5 @@
+import type { TermDisplayNames } from "@/lib/terminology";
+import { labLabel } from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { useTranslation } from "react-i18next";
@@ -35,6 +37,7 @@ interface LabRow {
   reference_range_low: number | null;
   reference_range_high: number | null;
   canonical_code: string | null;
+  test_display_names?: TermDisplayNames;
   test_name_canonical: string | null;
   test_name_original: string | null;
 }
@@ -107,8 +110,7 @@ export default function LabTrendChart({ rows, selectedCodes }: Props) {
   const labelByCode: Record<string, string> = {};
   for (const r of usable) {
     if (r.canonical_code && !labelByCode[r.canonical_code]) {
-      labelByCode[r.canonical_code] =
-        r.test_name_canonical || r.canonical_code || r.test_name_original || "";
+      labelByCode[r.canonical_code] = labLabel(r) || r.canonical_code || "";
     }
   }
 

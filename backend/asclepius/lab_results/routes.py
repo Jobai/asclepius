@@ -9,6 +9,7 @@ import aiosqlite
 from asclepius.auth.session import get_current_user
 from asclepius.authz import require_patient_access
 from asclepius.db.connection import get_db
+from asclepius.normalization.display_names import attach_display_names
 
 router = APIRouter()
 
@@ -94,8 +95,12 @@ async def list_lab_results(
         params.append(current_user["id"])
 
     if test_name:
-        conditions.append("(lr.test_name_original LIKE ? OR nlt.canonical_display LIKE ?)")
-        params.extend([f"%{test_name}%", f"%{test_name}%"])
+        conditions.append("""(unicode_casefold(lr.test_name_original) LIKE ? OR unicode_casefold(nlt.canonical_display) LIKE ?
+            OR EXISTS (SELECT 1 FROM norm_lab_test_labels l
+                       WHERE l.norm_lab_test_id = nlt.id AND unicode_casefold(l.label) LIKE ?)
+            OR EXISTS (SELECT 1 FROM norm_lab_test_aliases a
+                       WHERE a.norm_lab_test_id = nlt.id AND unicode_casefold(a.alias) LIKE ?))""")
+        params.extend([f"%{test_name.casefold()}%"] * 4)
     if date_from:
         conditions.append("lr.test_date >= ?")
         params.append(date_from)
@@ -130,7 +135,9 @@ async def list_lab_results(
 
     cursor = await db.execute(query, params)
     rows = await cursor.fetchall()
-    return {"items": [dict(r) for r in rows]}
+    items = [dict(r) for r in rows]
+    await attach_display_names(db, items, "lab_tests", "norm_lab_test_id", "test_display_names")
+    return {"items": items}
 
 
 @router.get("/orphans")
@@ -168,7 +175,9 @@ async def list_orphan_lab_results(
         ORDER BY lr.test_date DESC, lr.id DESC
     """
     cursor = await db.execute(query, params)
-    return {"items": [dict(r) for r in await cursor.fetchall()]}
+    items = [dict(r) for r in await cursor.fetchall()]
+    await attach_display_names(db, items, "lab_tests", "norm_lab_test_id", "test_display_names")
+    return {"items": items}
 
 
 @router.get("/timeline")
@@ -182,19 +191,32 @@ async def lab_timeline(
     await require_patient_access(db, patient_id, current_user)
 
     cursor = await db.execute(
-        """SELECT lr.test_date, lr.value, lr.value_text, lr.unit,
+        """SELECT lr.test_date, lr.value, lr.value_text, lr.unit, lr.norm_lab_test_id,
                   lr.reference_range_low, lr.reference_range_high, lr.is_abnormal,
                   nlt.canonical_display
            FROM lab_results lr
            LEFT JOIN norm_lab_tests nlt ON lr.norm_lab_test_id = nlt.id
            WHERE lr.patient_id = ?
-             AND (lr.test_name_original LIKE ? OR nlt.canonical_display LIKE ?
-                  OR nlt.canonical_code = ?)
+             AND (unicode_casefold(lr.test_name_original) LIKE ? OR unicode_casefold(nlt.canonical_display) LIKE ?
+                  OR nlt.canonical_code = ?
+                  OR EXISTS (SELECT 1 FROM norm_lab_test_labels l
+                             WHERE l.norm_lab_test_id = nlt.id AND unicode_casefold(l.label) LIKE ?)
+                  OR EXISTS (SELECT 1 FROM norm_lab_test_aliases a
+                             WHERE a.norm_lab_test_id = nlt.id AND unicode_casefold(a.alias) LIKE ?))
            ORDER BY lr.test_date ASC""",
-        (patient_id, f"%{test_name}%", f"%{test_name}%", test_name),
+        (
+            patient_id,
+            f"%{test_name.casefold()}%",
+            f"%{test_name.casefold()}%",
+            test_name,
+            f"%{test_name.casefold()}%",
+            f"%{test_name.casefold()}%",
+        ),
     )
     rows = await cursor.fetchall()
-    return {"data": [dict(r) for r in rows]}
+    items = [dict(r) for r in rows]
+    await attach_display_names(db, items, "lab_tests", "norm_lab_test_id", "test_display_names")
+    return {"data": items}
 
 
 @router.post("")

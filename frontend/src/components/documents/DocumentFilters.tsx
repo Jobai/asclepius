@@ -1,3 +1,4 @@
+import { sortTerms, termLabel, termSearchText } from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { useMemo, useRef, useState } from "react";
@@ -173,7 +174,7 @@ export default function DocumentFilters({
         const s = specialties.find(
           (x: any) => (x.canonical_code || x.canonical_display) === v,
         );
-        return s?.canonical_display || s?.canonical_code || v;
+        return termLabel(s) || v;
       },
       () => onChange({ specialtyFilter: [] }),
     );
@@ -265,9 +266,10 @@ export default function DocumentFilters({
         label={tx("common:columns.specialty")}
         options={[
           { value: "__blank__", label: ui("status.blank") },
-          ...specialties.map((s: any) => ({
+          ...sortTerms(specialties).map((s: any) => ({
             value: s.canonical_code || s.canonical_display,
-            label: s.canonical_display || s.canonical_code,
+            label: termLabel(s),
+            searchText: termSearchText(s),
           })),
         ]}
         selected={specialtyFilter}

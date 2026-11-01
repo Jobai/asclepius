@@ -10862,6 +10862,31 @@
               }
             ],
             "title": "Canonical Display"
+          },
+          "display_names": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 250
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "propertyNames": {
+                  "enum": ["en", "de"]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Names"
           }
         },
         "type": "object",

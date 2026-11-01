@@ -1,3 +1,4 @@
+import { labLabel } from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
 import {
@@ -21,7 +22,7 @@ import type { LabRow } from "./types";
  * matching the original ``canonicalOptions.length > 0`` render gate.
  */
 export function TrendChartPanel({ rows }: { rows: LabRow[] }) {
-  const { t: tx } = useFeatureTranslation([
+  const { t: tx, i18n } = useFeatureTranslation([
     "common",
     "auth",
     "documents",
@@ -43,21 +44,32 @@ export function TrendChartPanel({ rows }: { rows: LabRow[] }) {
   const canonicalOptions = useMemo(() => {
     const byCode = new Map<
       string,
-      { code: string; label: string; count: number }
+      { code: string; label: string; searchText: string; count: number }
     >();
     for (const r of rows) {
       if (!r.canonical_code) continue;
       if (!r.test_date || r.value == null) continue;
       const e = byCode.get(r.canonical_code) || {
         code: r.canonical_code,
-        label: r.test_name_canonical || r.canonical_code,
+        label: labLabel(r) || r.canonical_code,
+        searchText: [
+          r.test_name_canonical,
+          r.test_name_original,
+          ...Object.values(r.test_display_names || {}),
+        ]
+          .filter(Boolean)
+          .join(" "),
         count: 0,
       };
       e.count += 1;
       byCode.set(r.canonical_code, e);
     }
-    return [...byCode.values()].sort((a, b) => b.count - a.count);
-  }, [rows]);
+    return [...byCode.values()].sort(
+      (a, b) =>
+        b.count - a.count ||
+        a.label.localeCompare(b.label, i18n.resolvedLanguage),
+    );
+  }, [rows, i18n.resolvedLanguage]);
 
   // Subsequence fuzzy match: every char of the query must appear in order in
   // the candidate. Lightweight, no extra dep — and good enough to find
@@ -79,7 +91,10 @@ export function TrendChartPanel({ rows }: { rows: LabRow[] }) {
     if (!q && !showAllTests) return [];
     if (!q) return canonicalOptions;
     return canonicalOptions.filter(
-      (o) => fuzzyMatch(q, o.label) || fuzzyMatch(q, o.code),
+      (o) =>
+        fuzzyMatch(q, o.label) ||
+        fuzzyMatch(q, o.code) ||
+        fuzzyMatch(q, o.searchText),
     );
   }, [canonicalOptions, chartSearch, showAllTests]);
 
