@@ -1,3 +1,4 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
 import { useEffect, useRef, useState } from "react";
 import {
   Brain,
@@ -17,7 +18,7 @@ export interface AttachedModelRowProps {
   onToggle: () => void;
   onEdit: () => void;
   onRemove: () => void;
-  onTest: () => Promise<{ ok: boolean; message: string }>;
+  onTest: () => Promise<{ ok: boolean; message: UiMessage }>;
 }
 
 const RESULT_VISIBLE_MS = 6000;
@@ -39,10 +40,12 @@ export default function AttachedModelRow({
         ? "text-warning bg-warning-soft"
         : "text-success bg-success-soft";
 
+  const renderMessage = useMessage();
   const [testing, setTesting] = useState(false);
-  const [result, setResult] = useState<{ ok: boolean; message: string } | null>(
-    null,
-  );
+  const [result, setResult] = useState<{
+    ok: boolean;
+    message: UiMessage;
+  } | null>(null);
   const clearTimer = useRef<number | null>(null);
 
   useEffect(
@@ -93,14 +96,16 @@ export default function AttachedModelRow({
                 ? "bg-success-soft text-success"
                 : "bg-destructive-soft text-destructive"
             }`}
-            title={result.message}
+            title={renderMessage(result.message)}
           >
             {result.ok ? (
               <Check className="h-3 w-3" />
             ) : (
               <X className="h-3 w-3" />
             )}
-            <span className="truncate max-w-[42ch]">{result.message}</span>
+            <span className="truncate max-w-[42ch]">
+              {renderMessage(result.message)}
+            </span>
           </div>
         ) : showModelSubline ? (
           <div className="truncate text-xs text-muted-foreground">

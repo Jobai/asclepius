@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/errors";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message as uiMessage } from "@/i18n/messages";
 import { useEffect, useState } from "react";
@@ -122,29 +123,9 @@ export default function ShareTranslateMenu({
       );
       onQueued?.();
     } catch (err: any) {
-      const status = err?.response?.status;
-      const retryAfter = err?.response?.headers?.["retry-after"];
-      const detail = err?.response?.data?.detail;
-      if (status === 429 && retryAfter) {
-        setError(
-          uiMessage("feedback.tryAgainInS", { value0: String(retryAfter) }),
-        );
-      } else if (status === 503) {
-        setError(
-          detail ||
-            uiMessage(
-              "feedback.translationTemporarilyUnavailableAskTheSenderToRetryLater",
-            ),
-        );
-      } else if (detail) {
-        setError(typeof detail === "string" ? detail : JSON.stringify(detail));
-      } else {
-        setError(
-          uiMessage("feedback.translationRequestFailed646ed", {
-            value0: String(status ? ` (HTTP ${status})` : ""),
-          }),
-        );
-      }
+      setError(
+        getErrorMessage(err, uiMessage("feedback.translationRequestFailed")),
+      );
     } finally {
       setSubmitting(false);
     }

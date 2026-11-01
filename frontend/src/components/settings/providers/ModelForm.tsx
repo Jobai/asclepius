@@ -1,3 +1,5 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import type { Credential } from "@/types";
 import { getErrorMessage } from "@/lib/errors";
@@ -25,6 +27,7 @@ export default function ModelForm({
 }: ModelFormProps) {
   const kinds = allowedKindsFor(cred.type);
   const isEdit = !!initial;
+  const renderMessage = useMessage();
   const [kind, setKind] = useState<ModelKind>(
     initial ? initial.kind : kinds[0],
   );
@@ -34,7 +37,7 @@ export default function ModelForm({
     initial?.timeout || (kind === "vision" ? 600 : 120),
   );
   const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  const [err, setErr] = useState<UiMessage | null>(null);
 
   const needsModelField = !(
     cred.type === "google_vision" || cred.type === "tesseract_remote"
@@ -55,7 +58,7 @@ export default function ModelForm({
         timeout,
       );
     } catch (e: any) {
-      setErr(getErrorMessage(e, "Failed to save model"));
+      setErr(getErrorMessage(e, message("errors:unexpected")));
     } finally {
       setSaving(false);
     }
@@ -138,7 +141,9 @@ export default function ModelForm({
         </button>
       </div>
       {err && (
-        <div className="text-xs text-destructive">{err}</div>
+        <div className="text-xs text-destructive">
+          {renderMessage(err ?? undefined)}
+        </div>
       )}
     </div>
   );

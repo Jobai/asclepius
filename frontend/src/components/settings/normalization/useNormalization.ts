@@ -1,4 +1,4 @@
-import { message } from "@/i18n/messages";
+import { message, type UiMessage } from "@/i18n/messages";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "@/api/client";
@@ -46,7 +46,7 @@ export function useNormalization() {
   const [editCode, setEditCode] = useState("");
   const [editDisplay, setEditDisplay] = useState("");
   const [editing, setEditing] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<UiMessage | null>(null);
 
   const [newAlias, setNewAlias] = useState("");
   const [newAliasLang, setNewAliasLang] = useState("");
@@ -158,10 +158,10 @@ export function useNormalization() {
     try {
       await api.post(`/normalization/${normType}/merge-batch`, payload);
     } catch (err: any) {
-      const d = getErrorMessage(err, "Merge failed");
+      const d = getErrorMessage(err, message("feedback.mergeFailed"));
       toast({
         title: message("feedback.mergeFailed"),
-        description: typeof d === "string" ? d : JSON.stringify(d),
+        description: d,
         variant: "error",
       });
       return;
@@ -204,8 +204,8 @@ export function useNormalization() {
       setDetail(res.data);
       loadList();
     } catch (err: any) {
-      const d = getErrorMessage(err, "Save failed");
-      setSaveError(typeof d === "string" ? d : JSON.stringify(d));
+      const d = getErrorMessage(err, message("feedback.saveFailed"));
+      setSaveError(d);
     }
   };
 
@@ -240,10 +240,10 @@ export function useNormalization() {
         Array.isArray(res.data?.entries) ? res.data.entries : [],
       );
     } catch (err: any) {
-      const d = getErrorMessage(err, "Auto-merge request failed");
+      const d = getErrorMessage(err, message("errors:unexpected"));
       toast({
         title: message("feedback.autoMergeFailed"),
-        description: typeof d === "string" ? d : JSON.stringify(d),
+        description: d,
         variant: "error",
       });
     } finally {
@@ -263,10 +263,10 @@ export function useNormalization() {
     try {
       await api.delete(`/normalization/${normType}/${id}`);
     } catch (err: any) {
-      const d = getErrorMessage(err, "Delete failed");
+      const d = getErrorMessage(err, message("feedback.deleteFailed"));
       toast({
         title: message("feedback.deleteFailed"),
-        description: typeof d === "string" ? d : JSON.stringify(d),
+        description: d,
         variant: "error",
       });
       return;
@@ -420,10 +420,10 @@ export function useNormalization() {
     try {
       await api.post(`/normalization/${normType}/merge-batch`, payload);
     } catch (err: any) {
-      const d = getErrorMessage(err, "Merge failed");
+      const d = getErrorMessage(err, message("feedback.mergeFailed"));
       toast({
         title: message("feedback.mergeFailed"),
-        description: typeof d === "string" ? d : JSON.stringify(d),
+        description: d,
         variant: "error",
       });
       return;

@@ -5,6 +5,7 @@ import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 
 import shareApi from "@/api/shareClient";
+import { getErrorMessage } from "@/lib/errors";
 import ShareDocumentViewer, {
   type NormalizedBbox,
 } from "@/components/share/ShareDocumentViewer";
@@ -112,7 +113,7 @@ export default function ShareDocumentPage() {
       setError(
         status === 410 || status === 404
           ? message("feedback.documentNotAvailableInThisShare")
-          : message("feedback.failedToLoadDocument"),
+          : getErrorMessage(err, message("feedback.failedToLoadDocument")),
       );
     } finally {
       setLoading(false);
@@ -163,13 +164,9 @@ export default function ShareDocumentPage() {
       });
       refresh();
     } catch (err: any) {
-      const status = err?.response?.status;
-      const detail = err?.response?.data?.detail;
       toast({
         title: message("feedback.translationRequestFailed"),
-        description:
-          (typeof detail === "string" ? detail : null) ||
-          message("feedback.http", { value0: String(status ?? "?") }),
+        description: getErrorMessage(err),
         variant: "error",
       });
     }

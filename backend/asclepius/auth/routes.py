@@ -1,9 +1,11 @@
 """Authentication API routes (login / logout / me)."""
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 from pydantic import BaseModel, Field
 
 import aiosqlite
+
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.auth import rate_limit
 from asclepius.auth.preferences import (
     UiLanguage,
@@ -74,7 +76,8 @@ async def login(
         window_seconds=config.auth.login_window_seconds,
         record=False,  # we record only on failure below
     ):
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.RATE_LIMITED,
             status_code=429,
             detail="Too many failed login attempts. Try again later.",
         )
@@ -93,7 +96,9 @@ async def login(
             window_seconds=config.auth.login_window_seconds,
             record=True,
         )
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise ApiError(
+            code=ErrorCode.INVALID_CREDENTIALS, status_code=401, detail="Invalid credentials"
+        )
 
     rate_limit.clear(ip, body.username)
 

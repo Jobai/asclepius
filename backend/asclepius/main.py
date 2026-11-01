@@ -21,10 +21,18 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from asclepius.api_errors import (
+    ApiError,
+    ApiErrorResponse,
+    HTTPValidationError,
+    api_error_handler,
+    validation_error_handler,
+)
 from asclepius.config import get_config
 from asclepius.db.init import initialize_database
 from asclepius.middleware import (
@@ -202,7 +210,18 @@ def create_app() -> FastAPI:
         description="Self-hosted medical records manager",
         version="1.6.1",
         lifespan=lifespan,
+        responses={
+            "default": {
+                "model": ApiErrorResponse,
+                "description": "API error (code and params are additive when available)",
+            },
+            # A default response suppresses FastAPI's automatic 422 schema.
+            # Keep the existing typed validation contract alongside the code.
+            422: {"model": HTTPValidationError, "description": "Validation Error"},
+        },
     )
+    app.add_exception_handler(ApiError, api_error_handler)
+    app.add_exception_handler(RequestValidationError, validation_error_handler)
 
     config = get_config()
 

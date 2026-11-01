@@ -19,6 +19,7 @@ import hashlib
 import aiosqlite
 from fastapi import Depends, HTTPException, Request
 
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.config import get_config
 from asclepius.db.connection import get_db
 from asclepius.share.service import get_session, session_active, touch_session
@@ -51,10 +52,11 @@ def session_tag(session_id: str) -> str:
 
 def session_ended(detail: str) -> HTTPException:
     """The exception every share endpoint raises for a dead session."""
-    return HTTPException(
+    return ApiError(
         status_code=SESSION_ENDED_STATUS,
         detail=detail,
         headers=SESSION_ENDED_HEADERS,
+        code=ErrorCode.SHARE_SESSION_ENDED,
     )
 
 

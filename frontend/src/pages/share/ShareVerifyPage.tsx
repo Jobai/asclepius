@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { KeyRound } from "lucide-react";
 
 import shareApi from "@/api/shareClient";
+import { getErrorMessage } from "@/lib/errors";
 import ShareLogo from "@/components/share/ShareLogo";
 import Button from "@/components/ui/Button";
 
@@ -74,16 +75,24 @@ export default function ShareVerifyPage() {
       }
     } catch (err: any) {
       const status = err?.response?.status;
-      if (status === 422 || status === 401) {
+      if (!err?.response?.data?.code && (status === 422 || status === 401)) {
         setError(
           message("feedback.invalidOrExpiredCodeUseTheLatestCodeYouReceived"),
         );
       } else if (status === 410) {
-        setError(message("feedback.thisShareLinkIsNoLongerActiveAskTheSender"));
-      } else if (status === 429) {
-        setError(message("feedback.tooManyAttemptsWaitAndTryAgain"));
+        setError(
+          getErrorMessage(
+            err,
+            message("feedback.thisShareLinkIsNoLongerActiveAskTheSender"),
+          ),
+        );
       } else {
-        setError(message("feedback.verificationFailedPleaseRetry"));
+        setError(
+          getErrorMessage(
+            err,
+            message("feedback.verificationFailedPleaseRetry"),
+          ),
+        );
       }
     } finally {
       setSubmitting(false);

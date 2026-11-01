@@ -1,4 +1,4 @@
-import { message } from "@/i18n/messages";
+import { message, type UiMessage } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import { KeyRound, Plus } from "lucide-react";
 import api from "@/api/client";
@@ -153,7 +153,7 @@ export default function ProvidersTab() {
     } catch (e: any) {
       toast({
         title: message("feedback.failedToDeleteProvider"),
-        description: getErrorMessage(e, ""),
+        description: getErrorMessage(e, message("errors:unexpected")),
         variant: "error",
       });
     } finally {
@@ -288,7 +288,7 @@ export default function ProvidersTab() {
 
   const testModel = async (
     m: AttachedModel,
-  ): Promise<{ ok: boolean; message: string }> => {
+  ): Promise<{ ok: boolean; message: UiMessage }> => {
     const path =
       m.kind === "vision"
         ? "/settings/test-vision-provider"
@@ -303,17 +303,13 @@ export default function ProvidersTab() {
       }
       return { ok: false, message: data.error || "Test failed" };
     } catch (e: any) {
-      const message =
-        e?.response?.data?.error ||
-        e?.response?.data?.detail ||
-        e?.message ||
-        "Network error";
+      const failureMessage = getErrorMessage(e);
       toast({
         title: message("feedback.testFailedFor", { value0: String(m.name) }),
-        description: message,
+        description: failureMessage,
         variant: "error",
       });
-      return { ok: false, message };
+      return { ok: false, message: failureMessage };
     }
   };
 

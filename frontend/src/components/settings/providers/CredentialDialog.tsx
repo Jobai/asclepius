@@ -1,3 +1,5 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
+import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { Save } from "lucide-react";
 import type { Credential } from "@/types";
@@ -24,6 +26,7 @@ export default function CredentialDialog({
   onSave,
   onClose,
 }: CredentialDialogProps) {
+  const renderMessage = useMessage();
   const [name, setName] = useState(initial.name || "");
   const [type, setType] = useState(initial.type || "ollama");
   const [baseUrl, setBaseUrl] = useState(initial.base_url || "");
@@ -41,7 +44,7 @@ export default function CredentialDialog({
     ).join(","),
   );
   const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  const [err, setErr] = useState<UiMessage | null>(null);
 
   const typeInfo = CREDENTIAL_TYPES.find((t) => t.value === type);
   const hasSavedKey = !!initial.has_api_key;
@@ -77,7 +80,7 @@ export default function CredentialDialog({
       });
       onClose();
     } catch (e: any) {
-      setErr(getErrorMessage(e, "Failed to save"));
+      setErr(getErrorMessage(e, message("feedback.failedToSave")));
     } finally {
       setSaving(false);
     }
@@ -213,7 +216,7 @@ export default function CredentialDialog({
 
         {err && (
           <div className="rounded-md bg-destructive-soft text-destructive px-3 py-2 text-sm">
-            {err}
+            {renderMessage(err ?? undefined)}
           </div>
         )}
 
@@ -221,7 +224,11 @@ export default function CredentialDialog({
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={saving} className="px-4 py-1.5">
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-4 py-1.5"
+          >
             <Save className="h-3.5 w-3.5" />
             {saving ? "Saving..." : "Save"}
           </Button>

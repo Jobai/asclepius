@@ -212,9 +212,9 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
       }
       onSaved();
     } catch (err: any) {
-      const d = getErrorMessage(err, "Failed to save");
+      const d = getErrorMessage(err, message("feedback.failedToSave"));
       toast({
-        title: typeof d === "string" ? d : message("feedback.failedToSave"),
+        title: d,
         variant: "error",
       });
     } finally {
@@ -415,9 +415,9 @@ export default function LabResultsEditor({
       await api.delete(`/lab-results/${id}`);
       onChange();
     } catch (err: any) {
-      const d = getErrorMessage(err, "Failed to delete");
+      const d = getErrorMessage(err, message("feedback.failedToDelete"));
       toast({
-        title: typeof d === "string" ? d : message("feedback.failedToDelete"),
+        title: d,
         variant: "error",
       });
     }

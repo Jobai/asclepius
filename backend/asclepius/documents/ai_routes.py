@@ -8,6 +8,7 @@ import aiosqlite
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.auth.session import get_current_user
 from asclepius.config import get_config
 from asclepius.db.connection import get_db
@@ -106,7 +107,7 @@ async def edit_document_with_ai(
     """
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     await require_document_access(db, doc, current_user, write=True)
 
@@ -142,7 +143,8 @@ async def edit_document_with_ai(
 
     llm = _build_general_llm_provider(config)
     if llm is None:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.SERVICE_UNAVAILABLE,
             status_code=503,
             detail="General LLM is not configured. Set it under Settings → Document Analysis → General.",
         )
@@ -168,7 +170,7 @@ async def edit_document_with_ai(
     prompt = (
         "You are editing a medical document's metadata. The user wants to make changes.\n\n"
         f"Current data: {_json.dumps(current_data)}\n\n"
-        f"Known patients: {_json.dumps([p.get('name','') for p in context.get('patient_list', [])[:20]])}\n\n"
+        f"Known patients: {_json.dumps([p.get('name', '') for p in context.get('patient_list', [])[:20]])}\n\n"
         f'User instruction: "{body.instruction}"\n\n'
         "Return ONLY a JSON object with the fields that should change. Use these field names:\n"
         "- patient_name, doc_type, event_date (YYYY-MM-DD), issued_date (YYYY-MM-DD)\n"
@@ -195,8 +197,10 @@ async def edit_document_with_ai(
                 wait = 30 * (attempt + 1)
                 await _asyncio.sleep(wait)
                 if attempt == 2:
-                    raise HTTPException(
-                        status_code=429, detail="Rate limited \u2014 please try again in a minute"
+                    raise ApiError(
+                        code=ErrorCode.RATE_LIMITED,
+                        status_code=429,
+                        detail="Rate limited \u2014 please try again in a minute",
                     )
             else:
                 raise HTTPException(status_code=500, detail=f"LLM error: {str(e)}")
@@ -332,7 +336,8 @@ async def _scoped_page_reprocess(
     in_range = [p for p in requested_pages if 1 <= p <= total_pages] if total_pages else []
     out_of_range = [p for p in requested_pages if p not in in_range]
     if not in_range:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail=(
                 f"None of the requested pages exist — document has "
@@ -372,7 +377,8 @@ async def _scoped_page_reprocess(
         }
 
     if re_run_ocr and not ocr_provider_id:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail="re_run_ocr=true requires ocr_provider_id.",
         )
@@ -382,14 +388,16 @@ async def _scoped_page_reprocess(
     if llm_provider_id and not any(
         p.id == llm_provider_id and p.enabled for p in config.llm.providers
     ):
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail=f"LLM provider '{llm_provider_id}' is not configured or disabled.",
         )
     if ocr_provider_id and not any(
         p.id == ocr_provider_id and p.enabled for p in config.ocr.providers
     ):
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail=f"OCR provider '{ocr_provider_id}' is not configured or disabled.",
         )
@@ -399,12 +407,14 @@ async def _scoped_page_reprocess(
     # worker failure.
     rel_path = doc.get("file_path") or ""
     if re_run_ocr and not rel_path:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail="Document has no file on disk to re-OCR.",
         )
     if re_run_ocr and not (Path(config.vault.root_path) / rel_path).exists():
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail=f"File not found on disk: {rel_path}",
         )
@@ -419,7 +429,11 @@ async def _scoped_page_reprocess(
 
     queue = getattr(request.app.state, "pipeline_queue", None)
     if queue is None:
-        raise HTTPException(status_code=503, detail="Pipeline worker not running")
+        raise ApiError(
+            code=ErrorCode.SERVICE_UNAVAILABLE,
+            status_code=503,
+            detail="Pipeline worker not running",
+        )
 
     enqueue_job(
         queue,
@@ -467,7 +481,7 @@ async def generate_filename(
     """Generate an AI-suggested filename based on document metadata."""
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     await require_document_access(db, doc, current_user)
 
@@ -512,7 +526,8 @@ async def generate_filename(
     config = get_config()
     llm = _build_general_llm_provider(config)
     if llm is None:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.SERVICE_UNAVAILABLE,
             status_code=503,
             detail="General LLM is not configured. Set it under Settings → Document Analysis → General.",
         )

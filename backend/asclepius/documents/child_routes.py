@@ -9,10 +9,11 @@ correction next time we re-process a similar doc.
 
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, Field
 
 import aiosqlite
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.audit.service import audit_log, get_client_ip
 from asclepius.auth.session import get_current_user
 from asclepius.authz import require_document_access
@@ -39,11 +40,13 @@ async def _row_with_doc(
     cursor = await db.execute(f"SELECT * FROM {table} WHERE id = ?", (row_id,))
     row = await cursor.fetchone()
     if not row:
-        raise HTTPException(status_code=404, detail=f"{table[:-1].title()} not found")
+        raise ApiError(
+            code=ErrorCode.NOT_FOUND, status_code=404, detail=f"{table[:-1].title()} not found"
+        )
     rec = dict(row)
     doc = await get_document(db, rec["document_id"])
     if not doc:
-        raise HTTPException(status_code=404, detail="Parent document missing")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Parent document missing")
     return rec, doc
 
 

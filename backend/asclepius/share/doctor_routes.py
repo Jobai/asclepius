@@ -18,10 +18,11 @@ import re
 from pathlib import Path
 
 import aiosqlite
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import Response as FastAPIResponse
 from pydantic import BaseModel, Field
 
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.audit.service import get_client_ip
 from asclepius.config import first_enabled_provider, get_config
 from asclepius.db.connection import get_db
@@ -141,10 +142,12 @@ async def _ensure_doc_in_share(db: aiosqlite.Connection, share_id: int, doc_id: 
     state for the doctor.
     """
     if not await share_service.share_has_document(db, share_id, doc_id):
-        raise HTTPException(status_code=410, detail="Document not in this share")
+        raise ApiError(
+            code=ErrorCode.NOT_FOUND, status_code=410, detail="Document not in this share"
+        )
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=410, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=410, detail="Document not found")
     return doc
 
 
@@ -336,14 +339,14 @@ async def share_head_file(
 ):
     doc = await _ensure_doc_in_share(db, session["share_id"], doc_id)
     if not doc.get("file_path"):
-        raise HTTPException(status_code=410, detail="File not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=410, detail="File not found")
     cfg = get_config()
     try:
         path = safe_vault_join(Path(cfg.vault.root_path), doc["file_path"])
     except UnsafePathError:
-        raise HTTPException(status_code=400, detail="Invalid file path")
+        raise ApiError(code=ErrorCode.INVALID_REQUEST, status_code=400, detail="Invalid file path")
     if not path.is_file():
-        raise HTTPException(status_code=410, detail="File not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=410, detail="File not found")
     return Response(status_code=200)
 
 
@@ -363,14 +366,14 @@ async def share_serve_file(
     cfg = get_config()
     doc = await _ensure_doc_in_share(db, session["share_id"], doc_id)
     if not doc.get("file_path"):
-        raise HTTPException(status_code=410, detail="File not available")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=410, detail="File not available")
 
     try:
         path = safe_vault_join(Path(cfg.vault.root_path), doc["file_path"])
     except UnsafePathError:
-        raise HTTPException(status_code=400, detail="Invalid file path")
+        raise ApiError(code=ErrorCode.INVALID_REQUEST, status_code=400, detail="Invalid file path")
     if not path.is_file():
-        raise HTTPException(status_code=410, detail="File not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=410, detail="File not found")
 
     suffix = path.suffix.lower()
     headers = {
@@ -402,7 +405,8 @@ async def share_serve_file(
                 user_agent=request.headers.get("user-agent"),
                 detail={"reason": "watermark_failed"},
             )
-            raise HTTPException(
+            raise ApiError(
+                code=ErrorCode.DOCUMENT_UNAVAILABLE,
                 status_code=503,
                 detail="Document temporarily unavailable. Please retry.",
             )
@@ -425,7 +429,8 @@ async def share_serve_file(
                 user_agent=request.headers.get("user-agent"),
                 detail={"reason": "watermark_failed"},
             )
-            raise HTTPException(
+            raise ApiError(
+                code=ErrorCode.DOCUMENT_UNAVAILABLE,
                 status_code=503,
                 detail="Document temporarily unavailable. Please retry.",
             )
@@ -433,7 +438,8 @@ async def share_serve_file(
         # Non-watermarkable formats are not exposed to the doctor surface.
         # Refusing rather than streaming raw bytes keeps the "no leak"
         # guarantee tight.
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.UNSUPPORTED_FILE_TYPE,
             status_code=415,
             detail="This file type cannot be displayed in the share view",
         )
@@ -484,15 +490,17 @@ async def share_region_thumbnail(
     )
     row = await cursor.fetchone()
     if not row or not row["thumbnail_path"]:
-        raise HTTPException(status_code=410, detail="Thumbnail not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=410, detail="Thumbnail not found")
 
     cfg = get_config()
     try:
         disk_path = safe_vault_join(Path(cfg.vault.root_path), row["thumbnail_path"])
     except UnsafePathError:
-        raise HTTPException(status_code=400, detail="Invalid thumbnail path")
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST, status_code=400, detail="Invalid thumbnail path"
+        )
     if not disk_path.is_file():
-        raise HTTPException(status_code=410, detail="Thumbnail file missing")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=410, detail="Thumbnail file missing")
 
     return FileResponse(
         path=str(disk_path),
@@ -520,7 +528,8 @@ async def share_translate(
     cfg = get_config()
     doc = await _ensure_doc_in_share(db, session["share_id"], doc_id)
     if not (doc.get("ocr_text") or "").strip():
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.TRANSLATION_UNAVAILABLE,
             status_code=400,
             detail="Document has not been OCR'd yet, so translation is unavailable.",
         )
@@ -532,7 +541,9 @@ async def share_translate(
         per_share_per_hour=cfg.share.translate_per_share_per_hour,
     )
     if not allowed:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.RATE_LIMITED_RETRY,
+            params={"retry_after": retry_after},
             status_code=429,
             detail=f"Try again in {retry_after}s",
             headers={"Retry-After": str(retry_after)},
@@ -540,7 +551,11 @@ async def share_translate(
 
     queue = getattr(request.app.state, "pipeline_queue", None)
     if queue is None:
-        raise HTTPException(status_code=503, detail="Pipeline worker not running")
+        raise ApiError(
+            code=ErrorCode.SERVICE_UNAVAILABLE,
+            status_code=503,
+            detail="Pipeline worker not running",
+        )
 
     from asclepius.pipeline.watcher import enqueue_job
 
@@ -567,7 +582,8 @@ async def share_translate(
     allowed_languages = list(cfg.llm.translation_allowed_languages) or ["English"]
     target_language = body.target_language or cfg.llm.translation_target_language or "English"
     if target_language not in allowed_languages:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.LANGUAGE_NOT_ALLOWED,
             status_code=400,
             detail=f"Language '{target_language}' is not in the configured allow-list",
         )
@@ -620,7 +636,8 @@ async def share_translate_region(
     cfg = get_config()
     doc = await _ensure_doc_in_share(db, session["share_id"], doc_id)
     if not doc.get("file_path"):
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail="Document has no file to crop.",
         )
@@ -637,7 +654,9 @@ async def share_translate_region(
         per_share_per_hour=cfg.share.translate_per_share_per_hour,
     )
     if not allowed:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.RATE_LIMITED_RETRY,
+            params={"retry_after": retry_after},
             status_code=429,
             detail=f"Try again in {retry_after}s",
             headers={"Retry-After": str(retry_after)},
@@ -645,7 +664,11 @@ async def share_translate_region(
 
     queue = getattr(request.app.state, "pipeline_queue", None)
     if queue is None:
-        raise HTTPException(status_code=503, detail="Pipeline worker not running")
+        raise ApiError(
+            code=ErrorCode.SERVICE_UNAVAILABLE,
+            status_code=503,
+            detail="Pipeline worker not running",
+        )
 
     from asclepius.pipeline.watcher import enqueue_job
 
@@ -683,7 +706,8 @@ async def share_translate_region(
     allowed_languages = list(cfg.llm.translation_allowed_languages) or ["English"]
     target_language = body.target_language or cfg.llm.translation_target_language or "English"
     if target_language not in allowed_languages:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.LANGUAGE_NOT_ALLOWED,
             status_code=400,
             detail=f"Language '{target_language}' is not in the configured allow-list",
         )

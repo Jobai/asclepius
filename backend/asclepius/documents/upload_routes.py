@@ -16,6 +16,7 @@ import aiosqlite
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from pydantic import BaseModel
 
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.auth.session import get_current_user
 from asclepius.config import get_config
 from asclepius.db.connection import get_db, open_db
@@ -135,7 +136,9 @@ def _extract_zip(
     to defend against zip-bomb DoS.
     """
     if not zipfile.is_zipfile(str(zip_path)):
-        raise HTTPException(status_code=400, detail="Not a valid zip archive")
+        raise ApiError(
+            code=ErrorCode.INVALID_ARCHIVE, status_code=400, detail="Not a valid zip archive"
+        )
 
     # Pick a unique extraction folder under the user's inbox.
     zip_stem = safe_filename(zip_path.stem) or "bundle"
@@ -145,7 +148,9 @@ def _extract_zip(
         extract_dir = inbox / f"{zip_stem}-{counter}"
         counter += 1
         if counter > 10_000:
-            raise HTTPException(status_code=409, detail="Could not allocate folder")
+            raise ApiError(
+                code=ErrorCode.CONFLICT, status_code=409, detail="Could not allocate folder"
+            )
     extract_dir.mkdir(parents=True)
 
     max_uncompressed = getattr(
@@ -162,7 +167,9 @@ def _extract_zip(
     with zipfile.ZipFile(str(zip_path), "r") as zf:
         bad = zf.testzip()
         if bad is not None:
-            raise HTTPException(status_code=400, detail=f"Corrupt zip member: {bad}")
+            raise ApiError(
+                code=ErrorCode.INVALID_ARCHIVE, status_code=400, detail=f"Corrupt zip member: {bad}"
+            )
 
         for info in zf.infolist():
             if info.is_dir():
@@ -170,9 +177,11 @@ def _extract_zip(
             # Reject explicit zip-bomb expansion before touching the disk.
             total_uncompressed += info.file_size
             if total_uncompressed > max_uncompressed:
-                raise HTTPException(
+                raise ApiError(
+                    code=ErrorCode.UPLOAD_TOO_LARGE,
+                    params={"max_bytes": max_uncompressed},
                     status_code=413,
-                    detail=(f"Zip uncompressed size exceeds " f"{max_uncompressed} bytes"),
+                    detail=(f"Zip uncompressed size exceeds {max_uncompressed} bytes"),
                 )
 
             # Build a safe destination preserving sub-folders but rejecting
@@ -331,7 +340,9 @@ async def upload_document(
     try:
         dest = safe_vault_join(inbox, safe_name)
     except UnsafePathError as exc:
-        raise HTTPException(status_code=400, detail=f"Unsafe filename: {exc}")
+        raise ApiError(
+            code=ErrorCode.UNSAFE_FILENAME, status_code=400, detail=f"Unsafe filename: {exc}"
+        )
 
     # Handle name conflicts without leaking info about other uploads.
     counter = 1
@@ -341,7 +352,9 @@ async def upload_document(
         dest = inbox / f"{stem}_{counter}{suffix}"
         counter += 1
         if counter > 10_000:  # pragma: no cover — extreme edge case
-            raise HTTPException(status_code=409, detail="Could not allocate filename")
+            raise ApiError(
+                code=ErrorCode.CONFLICT, status_code=409, detail="Could not allocate filename"
+            )
 
     # Stream to disk with a size cap — avoids loading huge files in RAM and
     # bounds disk use per request.
@@ -355,7 +368,9 @@ async def upload_document(
                     break
                 written += len(chunk)
                 if written > max_bytes:
-                    raise HTTPException(
+                    raise ApiError(
+                        code=ErrorCode.UPLOAD_TOO_LARGE,
+                        params={"max_bytes": max_bytes},
                         status_code=413,
                         detail=f"Upload exceeds {max_bytes} bytes",
                     )
@@ -374,7 +389,8 @@ async def upload_document(
     mime = _detect_mime(dest)
     if not any(mime.startswith(p) for p in config.server.allowed_upload_mime_prefixes):
         dest.unlink(missing_ok=True)
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.UNSUPPORTED_FILE_TYPE,
             status_code=415,
             detail=f"Unsupported file type: {mime or 'unknown'}",
         )
@@ -388,7 +404,7 @@ async def upload_document(
             role = await check_patient_access(db, user_id, patient_id)
         if not role:
             dest.unlink(missing_ok=True)
-            raise HTTPException(status_code=403, detail="No access to patient")
+            raise ApiError(code=ErrorCode.FORBIDDEN, status_code=403, detail="No access to patient")
 
     # ── Zip-bundle branch ─────────────────────────────────────────────
     # DICOM exam zips contain many extension-less files (e.g. ``I1000000``)
@@ -413,7 +429,11 @@ async def upload_document(
         except Exception as exc:
             logger.exception("Zip extraction failed for %s", dest.name)
             dest.unlink(missing_ok=True)
-            raise HTTPException(status_code=400, detail=f"Could not extract zip: {exc}")
+            raise ApiError(
+                code=ErrorCode.INVALID_ARCHIVE,
+                status_code=400,
+                detail=f"Could not extract zip: {exc}",
+            )
         # Original zip is no longer needed — its members live in the inbox.
         dest.unlink(missing_ok=True)
         result = {
@@ -541,7 +561,9 @@ async def schedule_batch(
 ):
     """Schedule a batch of documents for later processing."""
     if not body.document_ids:
-        raise HTTPException(status_code=400, detail="No document IDs provided")
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST, status_code=400, detail="No document IDs provided"
+        )
 
     count = 0
     for doc_id in body.document_ids:

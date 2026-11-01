@@ -1,3 +1,4 @@
+import { useMessage, type UiMessage } from "@/i18n/messages";
 import React from "react";
 import {
   Check,
@@ -25,7 +26,7 @@ export interface NormalizationRowProps {
   editing: boolean;
   editCode: string;
   editDisplay: string;
-  saveError: string | null;
+  saveError: UiMessage | null;
   newAlias: string;
   newAliasLang: string;
   showMerge: boolean;
@@ -225,6 +226,7 @@ function ExpandedDetail({
   | "onDeleteAlias"
   | "onConfirmAll"
 >) {
+  const renderMessage = useMessage();
   return (
     <div className="space-y-4 max-w-2xl">
       {/* Canonical Entry */}
@@ -268,7 +270,7 @@ function ExpandedDetail({
             </div>
             {saveError && (
               <p className="text-xs text-destructive">
-                Save failed: {saveError}
+                {renderMessage(saveError ?? undefined)}
               </p>
             )}
           </div>
@@ -326,7 +328,11 @@ function ExpandedDetail({
                     </span>
                   )}
                   {a.auto_mapped === 1 && (
-                    <Badge variant="warning" size="sm" className="flex-shrink-0">
+                    <Badge
+                      variant="warning"
+                      size="sm"
+                      className="flex-shrink-0"
+                    >
                       auto
                     </Badge>
                   )}

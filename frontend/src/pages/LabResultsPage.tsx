@@ -120,10 +120,10 @@ export default function LabResultsPage() {
       setEditVals({});
       await load();
     } catch (err: any) {
-      const d = getErrorMessage(err, "Save failed");
+      const d = getErrorMessage(err, message("feedback.saveFailed"));
       toast({
         title: message("feedback.saveFailed"),
-        description: typeof d === "string" ? d : JSON.stringify(d),
+        description: d,
         variant: "error",
       });
     }
@@ -152,10 +152,10 @@ export default function LabResultsPage() {
       await api.delete(`/lab-results/${row.id}`);
       await load();
     } catch (err: any) {
-      const d = getErrorMessage(err, "Delete failed");
+      const d = getErrorMessage(err, message("feedback.deleteFailed"));
       toast({
         title: message("feedback.deleteFailed"),
-        description: typeof d === "string" ? d : JSON.stringify(d),
+        description: d,
         variant: "error",
       });
     }
@@ -167,10 +167,10 @@ export default function LabResultsPage() {
       await api.delete(`/lab-results/${row.id}`);
       setOrphans((prev) => prev.filter((o) => o.id !== row.id));
     } catch (err: any) {
-      const d = getErrorMessage(err, "Delete failed");
+      const d = getErrorMessage(err, message("feedback.deleteFailed"));
       toast({
         title: message("feedback.deleteFailed"),
-        description: typeof d === "string" ? d : JSON.stringify(d),
+        description: d,
         variant: "error",
       });
     }

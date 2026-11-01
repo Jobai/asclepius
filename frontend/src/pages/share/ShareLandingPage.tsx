@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
 
 import shareApi from "@/api/shareClient";
+import { getErrorMessage } from "@/lib/errors";
 import ShareLogo from "@/components/share/ShareLogo";
 import Button from "@/components/ui/Button";
 
@@ -66,22 +67,14 @@ export default function ShareLandingPage() {
       navigate(`/share/${token}/verify`);
     } catch (err: any) {
       const status = err?.response?.status;
-      if (status === 429) {
-        setError(
-          message("feedback.tooManyRequestsPleaseWaitAFewMinutesAndTry"),
-        );
-      } else if (status === 502) {
-        // Email delivery failed at the SMTP layer. The OTP was not
-        // sent and there is nothing the doctor can do — they need to
-        // ask the practice to switch this share to manual delivery.
-        setError(
-          "Could not deliver the access code by email. " +
-            "Please ask the person who shared this link with you " +
-            "to switch this share to manual delivery.",
-        );
-      } else {
-        setError(message("feedback.couldNotRequestACodePleaseRetry"));
-      }
+      setError(
+        getErrorMessage(
+          err,
+          status === 502
+            ? message("errors:codes.otp_delivery_failed")
+            : message("feedback.couldNotRequestACodePleaseRetry"),
+        ),
+      );
     } finally {
       setSubmitting(false);
     }

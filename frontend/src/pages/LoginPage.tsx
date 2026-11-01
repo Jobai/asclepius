@@ -1,4 +1,5 @@
 import { useMessage, type UiMessage } from "@/i18n/messages";
+import { getErrorMessage } from "@/lib/errors";
 import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -42,8 +43,10 @@ export default function LoginPage() {
     try {
       await login(username, password);
       navigate("/");
-    } catch {
-      setError(message("feedback.invalidUsernameOrPassword"));
+    } catch (err) {
+      setError(
+        getErrorMessage(err, message("feedback.invalidUsernameOrPassword")),
+      );
     } finally {
       setLoading(false);
     }

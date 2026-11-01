@@ -191,7 +191,7 @@ function GeneralLlmCard({
     } catch (e: any) {
       toast({
         title: message("feedback.failedToSaveGeneralLlm"),
-        description: getErrorMessage(e, ""),
+        description: getErrorMessage(e, message("errors:unexpected")),
         variant: "error",
       });
     }
@@ -356,7 +356,7 @@ function TranslationDefaultsCard({
     } catch (e: any) {
       toast({
         title: message("feedback.failedToSaveTranslationDefaults"),
-        description: getErrorMessage(e, ""),
+        description: getErrorMessage(e, message("errors:unexpected")),
         variant: "error",
       });
     }

@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/errors";
 import { message as uiMessage } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import { Languages, Save, Check } from "lucide-react";
@@ -84,14 +85,9 @@ export default function LanguageTab() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (e: unknown) {
-      const message =
-        (e as { response?: { data?: { detail?: string } } })?.response?.data
-          ?.detail ||
-        (e as Error)?.message ||
-        "";
       toast({
         title: uiMessage("feedback.failedToSaveTranslationLanguageSettings"),
-        description: message,
+        description: getErrorMessage(e),
         variant: "error",
       });
     }

@@ -1,5 +1,58 @@
 {
   "unexpected": "Something went wrong. Please try again.",
   "network": "The server could not be reached. Please check your connection.",
-  "required": "Please enter {{field}}."
+  "required": "Please enter {{field}}.",
+  "codes": {
+    "invalid_credentials": "Invalid username or password.",
+    "authentication_required": "Please sign in to continue.",
+    "session_expired": "Your session has expired. Please sign in again.",
+    "forbidden": "You do not have permission to perform this action.",
+    "not_found": "The requested item could not be found.",
+    "conflict": "This action conflicts with existing data. Refresh and try again.",
+    "invalid_request": "The request could not be processed. Please check your entries.",
+    "upload_too_large": "The file is too large to upload.",
+    "upload_limit": "The upload exceeds the limit of {{max_bytes, number}} bytes.",
+    "unsupported_file_type": "This file type is not supported.",
+    "invalid_archive": "The archive is invalid, damaged, or exceeds the extraction limits.",
+    "unsafe_filename": "The filename or destination is not allowed.",
+    "rate_limited": "Too many requests. Please wait and try again.",
+    "rate_limited_retry": "Please try again in {{retry_after, number}} seconds.",
+    "share_expired": "This share link is no longer active. Ask the sender for a new link.",
+    "share_code_invalid": "The access code is invalid or expired. Use the latest code or request a new one.",
+    "share_queue_expired": "Your waiting position has expired. Open the share link and request a new code.",
+    "share_session_ended": "Your share session has ended. Open the share link to regain access.",
+    "service_unavailable": "This service is temporarily unavailable. Please try again later.",
+    "otp_delivery_failed": "The access code could not be delivered by email. Ask the sender for help.",
+    "translation_unavailable": "Translation is unavailable until the document has been processed.",
+    "language_not_allowed": "The selected translation language is not allowed.",
+    "document_unavailable": "The document is temporarily unavailable. Please try again later."
+  },
+  "local": {
+    "network": "The server could not be reached. Please check your connection.",
+    "timeout": "The request timed out. Please try again.",
+    "budget": "Requests have been paused after repeated access errors. Please wait before trying again."
+  },
+  "validation": {
+    "invalid": "Some entries are invalid. Please check the form.",
+    "required": "{{field}} is required.",
+    "number": "Please enter a valid number for {{field}}.",
+    "invalidField": "Please check {{field}}.",
+    "tooShort": "{{field}} must contain at least {{limit, number}} characters.",
+    "tooLong": "{{field}} must contain at most {{limit, number}} characters.",
+    "extra": "The request contains an unsupported field.",
+    "json": "The request does not contain valid JSON."
+  },
+  "fields": {
+    "value": "This field",
+    "username": "Username",
+    "password": "Password",
+    "code": "Access code",
+    "ui_language": "Interface language",
+    "display_name": "Display name",
+    "patient_id": "Patient",
+    "filename": "Filename",
+    "file": "File",
+    "target_language": "Translation language"
+  },
+  "uploadsFailed": "{{uploaded, number}} uploaded, {{failed, number}} failed."
 }

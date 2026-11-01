@@ -15,9 +15,10 @@ from datetime import datetime, timedelta
 from typing import Literal
 
 import aiosqlite
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel, Field
 
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.audit.service import audit_log, get_client_ip
 from asclepius.auth.session import get_current_user
 from asclepius.config import get_config
@@ -82,7 +83,8 @@ async def _require_admin_or_owner(
     role = await check_patient_access(db, current_user["id"], patient_id)
     if role == "owner":
         return
-    raise HTTPException(
+    raise ApiError(
+        code=ErrorCode.FORBIDDEN,
         status_code=403,
         detail="Only admins or the patient owner may create shares",
     )
@@ -133,7 +135,8 @@ async def create_share(
     valid_ids = {row[0] for row in await cursor.fetchall()}
     invalid = [i for i in body.document_ids if i not in valid_ids]
     if invalid:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail=f"Documents do not belong to patient {body.patient_id}: {invalid}",
         )
@@ -146,12 +149,14 @@ async def create_share(
     # hits ``request-otp``.
     if body.otp_delivery == "email":
         if not cfg.smtp.enabled:
-            raise HTTPException(
+            raise ApiError(
+                code=ErrorCode.INVALID_REQUEST,
                 status_code=400,
                 detail="Email OTP delivery requires SMTP to be enabled in settings",
             )
         if not _EMAIL_RE.match(body.recipient_contact.strip()):
-            raise HTTPException(
+            raise ApiError(
+                code=ErrorCode.INVALID_REQUEST,
                 status_code=400,
                 detail="Recipient contact must be a valid email address for email delivery",
             )
@@ -257,11 +262,12 @@ async def add_share_documents(
     """
     share = await share_service.get_share_by_id(db, share_id)
     if not share:
-        raise HTTPException(status_code=404, detail="Share not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Share not found")
     await _require_admin_or_owner(db, current_user, share["patient_id"])
 
     if share.get("revoked_at"):
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail="Cannot add documents to a revoked share. Create a new share instead.",
         )
@@ -278,7 +284,8 @@ async def add_share_documents(
     valid_ids = {row[0] for row in await cursor.fetchall()}
     invalid = [i for i in body.document_ids if i not in valid_ids]
     if invalid:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail=f"Documents do not belong to patient {share['patient_id']}: {invalid}",
         )
@@ -311,7 +318,7 @@ async def revoke_share(
 ):
     share = await share_service.get_share_by_id(db, share_id)
     if not share:
-        raise HTTPException(status_code=404, detail="Share not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Share not found")
     await _require_admin_or_owner(db, current_user, share["patient_id"])
     await share_service.revoke_share(db, share_id)
     await audit_log(
@@ -343,7 +350,7 @@ async def purge_share(
     """
     share = await share_service.get_share_by_id(db, share_id)
     if not share:
-        raise HTTPException(status_code=404, detail="Share not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Share not found")
     # ``patient_id`` is NOT NULL and cascades on patient delete, so a live
     # share always has a resolvable patient for the ownership check even
     # when ``created_by_user_id`` points at a deleted user.
@@ -373,7 +380,7 @@ async def share_audit(
     doctor over a separate channel (phone, in-person)."""
     share = await share_service.get_share_by_id(db, share_id)
     if not share:
-        raise HTTPException(status_code=404, detail="Share not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Share not found")
     await _require_admin_or_owner(db, current_user, share["patient_id"])
 
     payload: dict = {
@@ -410,7 +417,7 @@ async def share_active_otp(
     """
     share = await share_service.get_share_by_id(db, share_id)
     if not share:
-        raise HTTPException(status_code=404, detail="Share not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Share not found")
     await _require_admin_or_owner(db, current_user, share["patient_id"])
     # Defense in depth: for email-delivery shares we never persist
     # otp_clear, so this would return None anyway. Short-circuit so
@@ -434,7 +441,7 @@ async def share_document_list(
     """
     share = await share_service.get_share_by_id(db, share_id)
     if not share:
-        raise HTTPException(status_code=404, detail="Share not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Share not found")
     await _require_admin_or_owner(db, current_user, share["patient_id"])
     return await share_service.share_documents(db, share_id)
 
@@ -458,7 +465,7 @@ async def share_sessions(
     """
     share = await share_service.get_share_by_id(db, share_id)
     if not share:
-        raise HTTPException(status_code=404, detail="Share not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Share not found")
     await _require_admin_or_owner(db, current_user, share["patient_id"])
 
     cfg = get_config()
@@ -485,7 +492,7 @@ async def share_revoke_session(
     """
     share = await share_service.get_share_by_id(db, share_id)
     if not share:
-        raise HTTPException(status_code=404, detail="Share not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Share not found")
     await _require_admin_or_owner(db, current_user, share["patient_id"])
 
     revoked = await share_service.revoke_session_by_rowid(db, share_id, rowid)
@@ -512,7 +519,7 @@ async def share_drop_queue(
     """Drop a queued waiter for this share. Idempotent."""
     share = await share_service.get_share_by_id(db, share_id)
     if not share:
-        raise HTTPException(status_code=404, detail="Share not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Share not found")
     await _require_admin_or_owner(db, current_user, share["patient_id"])
 
     deleted = await share_service.delete_queue_entry_by_rowid(db, share_id, rowid)

@@ -6,6 +6,7 @@ import aiosqlite
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.auth.session import get_current_user
 from asclepius.config import get_config
 from asclepius.db.connection import get_db
@@ -36,20 +37,30 @@ async def link_documents(
     """Link two documents together."""
     valid_types = {"invoice_for", "report_for", "imaging_for", "follow_up", "related"}
     if body.link_type not in valid_types:
-        raise HTTPException(
-            status_code=400, detail=f"Invalid link_type. Must be one of: {valid_types}"
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
+            status_code=400,
+            detail=f"Invalid link_type. Must be one of: {valid_types}",
         )
 
     if doc_id == body.target_document_id:
-        raise HTTPException(status_code=400, detail="Cannot link a document to itself")
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
+            status_code=400,
+            detail="Cannot link a document to itself",
+        )
 
     # Verify both documents exist
     source = await get_document(db, doc_id)
     if not source:
-        raise HTTPException(status_code=404, detail="Source document not found")
+        raise ApiError(
+            code=ErrorCode.NOT_FOUND, status_code=404, detail="Source document not found"
+        )
     target = await get_document(db, body.target_document_id)
     if not target:
-        raise HTTPException(status_code=404, detail="Target document not found")
+        raise ApiError(
+            code=ErrorCode.NOT_FOUND, status_code=404, detail="Target document not found"
+        )
 
     # The caller must be able to see BOTH documents, otherwise linking would
     # leak the existence (and, via GET /links, the metadata) of a document on
@@ -65,7 +76,9 @@ async def link_documents(
         (doc_id, body.target_document_id, body.target_document_id, doc_id),
     )
     if await existing.fetchone():
-        raise HTTPException(status_code=409, detail="These documents are already linked")
+        raise ApiError(
+            code=ErrorCode.CONFLICT, status_code=409, detail="These documents are already linked"
+        )
 
     try:
         cursor = await db.execute(
@@ -81,7 +94,7 @@ async def link_documents(
             "link_type": body.link_type,
         }
     except aiosqlite.IntegrityError:
-        raise HTTPException(status_code=409, detail="Link already exists")
+        raise ApiError(code=ErrorCode.CONFLICT, status_code=409, detail="Link already exists")
 
 
 @router.get("/{doc_id}/links")
@@ -93,7 +106,7 @@ async def get_links(
     """Get all linked documents for a document."""
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     await require_document_access(db, doc, current_user)
 
@@ -110,7 +123,7 @@ async def delete_link(
     """Remove a document link."""
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     await require_document_access(db, doc, current_user)
 
     cursor = await db.execute(
@@ -119,7 +132,7 @@ async def delete_link(
     )
     row = await cursor.fetchone()
     if not row:
-        raise HTTPException(status_code=404, detail="Link not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Link not found")
 
     await db.execute("DELETE FROM document_links WHERE id = ?", (link_id,))
     await db.commit()
@@ -135,17 +148,19 @@ async def suggest_document_links(
     """Use LLM to suggest related documents for linking."""
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     if not doc.get("patient_id"):
-        raise HTTPException(
-            status_code=400, detail="Document has no patient assigned — cannot suggest links"
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
+            status_code=400,
+            detail="Document has no patient assigned — cannot suggest links",
         )
 
     # Check access
     role = await check_patient_access(db, current_user["id"], doc["patient_id"])
     if not role:
-        raise HTTPException(status_code=403, detail="No access")
+        raise ApiError(code=ErrorCode.FORBIDDEN, status_code=403, detail="No access")
 
     # Get all other documents for the same patient
     cursor = await db.execute(
@@ -179,7 +194,8 @@ async def suggest_document_links(
     config = get_config()
     llm = _build_general_llm_provider(config)
     if llm is None:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.SERVICE_UNAVAILABLE,
             status_code=503,
             detail="General LLM is not configured. Set it under Settings → Document Analysis → General.",
         )
@@ -239,7 +255,7 @@ async def get_relevant_documents(
     """Get AI-suggested relevant documents. Returns cached results if available."""
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     if not doc.get("patient_id"):
         return {"suggestions": []}
@@ -247,7 +263,7 @@ async def get_relevant_documents(
     # Check access
     role = await check_patient_access(db, current_user["id"], doc["patient_id"])
     if not role:
-        raise HTTPException(status_code=403, detail="No access")
+        raise ApiError(code=ErrorCode.FORBIDDEN, status_code=403, detail="No access")
 
     # Get existing links to exclude
     existing_links = await get_document_links(db, doc_id)
@@ -287,7 +303,8 @@ async def get_relevant_documents(
     config = get_config()
     llm = _build_general_llm_provider(config)
     if llm is None:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.SERVICE_UNAVAILABLE,
             status_code=503,
             detail="General LLM is not configured. Set it under Settings → Document Analysis → General.",
         )

@@ -637,7 +637,7 @@ function AccessModal({
     } catch (err: any) {
       toast({
         title: message("feedback.saveFailed"),
-        description: getErrorMessage(err, ""),
+        description: getErrorMessage(err, message("errors:unexpected")),
         variant: "error",
       });
     }

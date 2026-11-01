@@ -156,9 +156,8 @@ export default function BackupTab() {
       await loadSettings();
     } catch (e: any) {
       toast({
-        title: message("feedback.backupFaileddee17", {
-          value0: String(getErrorMessage(e, "unknown")),
-        }),
+        title: message("feedback.backupFailed"),
+        description: getErrorMessage(e),
         variant: "error",
       });
     }

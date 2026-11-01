@@ -9,10 +9,11 @@ import shutil
 from pathlib import Path
 from typing import Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel, Field
 
 import aiosqlite
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.auth.session import get_current_user, require_role
 from asclepius.audit.service import audit_log, get_client_ip
 from asclepius.authz import require_document_access
@@ -139,7 +140,11 @@ async def retry_all_failed(
 
     queue = getattr(request.app.state, "pipeline_queue", None)
     if queue is None:
-        raise HTTPException(status_code=503, detail="Pipeline worker not running")
+        raise ApiError(
+            code=ErrorCode.SERVICE_UNAVAILABLE,
+            status_code=503,
+            detail="Pipeline worker not running",
+        )
 
     cursor = await db.execute("SELECT id FROM documents WHERE status = 'failed'")
     doc_ids = [row[0] for row in await cursor.fetchall()]
@@ -185,7 +190,9 @@ async def list_docs(
     if patient_id is not None:
         role = await check_patient_access(db, current_user["id"], patient_id)
         if not role:
-            raise HTTPException(status_code=403, detail="No access to this patient")
+            raise ApiError(
+                code=ErrorCode.FORBIDDEN, status_code=403, detail="No access to this patient"
+            )
 
     # Accept both "doctor_id" and "doctor" parameter names
     effective_doctor = doctor_id or doctor
@@ -219,7 +226,7 @@ async def get_doc(
 ):
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     # Read access: admins, the uploader, or any patient grant (canonical rule
     # in asclepius.authz). Unclassified docs with no uploader stay admin-only.
@@ -307,7 +314,7 @@ async def update_doc(
 
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     await _require_write_access(db, current_user, doc)
 
     updates = {}
@@ -320,11 +327,15 @@ async def update_doc(
         if field_name == "patient_id" and value is not None:
             role = await check_patient_access(db, current_user["id"], value)
             if not role:
-                raise HTTPException(status_code=403, detail="No access to target patient")
+                raise ApiError(
+                    code=ErrorCode.FORBIDDEN, status_code=403, detail="No access to target patient"
+                )
         updates[field_name] = value
 
     if not updates:
-        raise HTTPException(status_code=400, detail="No fields to update")
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST, status_code=400, detail="No fields to update"
+        )
 
     # doctor_name / facility_name are no longer columns — they're accepted as
     # convenience API inputs that resolve to the corresponding FK via the
@@ -397,7 +408,7 @@ async def mark_reviewed(
 
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     await _require_write_access(db, current_user, doc)
 
     if doc.get("status") not in ("needs_review", "failed"):
@@ -436,7 +447,7 @@ async def cancel_processing(
 
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     await _require_write_access(db, current_user, doc)
 
     cancelled_docs.add(doc_id)
@@ -462,7 +473,7 @@ async def delete_doc(
 
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     # Delete requires write access: admins, the uploader, or an owner/editor
     # patient grant (canonical rule in asclepius.authz). Viewers and callers
@@ -583,18 +594,22 @@ async def move_doc(
     """Reassign a document to a different patient, moving the file on disk."""
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     # Check access to source patient
     if doc["patient_id"]:
         role = await check_patient_access(db, current_user["id"], doc["patient_id"])
         if role != "owner":
-            raise HTTPException(status_code=403, detail="Only owners can move documents")
+            raise ApiError(
+                code=ErrorCode.FORBIDDEN, status_code=403, detail="Only owners can move documents"
+            )
 
     # Check access to target patient
     target_role = await check_patient_access(db, current_user["id"], body.patient_id)
     if not target_role:
-        raise HTTPException(status_code=403, detail="No access to target patient")
+        raise ApiError(
+            code=ErrorCode.FORBIDDEN, status_code=403, detail="No access to target patient"
+        )
 
     config = get_config()
     vault_root = Path(config.vault.root_path)
@@ -603,7 +618,7 @@ async def move_doc(
     cursor = await db.execute("SELECT slug FROM patients WHERE id = ?", (body.patient_id,))
     target_patient = await cursor.fetchone()
     if not target_patient:
-        raise HTTPException(status_code=404, detail="Target patient not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Target patient not found")
 
     target_slug = target_patient[0]
 
@@ -703,7 +718,7 @@ async def get_doc_stages(
     """
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     await require_document_access(db, doc, current_user)
 
@@ -742,12 +757,16 @@ async def reprocess_doc(
 
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     await _require_write_access(db, current_user, doc)
 
     queue = getattr(request.app.state, "pipeline_queue", None)
     if queue is None:
-        raise HTTPException(status_code=503, detail="Pipeline worker not running")
+        raise ApiError(
+            code=ErrorCode.SERVICE_UNAVAILABLE,
+            status_code=503,
+            detail="Pipeline worker not running",
+        )
 
     # Mark as pending immediately so the UI reflects the change.
     await update_document_status(db, doc_id, "pending")
@@ -828,18 +847,23 @@ async def translate_doc(
 
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     await _require_write_access(db, current_user, doc)
 
     if not (doc.get("ocr_text") or "").strip():
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail="Document has no OCR text yet — run OCR before translating.",
         )
 
     queue = getattr(request.app.state, "pipeline_queue", None)
     if queue is None:
-        raise HTTPException(status_code=503, detail="Pipeline worker not running")
+        raise ApiError(
+            code=ErrorCode.SERVICE_UNAVAILABLE,
+            status_code=503,
+            detail="Pipeline worker not running",
+        )
 
     cfg = get_config()
 
@@ -894,18 +918,23 @@ async def translate_region_endpoint(
 
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     await _require_write_access(db, current_user, doc)
 
     if not doc.get("file_path"):
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail="Document has no file on disk to crop.",
         )
 
     queue = getattr(request.app.state, "pipeline_queue", None)
     if queue is None:
-        raise HTTPException(status_code=503, detail="Pipeline worker not running")
+        raise ApiError(
+            code=ErrorCode.SERVICE_UNAVAILABLE,
+            status_code=503,
+            detail="Pipeline worker not running",
+        )
 
     cfg = get_config()
 
@@ -983,7 +1012,7 @@ async def delete_region_translation(
 
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     await _require_write_access(db, current_user, doc)
 
     cursor = await db.execute(
@@ -993,7 +1022,9 @@ async def delete_region_translation(
     )
     row = await cursor.fetchone()
     if not row:
-        raise HTTPException(status_code=404, detail="Region translation not found")
+        raise ApiError(
+            code=ErrorCode.NOT_FOUND, status_code=404, detail="Region translation not found"
+        )
 
     thumbnail_path = row["thumbnail_path"]
     cfg = get_config()
@@ -1031,7 +1062,7 @@ async def get_region_thumbnail(
 
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     await require_document_access(db, doc, current_user)
 
     cursor = await db.execute(
@@ -1041,15 +1072,17 @@ async def get_region_thumbnail(
     )
     row = await cursor.fetchone()
     if not row or not row["thumbnail_path"]:
-        raise HTTPException(status_code=404, detail="Thumbnail not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Thumbnail not found")
 
     cfg = get_config()
     try:
         disk_path = safe_vault_join(Path(cfg.vault.root_path), row["thumbnail_path"])
     except UnsafePathError:
-        raise HTTPException(status_code=400, detail="Invalid thumbnail path")
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST, status_code=400, detail="Invalid thumbnail path"
+        )
     if not disk_path.is_file():
-        raise HTTPException(status_code=404, detail="Thumbnail file missing")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Thumbnail file missing")
     return FileResponse(
         path=str(disk_path),
         media_type="image/png",

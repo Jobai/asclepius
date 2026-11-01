@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowUpDown, Upload } from "lucide-react";
 import api from "@/api/client";
 import { usePolling } from "@/lib/polling";
-import { getErrorMessage } from "@/lib/errors";
+import { getErrorDetails } from "@/lib/errors";
 import { usePatient } from "@/contexts/PatientContext";
 import { useConfirm } from "@/contexts/ConfirmContext";
 import FileUpload from "@/components/FileUpload";
@@ -180,10 +180,8 @@ export default function DocumentsPage() {
         await perDoc(id);
         ok += 1;
       } catch (err: any) {
-        const d = getErrorMessage(err, "failed");
-        failures.push(
-          `#${id}: ${typeof d === "string" ? d : JSON.stringify(d)}`,
-        );
+        const d = getErrorDetails(err, "failed");
+        failures.push(`#${id}: ${d}`);
       }
     }
     setBulkBusy(null);

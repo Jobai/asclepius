@@ -1,5 +1,58 @@
 {
   "unexpected": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
   "network": "Der Server ist nicht erreichbar. Bitte prüfen Sie Ihre Verbindung.",
-  "required": "Bitte geben Sie {{field}} ein."
+  "required": "Bitte geben Sie {{field}} ein.",
+  "codes": {
+    "invalid_credentials": "Benutzername oder Passwort ist ungültig.",
+    "authentication_required": "Bitte melden Sie sich an, um fortzufahren.",
+    "session_expired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+    "forbidden": "Sie haben keine Berechtigung für diese Aktion.",
+    "not_found": "Der angeforderte Eintrag wurde nicht gefunden.",
+    "conflict": "Diese Aktion steht im Konflikt mit vorhandenen Daten. Aktualisieren Sie die Ansicht und versuchen Sie es erneut.",
+    "invalid_request": "Die Anfrage konnte nicht verarbeitet werden. Bitte prüfen Sie Ihre Angaben.",
+    "upload_too_large": "Die Datei ist zu groß zum Hochladen.",
+    "upload_limit": "Der Upload überschreitet das Limit von {{max_bytes, number}} Bytes.",
+    "unsupported_file_type": "Dieses Dateiformat wird nicht unterstützt.",
+    "invalid_archive": "Das Archiv ist ungültig, beschädigt oder überschreitet die Entpackgrenzen.",
+    "unsafe_filename": "Der Dateiname oder das Ziel ist nicht zulässig.",
+    "rate_limited": "Zu viele Anfragen. Bitte warten Sie und versuchen Sie es erneut.",
+    "rate_limited_retry": "Bitte versuchen Sie es in {{retry_after, number}} Sekunden erneut.",
+    "share_expired": "Dieser Freigabelink ist nicht mehr aktiv. Bitten Sie den Absender um einen neuen Link.",
+    "share_code_invalid": "Der Zugangscode ist ungültig oder abgelaufen. Verwenden Sie den neuesten Code oder fordern Sie einen neuen an.",
+    "share_queue_expired": "Ihr Warteplatz ist abgelaufen. Öffnen Sie den Freigabelink und fordern Sie einen neuen Code an.",
+    "share_session_ended": "Ihre Freigabesitzung wurde beendet. Öffnen Sie den Freigabelink, um erneut Zugriff zu erhalten.",
+    "service_unavailable": "Dieser Dienst ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
+    "otp_delivery_failed": "Der Zugangscode konnte nicht per E-Mail zugestellt werden. Bitten Sie den Absender um Hilfe.",
+    "translation_unavailable": "Die Übersetzung ist erst nach der Dokumentverarbeitung verfügbar.",
+    "language_not_allowed": "Die ausgewählte Übersetzungssprache ist nicht zulässig.",
+    "document_unavailable": "Das Dokument ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut."
+  },
+  "local": {
+    "network": "Der Server ist nicht erreichbar. Bitte prüfen Sie Ihre Verbindung.",
+    "timeout": "Die Anfrage hat zu lange gedauert. Bitte versuchen Sie es erneut.",
+    "budget": "Anfragen wurden nach wiederholten Zugriffsfehlern angehalten. Bitte warten Sie vor einem erneuten Versuch."
+  },
+  "validation": {
+    "invalid": "Einige Angaben sind ungültig. Bitte prüfen Sie das Formular.",
+    "required": "{{field}} ist erforderlich.",
+    "number": "Bitte geben Sie für {{field}} eine gültige Zahl ein.",
+    "invalidField": "Bitte prüfen Sie {{field}}.",
+    "tooShort": "{{field}} muss mindestens {{limit, number}} Zeichen enthalten.",
+    "tooLong": "{{field}} darf höchstens {{limit, number}} Zeichen enthalten.",
+    "extra": "Die Anfrage enthält ein nicht unterstütztes Feld.",
+    "json": "Die Anfrage enthält kein gültiges JSON."
+  },
+  "fields": {
+    "value": "Dieses Feld",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "code": "Zugangscode",
+    "ui_language": "Sprache der Oberfläche",
+    "display_name": "Anzeigename",
+    "patient_id": "Patient",
+    "filename": "Dateiname",
+    "file": "Datei",
+    "target_language": "Übersetzungssprache"
+  },
+  "uploadsFailed": "{{uploaded, number}} hochgeladen, {{failed, number}} fehlgeschlagen."
 }

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Compatible API error codes and safe numeric parameters for common authentication,
+  authorization, upload, validation, and sharing failures. User-facing errors follow
+  the selected English/German UI language, including errors already on screen.
+  Existing API details, status codes, retry headers, and share-session behavior
+  remain compatible.
+
 - Personal UI-language preferences (`auto`, `en`, `de`) can be saved through
   `PATCH /api/auth/me/preferences` and read through `GET /api/auth/me`.
   Preferences persist per account for all authenticated roles. This supplies

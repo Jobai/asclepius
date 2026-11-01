@@ -1,3 +1,4 @@
+import type { UiMessage } from "@/i18n/messages";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import type { Credential } from "@/types";
 import AttachedModelRow from "./AttachedModelRow";
@@ -30,7 +31,9 @@ export interface CredentialCardProps {
   ) => Promise<void>;
   onToggleModel: (m: AttachedModel) => Promise<void>;
   onRemoveModel: (m: AttachedModel) => Promise<void>;
-  onTestModel: (m: AttachedModel) => Promise<{ ok: boolean; message: string }>;
+  onTestModel: (
+    m: AttachedModel,
+  ) => Promise<{ ok: boolean; message: UiMessage }>;
 }
 
 export const modelKey = (m: AttachedModel) => `${m.kind}-${m.entry_id}`;

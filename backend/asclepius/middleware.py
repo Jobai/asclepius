@@ -13,6 +13,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp
 
+from asclepius.api_errors import ErrorCode, error_body
 from asclepius.auth.session import COOKIE_NAME
 from asclepius.config import AppConfig
 from asclepius.share.dependencies import SHARE_COOKIE_NAME, SHARE_QUEUE_COOKIE_NAME
@@ -125,7 +126,9 @@ class CsrfMiddleware(BaseHTTPMiddleware):
                         _CSRF_HEADER,
                     )
                     return JSONResponse(
-                        {"detail": "CSRF protection: missing X-Requested-With header"},
+                        error_body(
+                            "CSRF protection: missing X-Requested-With header", ErrorCode.FORBIDDEN
+                        ),
                         status_code=403,
                     )
         return await call_next(request)
@@ -195,7 +198,11 @@ class MaxBodySizeMiddleware(BaseHTTPMiddleware):
         cl = request.headers.get("content-length")
         if cl and cl.isdigit() and int(cl) > self._max_bytes:
             return JSONResponse(
-                {"detail": f"Request body exceeds {self._max_bytes} bytes"},
+                error_body(
+                    f"Request body exceeds {self._max_bytes} bytes",
+                    ErrorCode.UPLOAD_TOO_LARGE,
+                    {"max_bytes": self._max_bytes},
+                ),
                 status_code=413,
             )
         return await call_next(request)

@@ -123,16 +123,18 @@ export default function LinksSection({
       ]);
       setSearchResults((prev) => prev.filter((d: any) => d.id !== targetId));
     } catch (err: any) {
-      const detail = err?.response?.data?.detail;
       if (err?.response?.status === 409) {
         toast({
-          title: detail || message("feedback.theseDocumentsAreAlreadyLinked"),
+          title: getErrorMessage(
+            err,
+            message("feedback.theseDocumentsAreAlreadyLinked"),
+          ),
           variant: "warning",
         });
         setSearchResults((prev) => prev.filter((d: any) => d.id !== targetId));
       } else {
         toast({
-          title: detail || message("feedback.failedToLinkDocument"),
+          title: getErrorMessage(err, message("feedback.failedToLinkDocument")),
           variant: "error",
         });
       }

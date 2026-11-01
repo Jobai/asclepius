@@ -16,6 +16,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Request, Response, 
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.audit.service import audit_log, get_client_ip
 from asclepius.auth.session import get_current_user
 from asclepius.authz import require_document_access
@@ -56,7 +57,9 @@ def _resolve_vault_file(vault_root: Path, relative_path: str) -> Path:
         return safe_vault_join(vault_root, relative_path)
     except UnsafePathError as exc:
         logger.warning("Refusing to serve unsafe path %r: %s", relative_path, exc)
-        raise HTTPException(status_code=400, detail="Invalid file path") from exc
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST, status_code=400, detail="Invalid file path"
+        ) from exc
 
 
 class RenameRequest(BaseModel):
@@ -79,7 +82,7 @@ async def head_file(
     the file is missing on disk, 403 when the caller lacks access)."""
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     if current_user.get("role") != "admin":
         allowed = False
         if doc["patient_id"]:
@@ -88,14 +91,14 @@ async def head_file(
         if not allowed and doc.get("uploaded_by_user_id") == current_user["id"]:
             allowed = True
         if not allowed:
-            raise HTTPException(status_code=403, detail="No access")
+            raise ApiError(code=ErrorCode.FORBIDDEN, status_code=403, detail="No access")
     if not doc["file_path"]:
-        raise HTTPException(status_code=404, detail="File not found on disk")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="File not found on disk")
     config = get_config()
     vault_root = Path(config.vault.root_path)
     file_path = _resolve_vault_file(vault_root, doc["file_path"])
     if not file_path.is_file():
-        raise HTTPException(status_code=404, detail="File not found on disk")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="File not found on disk")
     return Response(status_code=200)
 
 
@@ -115,7 +118,7 @@ async def serve_file(
     """
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     if current_user.get("role") != "admin":
         allowed = False
@@ -125,7 +128,7 @@ async def serve_file(
         if not allowed and doc.get("uploaded_by_user_id") == current_user["id"]:
             allowed = True
         if not allowed:
-            raise HTTPException(status_code=403, detail="No access")
+            raise ApiError(code=ErrorCode.FORBIDDEN, status_code=403, detail="No access")
 
     config = get_config()
     vault_root = Path(config.vault.root_path)
@@ -142,7 +145,9 @@ async def serve_file(
         if inbox_candidate.is_file():
             file_path = inbox_candidate
         else:
-            raise HTTPException(status_code=404, detail="File not found on disk")
+            raise ApiError(
+                code=ErrorCode.NOT_FOUND, status_code=404, detail="File not found on disk"
+            )
 
     return FileResponse(
         path=str(file_path),
@@ -168,11 +173,15 @@ async def rotate_document(
     - pages: list of 1-based page numbers to rotate, or null/empty for all pages
     """
     if body.degrees not in (90, 180, 270):
-        raise HTTPException(status_code=400, detail="Degrees must be 90, 180, or 270")
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
+            status_code=400,
+            detail="Degrees must be 90, 180, or 270",
+        )
 
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     # Rotation mutates the file — require editor/owner role on the patient
     # (or admin) to avoid a viewer being able to deface documents.
@@ -182,10 +191,14 @@ async def rotate_document(
     vault_root = Path(config.vault.root_path)
     file_path = _resolve_vault_file(vault_root, doc["file_path"])
     if not file_path.is_file():
-        raise HTTPException(status_code=404, detail="File not found on disk")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="File not found on disk")
 
     if file_path.suffix.lower() != ".pdf":
-        raise HTTPException(status_code=400, detail="Rotation is only supported for PDF files")
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
+            status_code=400,
+            detail="Rotation is only supported for PDF files",
+        )
 
     try:
         pdf = fitz.open(str(file_path))
@@ -195,7 +208,8 @@ async def rotate_document(
             for p in body.pages:
                 if p < 1 or p > total_pages:
                     pdf.close()
-                    raise HTTPException(
+                    raise ApiError(
+                        code=ErrorCode.INVALID_REQUEST,
                         status_code=400,
                         detail=f"Page {p} is out of range (document has {total_pages} pages)",
                     )
@@ -254,13 +268,15 @@ async def rename_document(
     """
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
 
     await _require_write_access(db, current_user, doc)
 
     raw_new = body.filename.strip()
     if not raw_new:
-        raise HTTPException(status_code=400, detail="Filename cannot be empty")
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST, status_code=400, detail="Filename cannot be empty"
+        )
 
     # Lock the extension to the original — prevents content-type confusion.
     # Exception: when the original has *no* extension at all (e.g. imaging
@@ -272,14 +288,15 @@ async def rename_document(
     if not new_ext:
         raw_new += old_ext
     elif old_ext and new_ext != old_ext:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail=f"Cannot change file extension from {old_ext} to {new_ext}",
         )
 
     new_name = safe_filename(raw_new)
     if not new_name:
-        raise HTTPException(status_code=400, detail="Invalid filename")
+        raise ApiError(code=ErrorCode.INVALID_REQUEST, status_code=400, detail="Invalid filename")
 
     config = get_config()
     vault_root = Path(config.vault.root_path)
@@ -301,7 +318,11 @@ async def rename_document(
                     new_name = candidate.name
                     break
             else:
-                raise HTTPException(status_code=409, detail="Could not find a free filename")
+                raise ApiError(
+                    code=ErrorCode.CONFLICT,
+                    status_code=409,
+                    detail="Could not find a free filename",
+                )
         old_path.rename(target)
         new_file_path = str(target.relative_to(vault_root.resolve()))
     else:
@@ -362,7 +383,7 @@ async def find_candidate_files(
     """
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     if current_user.get("role") != "admin":
         allowed = False
         if doc["patient_id"]:
@@ -371,7 +392,7 @@ async def find_candidate_files(
         if not allowed and doc.get("uploaded_by_user_id") == current_user["id"]:
             allowed = True
         if not allowed:
-            raise HTTPException(status_code=403, detail="No access")
+            raise ApiError(code=ErrorCode.FORBIDDEN, status_code=403, detail="No access")
 
     config = get_config()
     vault_root = Path(config.vault.root_path)
@@ -402,7 +423,7 @@ async def relink_document(
     """
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     await _require_write_access(db, current_user, doc)
 
     config = get_config()
@@ -410,7 +431,7 @@ async def relink_document(
     rel = body.vault_path.replace("\\", "/").lstrip("/")
     target = _resolve_vault_file(vault_root, rel)
     if not target.is_file():
-        raise HTTPException(status_code=404, detail="Target file not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Target file not found")
 
     # Final path is recorded relative to the vault root.
     new_rel = str(target.relative_to(vault_root.resolve())).replace("\\", "/")
@@ -462,14 +483,15 @@ async def replace_document_file(
 
     doc = await get_document(db, doc_id)
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Document not found")
     await _require_write_access(db, current_user, doc)
 
     # The replacement keeps the document's base name but takes the new
     # file's extension, so an image -> PDF swap produces a ``.pdf`` file.
     new_ext = Path(file.filename or "").suffix.lower()
     if not new_ext:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST,
             status_code=400,
             detail="Replacement file must have a file extension",
         )
@@ -504,7 +526,9 @@ async def replace_document_file(
     try:
         dest = safe_vault_join(vault_root, dest_dir_rel, new_filename)
     except UnsafePathError as exc:
-        raise HTTPException(status_code=400, detail=f"Unsafe destination: {exc}")
+        raise ApiError(
+            code=ErrorCode.UNSAFE_FILENAME, status_code=400, detail=f"Unsafe destination: {exc}"
+        )
 
     # Disambiguate on collision so we don't clobber a file the user
     # intended to keep.
@@ -516,7 +540,9 @@ async def replace_document_file(
         dest = base.parent / f"{stem}-{counter}{suffix}"
         counter += 1
         if counter > 1000:
-            raise HTTPException(status_code=409, detail="Could not allocate filename")
+            raise ApiError(
+                code=ErrorCode.CONFLICT, status_code=409, detail="Could not allocate filename"
+            )
 
     dest.parent.mkdir(parents=True, exist_ok=True)
     written = 0
@@ -530,7 +556,11 @@ async def replace_document_file(
                     break
                 written += len(buf)
                 if written > max_bytes:
-                    raise HTTPException(status_code=413, detail="Upload exceeds size cap")
+                    raise ApiError(
+                        code=ErrorCode.UPLOAD_TOO_LARGE,
+                        status_code=413,
+                        detail="Upload exceeds size cap",
+                    )
                 out.write(buf)
     except HTTPException:
         dest.unlink(missing_ok=True)
@@ -541,7 +571,8 @@ async def replace_document_file(
     mime = _detect_mime(dest)
     if not any(mime.startswith(p) for p in config.server.allowed_upload_mime_prefixes):
         dest.unlink(missing_ok=True)
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.UNSUPPORTED_FILE_TYPE,
             status_code=415,
             detail=f"Unsupported file type: {mime or 'unknown'}",
         )
@@ -559,7 +590,8 @@ async def replace_document_file(
     )
     if await cursor.fetchone():
         dest.unlink(missing_ok=True)
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.CONFLICT,
             status_code=409,
             detail="This file already exists as another document",
         )
@@ -578,7 +610,8 @@ async def replace_document_file(
         # exact bytes between our pre-check and this commit. The constraint,
         # not the pre-check, is the authoritative guard.
         dest.unlink(missing_ok=True)
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.CONFLICT,
             status_code=409,
             detail="This file already exists as another document",
         )

@@ -1,3 +1,5 @@
+import { getErrorMessage } from "@/lib/errors";
+import { message, useMessage, type UiMessage } from "@/i18n/messages";
 import { useCallback, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
@@ -44,13 +46,14 @@ interface DuplicateInfo {
 }
 
 export default function FileUpload({ onUploadComplete }: FileUploadProps) {
+  const renderMessage = useMessage();
   const { selectedPatient } = usePatient();
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState<{
     ok: boolean;
-    message: string;
-    failures?: { file: string; reason: string }[];
+    message: UiMessage;
+    failures?: { file: string; reason: UiMessage }[];
     duplicates?: DuplicateInfo[];
   } | null>(null);
   const [showFailures, setShowFailures] = useState(false);
@@ -126,7 +129,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
       let zipDicom = 0;
       let zipOther = 0;
       let sawZip = false;
-      const failures: { file: string; reason: string }[] = [];
+      const failures: { file: string; reason: UiMessage }[] = [];
       const duplicates: DuplicateInfo[] = [];
       for (const [index, file] of files.entries()) {
         setUploadProgress({ current: index + 1, total: files.length });
@@ -161,14 +164,8 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
             zipOther += data.other || 0;
           }
         } catch (err: any) {
-          // Capture as much detail as possible — backend returns
-          // ``{detail: "..."}`` on validation errors; axios surfaces both
-          // the response body and the wire error message.
-          const detail = err?.response?.data?.detail;
-          const reason =
-            (typeof detail === "string" && detail) ||
-            err?.message ||
-            "Upload failed";
+          // Keep a descriptor so each failure follows later language changes.
+          const reason = getErrorMessage(err, message("feedback.uploadFailed"));
           failures.push({ file: file.name, reason });
           errorCount++;
         }
@@ -202,7 +199,10 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
       } else {
         setResult({
           ok: false,
-          message: `${successCount} uploaded${dupSegment}, ${errorCount} failed`,
+          message: message("errors:uploadsFailed", {
+            uploaded: successCount,
+            failed: errorCount,
+          }),
           failures,
           duplicates: duplicates.length > 0 ? duplicates : undefined,
         });
@@ -470,7 +470,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
               ) : (
                 <AlertCircle className="h-4 w-4" />
               )}
-              {result.message}
+              {renderMessage(result.message)}
               {result.failures && result.failures.length > 0 && (
                 <button
                   onClick={() => setShowFailures((v) => !v)}
@@ -492,7 +492,9 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
                 {result.failures.map((f, i) => (
                   <li key={i} className="flex flex-col">
                     <span className="font-medium truncate">{f.file}</span>
-                    <span className="text-muted-foreground">{f.reason}</span>
+                    <span className="text-muted-foreground">
+                      {renderMessage(f.reason)}
+                    </span>
                   </li>
                 ))}
               </ul>

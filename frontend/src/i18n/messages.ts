@@ -17,7 +17,10 @@ type MessageKey = ParseKeys<
 >;
 
 /** Strings remain literal for server/user content; descriptors translate at render. */
-export type UiMessage = string | TranslatedMessage;
+export type UiMessage = string | TranslatedMessage | MessageList;
+export interface MessageList {
+  messages: UiMessage[];
+}
 export interface TranslatedMessage {
   key: MessageKey;
   values?: Record<string, string | number | TranslatedMessage>;
@@ -44,6 +47,7 @@ export function useMessage() {
   const resolve = (value: UiMessage | undefined): string => {
     if (value === undefined) return "";
     if (typeof value === "string") return value;
+    if ("messages" in value) return value.messages.map(resolve).join("; ");
     const values = Object.fromEntries(
       Object.entries(value.values ?? {}).map(([key, value]) => [
         key,

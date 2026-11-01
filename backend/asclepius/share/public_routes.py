@@ -30,9 +30,10 @@ from __future__ import annotations
 import logging
 
 import aiosqlite
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 from pydantic import BaseModel, Field
 
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.audit.service import get_client_ip
 from asclepius.config import get_config
 from asclepius.db.connection import get_db
@@ -115,7 +116,8 @@ async def request_otp(
 
     token_hash = share["token_hash"]
     if not otp_request_allowed(token_hash, ip):
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.RATE_LIMITED,
             status_code=429,
             detail="Too many OTP requests. Try again later.",
         )
@@ -138,7 +140,8 @@ async def request_otp(
                 user_agent=user_agent,
                 detail={"reason": "daily_cap", "cap": cfg.share.email_otp_daily_cap},
             )
-            raise HTTPException(
+            raise ApiError(
+                code=ErrorCode.RATE_LIMITED,
                 status_code=429,
                 detail="Daily email OTP cap reached for this share.",
             )
@@ -154,7 +157,9 @@ async def request_otp(
             ),
         )
     except OtpCooldownError as e:
-        raise HTTPException(
+        raise ApiError(
+            code=ErrorCode.RATE_LIMITED_RETRY,
+            params={"retry_after": e.retry_after_seconds},
             status_code=429,
             detail="Please wait before requesting another code.",
             headers={"Retry-After": str(e.retry_after_seconds)},
@@ -189,7 +194,8 @@ async def request_otp(
             # 502: we accepted the request but the upstream (SMTP)
             # failed. The doctor's UI surfaces this so the practice
             # can fall back to manual delivery.
-            raise HTTPException(
+            raise ApiError(
+                code=ErrorCode.OTP_DELIVERY_FAILED,
                 status_code=502,
                 detail="Could not deliver the access code by email. "
                 "Ask your contact to switch this share to manual delivery.",
@@ -247,7 +253,9 @@ async def verify_otp(
     if not share or not share_service.is_share_active(share):
         # 410, not 401: fail2ban counts 401 toward an IP ban, and a doctor
         # on a revoked or expired link keeps retrying.
-        raise HTTPException(status_code=410, detail="Invalid or expired share")
+        raise ApiError(
+            code=ErrorCode.SHARE_EXPIRED, status_code=410, detail="Invalid or expired share"
+        )
 
     ok = await share_service.verify_otp(
         db,
@@ -287,7 +295,9 @@ async def verify_otp(
         # 422, not 401: a typo or a superseded code is a form error, and
         # fail2ban counts 401 toward an IP ban. The share lockout above
         # still bounds brute force.
-        raise HTTPException(status_code=422, detail="Invalid or expired code")
+        raise ApiError(
+            code=ErrorCode.SHARE_CODE_INVALID, status_code=422, detail="Invalid or expired code"
+        )
     # Successful verify resets the per-share counter so a doctor whose
     # session expires and re-OTPs months later does not inherit old
     # failed attempts from a previous (legitimate) typo.
@@ -390,7 +400,9 @@ async def claim_session(
 
     raw = request.cookies.get(SHARE_QUEUE_COOKIE_NAME)
     if not raw:
-        raise HTTPException(status_code=410, detail="No queue position")
+        raise ApiError(
+            code=ErrorCode.SHARE_QUEUE_EXPIRED, status_code=410, detail="No queue position"
+        )
 
     entry = await share_service.get_queue_entry(db, raw)
     if not entry or not share_service.queue_entry_active(entry):
@@ -398,7 +410,9 @@ async def claim_session(
         clear_share_queue_cookie(response, config=cfg)
         if entry:
             await share_service.delete_queue_entry(db, raw)
-        raise HTTPException(status_code=410, detail="Queue position expired")
+        raise ApiError(
+            code=ErrorCode.SHARE_QUEUE_EXPIRED, status_code=410, detail="Queue position expired"
+        )
 
     active = await share_service.get_active_session_for_share(
         db,

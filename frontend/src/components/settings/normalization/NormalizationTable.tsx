@@ -1,3 +1,4 @@
+import type { UiMessage } from "@/i18n/messages";
 import { type NormItem } from "./types";
 import NormalizationRow, {
   NormalizationCard,
@@ -11,7 +12,7 @@ export interface NormalizationTableProps {
   editing: boolean;
   editCode: string;
   editDisplay: string;
-  saveError: string | null;
+  saveError: UiMessage | null;
   newAlias: string;
   newAliasLang: string;
   showMergeFor: number | null;
@@ -101,7 +102,10 @@ export default function NormalizationTable({
     onToggleSelect: () => onToggleSelect(item.id),
     onToggleExpand: () => onToggleExpand(item.id),
     onViewDocuments: () =>
-      onViewDocuments(item.id, item.canonical_display || item.name || `#${item.id}`),
+      onViewDocuments(
+        item.id,
+        item.canonical_display || item.name || `#${item.id}`,
+      ),
     onToggleMerge: () =>
       onSetShowMergeFor(showMergeFor === item.id ? null : item.id),
     onCancelMerge,

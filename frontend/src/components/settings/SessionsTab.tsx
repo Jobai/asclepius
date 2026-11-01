@@ -92,7 +92,7 @@ export default function SessionsTab() {
     } catch (err: any) {
       toast({
         title: message("feedback.failedToLoadSessions"),
-        description: getErrorMessage(err, ""),
+        description: getErrorMessage(err, message("errors:unexpected")),
         variant: "error",
       });
       setSessions([]);
@@ -155,7 +155,7 @@ export default function SessionsTab() {
     } catch (err: any) {
       toast({
         title: message("feedback.revokeFailed"),
-        description: getErrorMessage(err, ""),
+        description: getErrorMessage(err, message("errors:unexpected")),
         variant: "error",
       });
     }

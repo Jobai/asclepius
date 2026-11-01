@@ -16,10 +16,11 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import bcrypt
-from fastapi import Depends, HTTPException, Request
+from fastapi import Depends, Request
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 import aiosqlite
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.audit.service import get_client_ip
 from asclepius.config import get_config
 from asclepius.db.connection import get_db
@@ -140,11 +141,13 @@ async def get_current_user(
     """
     token = request.cookies.get(COOKIE_NAME)
     if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        raise ApiError(
+            code=ErrorCode.AUTHENTICATION_REQUIRED, status_code=401, detail="Not authenticated"
+        )
 
     session_id = _unpack_token(token)
     if not session_id:
-        raise HTTPException(status_code=401, detail="Session expired")
+        raise ApiError(code=ErrorCode.SESSION_EXPIRED, status_code=401, detail="Session expired")
 
     cursor = await db.execute(
         """SELECT s.user_id, s.revoked_at, s.expires_at,
@@ -156,11 +159,11 @@ async def get_current_user(
     )
     row = await cursor.fetchone()
     if not row:
-        raise HTTPException(status_code=401, detail="Session not found")
+        raise ApiError(code=ErrorCode.SESSION_EXPIRED, status_code=401, detail="Session not found")
     if row[1] is not None:
-        raise HTTPException(status_code=401, detail="Session revoked")
+        raise ApiError(code=ErrorCode.SESSION_EXPIRED, status_code=401, detail="Session revoked")
     if row[2] and row[2] < datetime.utcnow().isoformat(timespec="seconds"):
-        raise HTTPException(status_code=401, detail="Session expired")
+        raise ApiError(code=ErrorCode.SESSION_EXPIRED, status_code=401, detail="Session expired")
 
     # Throttled last-active update: only rewrite the column if >60s has
     # elapsed since the previous update. Keeps this dependency cheap on
@@ -189,7 +192,8 @@ def require_role(*allowed_roles: str):
     async def _check(current_user: dict = Depends(get_current_user)):
         user_role = current_user.get("role", "viewer")
         if user_role not in allowed_roles:
-            raise HTTPException(
+            raise ApiError(
+                code=ErrorCode.FORBIDDEN,
                 status_code=403,
                 detail=f"Requires role: {', '.join(allowed_roles)}. Your role: {user_role}",
             )

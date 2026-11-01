@@ -18,8 +18,8 @@ building block both helpers below sit on top of.
 """
 
 import aiosqlite
-from fastapi import HTTPException
 
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.documents.service import get_document  # noqa: F401  (re-exported for callers)
 from asclepius.patients.service import check_patient_access
 
@@ -51,10 +51,14 @@ async def require_document_access(
     if doc.get("patient_id"):
         role = await check_patient_access(db, current_user["id"], doc["patient_id"])
     if not role:
-        raise HTTPException(status_code=403, detail="No access to this document")
+        raise ApiError(
+            code=ErrorCode.FORBIDDEN, status_code=403, detail="No access to this document"
+        )
     if write and role == "viewer":
-        raise HTTPException(
-            status_code=403, detail="Insufficient permissions to modify this document"
+        raise ApiError(
+            code=ErrorCode.FORBIDDEN,
+            status_code=403,
+            detail="Insufficient permissions to modify this document",
         )
 
 
@@ -76,9 +80,13 @@ async def require_patient_access(
         return None
     role = await check_patient_access(db, current_user["id"], patient_id)
     if not role:
-        raise HTTPException(status_code=403, detail="No access to this patient")
+        raise ApiError(
+            code=ErrorCode.FORBIDDEN, status_code=403, detail="No access to this patient"
+        )
     if write and role not in _WRITE_ROLES:
-        raise HTTPException(
-            status_code=403, detail="Insufficient permissions for this patient"
+        raise ApiError(
+            code=ErrorCode.FORBIDDEN,
+            status_code=403,
+            detail="Insufficient permissions for this patient",
         )
     return role

@@ -1,9 +1,42 @@
 # UI localization foundation
 
-Steps 1–4 are implemented: language selection, account synchronization, shared
-labels/formatting, and reactive application messages. Backend error codes and
-feature-wide translation remain Steps 5–6 in `LOCALIZATION_PLAN.md`. Some
-feature-specific static copy and backend errors are still English.
+Steps 1–5 are implemented: language selection, account synchronization, shared
+labels/formatting, reactive application messages, and compatible API error codes.
+Feature-wide translation remains Step 6 in `LOCALIZATION_PLAN.md`. Some
+feature-specific static copy is still English.
+
+## Localizable API errors (Step 5)
+
+`ApiError` subclasses `HTTPException` and adds a stable `code` and optional `params`
+in both core and share modes. Existing `detail` values (including structured
+objects), HTTP statuses, and headers remain available to legacy consumers.
+Ordinary HTTP exceptions retain their original response shape. FastAPI request
+validation keeps its existing `detail` array and adds `code: "validation_error"`.
+The default OpenAPI error response publishes the shared optional fields and code
+enum; regenerate `openapi.json` and `api/schema.ts` after changing that contract.
+
+Auth/session/authorization, patient/document/upload, and share producers use
+explicit codes. Add a code at its producer rather than matching English text in
+the client. Interpolation parameters are allowlisted numeric values: `max_bytes`
+for upload limits and `retry_after` for rate limits. Keep filenames, patient data,
+exception messages, and arbitrary response bodies out of interpolation params.
+Backend logs, audit records, and provider diagnostic responses are unchanged.
+
+Use `getErrorMessage(error, message("feedback.failedToSave"))` for user-facing
+errors. It returns `UiMessage`, so store that value and render with `useMessage()`
+or pass it to the toast provider. Known codes use bundled translations; older
+responses can use status-based summaries. Network/timeouts, expired-session
+guards, and the local 4xx-budget error use local codes without sending requests.
+Unknown failures use the caller's contextual descriptor or a generic localized
+fallback. Error rendering does not change interceptors, retries, or budget rules.
+
+Validation arrays are stored as message lists that translate on each render.
+Only supported machine `type`, allowlisted field names from `loc`, and numeric
+length constraints are used. Unknown types/fields get a translated fallback;
+backend `msg`, submitted `input`, and unknown field names are never copied into
+these UI messages. `getErrorDetails` provides literal diagnostics explicitly for
+existing technical detail areas such as document batch reports. Do not use it as
+the default error summary or expose additional raw response bodies.
 
 ## Shared labels, formatting, and messages (Step 4)
 
@@ -34,9 +67,9 @@ pending confirmation promises survive a language switch. Nested descriptors may
 be used for operation names inside summary messages. Bulk actions use complete
 pluralized sentences rather than English `s` suffixes.
 
-`getErrorMessage` preserves its original string behavior and accepts a descriptor
-fallback. Server messages remain literal diagnostics; stable error-code translation
-is Step 5. Feature-specific static headings and help text are Step 6.
+`getErrorMessage` resolves API/local errors to reactive descriptors; explicit
+technical detail access uses `getErrorDetails`. Feature-specific static headings
+and help text are Step 6.
 
 ## Selecting a language (Step 3)
 
@@ -163,8 +196,8 @@ uses Node 20 and does not require this flag.
 
 The feature-wide inventory below still guides Step 6. Shared navigation, column
 labels, statuses/types/stages, controls, formatting, and persistent application
-messages are now localized. Feature-specific static copy and backend error-code
-handling remain pending. Migrate remaining labels and consumers together,
+messages and common API errors are now localized. Feature-specific static copy
+remains pending. Migrate remaining labels and consumers together,
 retaining internal identifiers and existing behavior.
 
 | Group | Source areas | Strings/context to review |
@@ -186,7 +219,7 @@ retaining internal identifiers and existing behavior.
 | Identity/operations settings | `components/settings/` access, users, OIDC, sessions, SMTP, backup, logs and columns tabs | Forms, validation, warnings, action results; preserve logs/config values |
 | Normalization | `components/settings/normalization/` | Entity/alias controls, status labels; preserve clinical terminology and codes |
 | Helpers and formatting | `lib/{utils,datetime,pipelineStages,errors}.ts*`, `pages/shares/format.ts`, inline `toLocale*` calls | English relative times, hard-coded en-GB, status/type fallbacks, raw backend messages |
-| Backend error producers | Auth/session/authz, document/upload, share public/doctor routes | Stable codes added later; current English details/validation arrays need compatible handling |
+| Backend error producers | Auth/session/authz, document/upload, share public/doctor routes | Common codes implemented in Step 5; add explicit codes for future domain-specific failures, retain legacy details |
 
 Future acceptance checks must include open dialogs, stateful error messages,
 memoized labels, chart callbacks, table registries, mobile-only labels, dates and

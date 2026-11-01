@@ -2,10 +2,11 @@
 
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 import aiosqlite
+from asclepius.api_errors import ApiError, ErrorCode
 from asclepius.auth.session import get_current_user
 from asclepius.config import get_config
 from asclepius.db.connection import get_db
@@ -70,7 +71,9 @@ async def get_patient(
     else:
         role = await check_patient_access(db, current_user["id"], patient_id)
         if not role:
-            raise HTTPException(status_code=403, detail="No access to this patient")
+            raise ApiError(
+                code=ErrorCode.FORBIDDEN, status_code=403, detail="No access to this patient"
+            )
 
     cursor = await db.execute(
         """SELECT id, slug, display_name, date_of_birth, sex, created_at
@@ -79,7 +82,7 @@ async def get_patient(
     )
     row = await cursor.fetchone()
     if not row:
-        raise HTTPException(status_code=404, detail="Patient not found")
+        raise ApiError(code=ErrorCode.NOT_FOUND, status_code=404, detail="Patient not found")
 
     patient = dict(row)
     patient["role"] = role
@@ -126,7 +129,9 @@ async def create_patient(
     except aiosqlite.IntegrityError:
         # Shouldn't happen given unique_patient_slug above, but if there's a
         # race between two simultaneous creates, surface a clean 409.
-        raise HTTPException(status_code=409, detail="Patient slug already exists")
+        raise ApiError(
+            code=ErrorCode.CONFLICT, status_code=409, detail="Patient slug already exists"
+        )
 
     return {
         "id": patient_id,
@@ -149,9 +154,15 @@ async def update_patient(
     if current_user.get("role") != "admin":
         role = await check_patient_access(db, current_user["id"], patient_id)
         if not role:
-            raise HTTPException(status_code=403, detail="No access to this patient")
+            raise ApiError(
+                code=ErrorCode.FORBIDDEN, status_code=403, detail="No access to this patient"
+            )
         if role != "owner":
-            raise HTTPException(status_code=403, detail="Only owners can edit patient info")
+            raise ApiError(
+                code=ErrorCode.FORBIDDEN,
+                status_code=403,
+                detail="Only owners can edit patient info",
+            )
 
     updates = {}
     for field in ("display_name", "date_of_birth", "sex"):
@@ -160,7 +171,9 @@ async def update_patient(
             updates[field] = value
 
     if not updates:
-        raise HTTPException(status_code=400, detail="No fields to update")
+        raise ApiError(
+            code=ErrorCode.INVALID_REQUEST, status_code=400, detail="No fields to update"
+        )
 
     set_clause = ", ".join(f"{k} = ?" for k in updates)
     values = list(updates.values()) + [patient_id]
@@ -187,9 +200,13 @@ async def delete_patient(
     if current_user.get("role") != "admin":
         role = await check_patient_access(db, current_user["id"], patient_id)
         if not role:
-            raise HTTPException(status_code=403, detail="No access to this patient")
+            raise ApiError(
+                code=ErrorCode.FORBIDDEN, status_code=403, detail="No access to this patient"
+            )
         if role != "owner":
-            raise HTTPException(status_code=403, detail="Only owners can delete patients")
+            raise ApiError(
+                code=ErrorCode.FORBIDDEN, status_code=403, detail="Only owners can delete patients"
+            )
 
     # Disassociate documents (set patient_id to NULL rather than deleting)
     await db.execute(
