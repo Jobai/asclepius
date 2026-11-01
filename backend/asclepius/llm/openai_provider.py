@@ -44,7 +44,16 @@ class OpenAIProvider(LLMProvider):
         extraction_cap, _ = get_output_token_caps()
         timeout = httpx.Timeout(connect=10.0, read=float(self.timeout), write=10.0, pool=10.0)
         headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
-        body: dict = {"model": self.model, "messages": all_messages, "max_tokens": extraction_cap}
+        body: dict = {
+            "model": self.model,
+            "messages": all_messages,
+            # GPT-5/6 reject the legacy max_tokens parameter.
+            (
+                "max_completion_tokens"
+                if self.model.startswith(("gpt-5", "gpt-6"))
+                else "max_tokens"
+            ): extraction_cap,
+        }
         if json_schema is not None:
             # OpenAI's structured-outputs mode (gpt-4o-2024-08-06+ and
             # vLLM/llama.cpp servers that implement it) — guarantees the
@@ -81,7 +90,11 @@ class OpenAIProvider(LLMProvider):
         payload: dict = {
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": int(max_output_tokens),
+            (
+                "max_completion_tokens"
+                if self.model.startswith(("gpt-5", "gpt-6"))
+                else "max_tokens"
+            ): int(max_output_tokens),
         }
         if force_json:
             payload["response_format"] = {"type": "json_object"}

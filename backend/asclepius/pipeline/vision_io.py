@@ -242,7 +242,11 @@ async def call_vision(
                             ],
                         }
                     ],
-                    "max_tokens": max_tokens,
+                    (
+                        "max_completion_tokens"
+                        if model.startswith(("gpt-5", "gpt-6"))
+                        else "max_tokens"
+                    ): max_tokens,
                 },
             )
             resp.raise_for_status()
