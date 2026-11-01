@@ -343,10 +343,9 @@ async def extract_and_store(
         if key in extraction and not isinstance(extraction[key], list):
             extraction[key] = []
 
-    # Deterministic normalization — exact-match, fuzzy-match, or
-    # auto-create canonical entries for every referenced lab test /
-    # medication / diagnosis / specialty. Fills in ``norm_*_id`` fields
-    # on each row so the insert loops below can use them directly.
+    # Deterministic normalization — reviewed aliases, guarded spelling,
+    # or literal entries for unmatched original terms. Model-supplied IDs
+    # are discarded; writers revalidate the originals on partial paths too.
     # Runs before the error/truncation branches so partial extractions
     # (e.g. response hit token cap mid-list) still get their usable rows
     # mapped.
@@ -486,17 +485,12 @@ async def extract_and_store(
 
         # Specialty info on the document itself
         specialty_data = extraction.get("specialty", {})
-        if spec_orig := _clean(specialty_data.get("original")):
+        if spec_orig := _clean(specialty_data.get("original") or specialty_data.get("name")):
             updates["specialty_original"] = spec_orig
-        # resolve_extraction() populates specialty["norm_specialty_id"] from
-        # the original text; fall back to the legacy canonical-based
-        # resolver when that wasn't run (error / override path).
-        if specialty_data.get("norm_specialty_id"):
-            updates["norm_specialty_id"] = specialty_data["norm_specialty_id"]
-        elif specialty_data.get("canonical"):
-            norm_spec_id = await _resolve_specialty_from_data(db, specialty_data)
-            if norm_spec_id:
-                updates["norm_specialty_id"] = norm_spec_id
+        # Revalidate even if the bulk resolver failed before this block.
+        # A model-supplied ID or canonical code must not bypass matching.
+        if specialty_data:
+            updates["norm_specialty_id"] = await _resolve_specialty_from_data(db, specialty_data)
 
         if updates:
             set_clause = ", ".join(f"{k} = ?" for k in updates)

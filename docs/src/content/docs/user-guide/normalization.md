@@ -90,12 +90,13 @@ lookup. Excluded aliases remain stored and visible in the normalization editor;
 searching and reviewing them still works. Re-enabling their language makes them
 available to future matching again. No document reprocessing is triggered.
 
-**Also use synonyms without a language** is enabled by default. Automatically
-learned aliases currently have no language tag and follow this separate switch.
-An existing incorrect untagged alias therefore remains eligible while this
-switch is enabled, even if the language of the alias that originally caused
-the fuzzy match has been disabled. Changing the language selection does not
-repair existing aliases or assignments.
+**Also use synonyms without a language** is enabled by default. Reviewed
+synonyms without a language remain available under this switch. Language and
+review status are separate: old automatically learned synonyms are retained
+for review, but cannot supply exact or spelling matches until confirmed.
+Unreviewed self-aliases can only reuse their own complete canonical wording;
+they cannot supply spelling matches. Changing the language selection does not
+repair existing aliases or document assignments.
 
 Stored language tags use their base code: `de-DE`, `DE_de` and `de` all count
 as German. The setting is independent of UI language, OCR languages and the
@@ -126,19 +127,60 @@ This is useful because the same doctor may appear under different name variation
 
 ## How normalization works
 
-The LLM's only job is to copy the test / medication / diagnosis / specialty name exactly as the document writes it (e.g., "Hämoglobin"). A Python resolver then maps that raw name to a canonical ID:
+The LLM copies the test / medication / diagnosis / specialty name as the document
+writes it (e.g., "Hämoglobin"). A Python resolver maps that original wording to a
+canonical ID. Model-emitted IDs, canonical names and mapping flags cannot bypass
+this resolver, including during partial extraction and reprocessing.
 
-1. **Exact alias match**, case-insensitive lookup against the alias table. Covered by the seed data for common tests, specialties, diagnoses, and medications.
-2. **Fuzzy match**, if no exact hit, run `rapidfuzz.process.extractOne` with a score threshold of 85. Catches OCR drift, typos, and minor language variants ("Hepatite C" vs "Hepatitis C", "S-Creatinina" vs "Creatinina"). The matching original text is inserted as a new alias on the canonical entry so the next document with the same phrasing lands on step 1.
-3. **Auto-create**, still nothing? The resolver inserts a new canonical row with `canonical_display` set to the original wording and the original text as an `auto_mapped=1` alias. The row appears in Settings → Normalization flagged for review.
+1. **Exact match.** Unicode, case, whitespace and word separators are normalized.
+   Complete reviewed synonyms in the enabled languages are eligible. Abbreviations
+   such as `MI` or `PE` must occur as complete terms, not inside unrelated words.
+   If the same alias belongs to different concepts, no arbitrary first match wins.
+2. **Guarded spelling match.** The resolver compares whole words with
+   Damerau–Levenshtein distance. Short words and identifiers must match exactly;
+   longer words allow one or two edits depending on length. Common connective
+   words such as “mit”, “bei” and “with” contribute no positive evidence. At least
+   90% of the informative word weight must be covered on each side, the spelling
+   score must reach 0.86, and the next-best different concept must trail by at
+   least 0.08. These are text similarity scores, not diagnostic probabilities.
+3. **Diagnosis qualifiers.** A diagnosis may match a complete known main term
+   before a qualifier such as “mit” or “with”. For example, `Objekt Alpha mit Gammafaktor`
+   can match an existing reviewed `Objekt Alpha` alias. The complete original wording
+   stays on the clinical row. This exception does not apply to lab tests or
+   medication combinations, and a shared qualifier alone is never evidence.
+4. **No reliable match.** An unmatched term gets a separate canonical entry with
+   the original wording and an unreviewed self-alias. A collision in the generated
+   code does not merge different terms. An ambiguous term keeps its original text
+   without a normalized assignment.
+
+Contradictions block matches even when the spelling is close: examples include
+Vitamin B1/B12, T3/T4, Anti-HBs/Anti-HBc, hypo/hyper, left/right, and recognized
+negation, suspected or historical diagnoses. A supplied ICD-10 code must not
+contradict the candidate's stored code. The resolver does not invent medical
+synonyms; a semantic equivalent or abbreviation needs a reviewed reference alias.
 
 The alias tables aren't sent to the LLM as prompt context any more. Before this refactor the prompt carried every `(canonical_code, alias)` row inline, a moderately-used install pushed extraction prompts past 400 kB, which broke schema adherence on small models. Doing the match in Python is faster, deterministic, auditable, and scales with the database instead of the prompt.
 
 ### Auto-mapped aliases
 
-Any alias inserted by the resolver (steps 2 and 3 above) has `auto_mapped = 1`. Manually curated aliases have `auto_mapped = 0`. The row displays an `auto` badge in the Normalization UI and contributes to the entry's "unreviewed" count. Confirm them in bulk from the row-level Confirm action.
+Spelling and qualified-head matches do **not** create new synonyms. This prevents
+one incorrect guess from becoming an authoritative exact match for later reports.
+Old learned aliases with `auto_mapped = 1` stay stored and visible, but are excluded
+from automatic matching and medical merge suggestions until reviewed. An
+unreviewed self-alias whose full text equals its own canonical name can be reused
+literally, without becoming a spelling reference.
 
-A self-alias whose text matches the canonical display name exactly (case- and whitespace-insensitive) is auto-confirmed on insert because there's no normalization decision to audit, it's just the canonical form echoed back. A one-shot migration clears the `auto_mapped` flag on any existing self-alias of that kind.
+Bundled and manually curated aliases use `auto_mapped = 0` and supply the reviewed
+matching vocabulary. The UI marks unreviewed aliases with an `auto` badge. Check
+every alias before using the row-level Confirm action, which confirms all aliases
+on that entry. Delete incorrect associations or move them to the appropriate
+concept rather than confirming them.
+
+The matcher does not rewrite existing clinical assignments or remove old aliases
+on upgrade. Review incorrect aliases, then reprocess affected documents with
+**Reprocess → LLM only**, or correct individual diagnoses manually. Reprocessing
+still depends on the original extraction text and the available reviewed
+vocabulary; it is not a medical validation of the document.
 
 ## Managing normalization data
 

@@ -308,7 +308,9 @@ async def _fetch_entries(
     rows = [dict(r) for r in await cursor.fetchall()]
 
     policy = matching_policy() if main_table.startswith("norm_") else None
-    alias_map = await load_aliases_by_parent(db, alias_table, fk_col, policy=policy)
+    alias_map = await load_aliases_by_parent(
+        db, alias_table, fk_col, policy=policy, reviewed_only=main_table.startswith("norm_")
+    )
 
     for row in rows:
         row["aliases"] = alias_map.get(row["id"], [])

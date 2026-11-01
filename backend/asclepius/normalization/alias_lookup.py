@@ -10,6 +10,57 @@ shape to audit when the schema changes.
 import aiosqlite
 
 from .languages import alias_is_enabled, matching_policy
+from .matching import Candidate, TermMatcher, text_key
+
+MEDICAL_ALIAS_TABLES = {
+    "norm_lab_test_aliases": ("norm_lab_tests", "norm_lab_test_id"),
+    "norm_diagnosis_aliases": ("norm_diagnoses", "norm_diagnosis_id"),
+    "norm_medication_aliases": ("norm_medications", "norm_medication_id"),
+    "norm_specialty_aliases": ("norm_specialties", "norm_specialty_id"),
+}
+
+
+async def load_matching_candidates(
+    db: aiosqlite.Connection,
+    alias_table: str,
+    fk_col: str,
+    *,
+    policy: tuple[frozenset[str], bool] | None = None,
+) -> list[Candidate]:
+    """Separate reviewed synonyms from literal identities and old learned aliases.
+
+    Nothing is deleted or relabelled. An unreviewed alias pointing to a different
+    canonical name cannot make an old fuzzy error authoritative on the next run.
+    """
+    main, expected_fk = MEDICAL_ALIAS_TABLES[alias_table]
+    if fk_col != expected_fk:
+        raise ValueError("Invalid normalization foreign key")
+    policy = matching_policy() if policy is None else policy
+    code_column = "icd10_code" if main == "norm_diagnoses" else "NULL"
+    cursor = await db.execute(f"SELECT id, canonical_display, {code_column} FROM {main}")
+    parents = {row[0]: (row[1], row[2]) for row in await cursor.fetchall()}
+    cursor = await db.execute(
+        f"SELECT id, alias, {fk_col}, language, auto_mapped FROM {alias_table}"
+    )
+    candidates = []
+    for row in await cursor.fetchall():
+        alias_id, alias, norm_id, language, auto_mapped = row
+        if not alias or norm_id not in parents or not alias_is_enabled(language, policy):
+            continue
+        display, code = parents[norm_id]
+        reviewed = auto_mapped == 0
+        if reviewed or text_key(alias) == text_key(display):
+            candidates.append(Candidate(norm_id, alias, display, reviewed, alias_id, code))
+    # Canonical names have no language metadata. They can be reused literally
+    # under the existing unlabeled-language setting, never used as learned
+    # spelling references. Reviewed aliases supply the spelling vocabulary.
+    if policy[1]:
+        candidates.extend(
+            Candidate(norm_id, display, display, False, code=code)
+            for norm_id, (display, code) in parents.items()
+            if display
+        )
+    return candidates
 
 
 async def load_aliases_flat(
@@ -19,22 +70,15 @@ async def load_aliases_flat(
     *,
     policy: tuple[frozenset[str], bool] | None = None,
 ) -> list[tuple[str, int]]:
-    """Return enabled aliases as ``(alias_lower_stripped, parent_id)``.
+    """Return safe candidates as ``(alias_lower_stripped, parent_id)``.
 
-    Disabled languages, blank aliases and null parent ids are dropped. Duplicates are
-    preserved — callers that need uniqueness should feed the result into
-    a dict or set.
+    Disabled languages and unreviewed learned synonyms are excluded. Literal
+    canonical identities are included under the unlabeled-language policy.
+    Duplicates are preserved; do not collapse different parents into a last-wins
+    dictionary when making a matching decision.
     """
-    policy = matching_policy() if policy is None else policy
-    cursor = await db.execute(f"SELECT alias, {fk_col}, language FROM {alias_table}")
-    rows = await cursor.fetchall()
-    out: list[tuple[str, int]] = []
-    for r in rows:
-        alias, parent = r[0], r[1]
-        if not alias or parent is None or not alias_is_enabled(r[2], policy):
-            continue
-        out.append((str(alias).strip().lower(), int(parent)))
-    return out
+    candidates = await load_matching_candidates(db, alias_table, fk_col, policy=policy)
+    return [(candidate.alias.strip().casefold(), candidate.norm_id) for candidate in candidates]
 
 
 async def load_aliases_by_parent(
@@ -43,6 +87,7 @@ async def load_aliases_by_parent(
     fk_col: str,
     *,
     policy: tuple[frozenset[str], bool] | None = None,
+    reviewed_only: bool = False,
 ) -> dict[int, list[str]]:
     """Return ``{parent_id: [alias, alias, ...]}`` keeping the raw casing.
 
@@ -51,7 +96,9 @@ async def load_aliases_by_parent(
     Aliases are returned in whatever order the DB yields them — callers
     that care about stability should sort themselves.
     """
-    cursor = await db.execute(f"SELECT {fk_col} AS parent_id, alias, language FROM {alias_table}")
+    cursor = await db.execute(
+        f"SELECT {fk_col} AS parent_id, alias, language, auto_mapped FROM {alias_table}"
+    )
     out: dict[int, list[str]] = {}
     for r in await cursor.fetchall():
         parent = r[0]
@@ -60,6 +107,7 @@ async def load_aliases_by_parent(
             parent is None
             or not alias
             or (policy is not None and not alias_is_enabled(r[2], policy))
+            or (reviewed_only and r[3] != 0)
         ):
             continue
         out.setdefault(int(parent), []).append(alias)
@@ -73,12 +121,5 @@ async def find_matching_alias(
     original: str,
 ) -> int | None:
     """Language-filtered exact lookup for the legacy extraction fallback."""
-    policy = matching_policy()
-    cursor = await db.execute(
-        f"SELECT {fk_col}, language FROM {alias_table} WHERE alias = ? COLLATE NOCASE",
-        (original,),
-    )
-    for row in await cursor.fetchall():
-        if alias_is_enabled(row[1], policy):
-            return row[0]
-    return None
+    candidates = await load_matching_candidates(db, alias_table, fk_col)
+    return TermMatcher(candidates).exact_match(original).norm_id

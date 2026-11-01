@@ -67,6 +67,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Medical normalization now compares complete words with bounded spelling edits,
+  informative-word coverage, contradictory-identifier checks and an ambiguity
+  margin between different concepts. Short aliases such as MI, AS and PE no longer
+  match inside unrelated words, and shared connective words cannot join unrelated
+  diagnoses. Import, reprocessing, legacy fallbacks and manual edits use the same
+  resolver instead of trusting model-generated IDs or canonical codes. Old
+  unreviewed learned synonyms remain stored but are excluded from matching;
+  spelling matches no longer learn new synonyms automatically. Language settings
+  and reviewed synonyms without language tags remain supported. Existing clinical
+  assignments are not rewritten automatically.
+
 - The frontend no longer repeats 401, 403 or 404 responses, which the public
   reverse proxy's fail2ban jail counts toward a 6-hour IP ban (10 in 2
   minutes, shared by everyone behind the same NAT). A doctor share page that

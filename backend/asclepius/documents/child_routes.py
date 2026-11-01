@@ -119,12 +119,6 @@ async def update_encounter(
             set_parts.append(f"{field} = ?")
             params.append(new_val)
             corrections.append((field, old_val, new_val))
-            # Resolve diagnosis_original to norm_diagnosis_id so the display
-            # join updates in lockstep.
-            if field == "diagnosis_original":
-                norm_id = await resolve_diagnosis(db, cache, new_val) if new_val else None
-                set_parts.append("norm_diagnosis_id = ?")
-                params.append(norm_id)
 
         elif field == "specialty_original":
             old_specialty = rec.get("norm_specialty_id")
@@ -137,6 +131,23 @@ async def update_encounter(
 
     if not set_parts:
         return {"status": "noop", "id": encounter_id}
+
+    if any(field in ("diagnosis_original", "diagnosis_code") for field, _, _ in corrections):
+        original = (
+            body.diagnosis_original
+            if "diagnosis_original" in body.model_fields_set
+            else rec.get("diagnosis_original")
+        )
+        code = (
+            body.diagnosis_code
+            if "diagnosis_code" in body.model_fields_set
+            else rec.get("diagnosis_code")
+        )
+        norm_id = (
+            await resolve_diagnosis(db, cache, original, icd10_code=code) if original else None
+        )
+        set_parts.append("norm_diagnosis_id = ?")
+        params.append(norm_id)
 
     params.append(encounter_id)
     await db.execute(

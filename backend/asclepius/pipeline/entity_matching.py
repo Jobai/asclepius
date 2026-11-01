@@ -210,18 +210,10 @@ async def _match_patient(db: aiosqlite.Connection, name: str | None) -> int | No
 
 
 async def _resolve_specialty_from_doctor(db: aiosqlite.Connection, doctor_data: dict) -> int | None:
-    """Resolve specialty to norm_specialties ID from doctor extraction data."""
-    canonical = doctor_data.get("specialty_canonical", "")
+    """Resolve specialty wording through the shared medical-term matcher."""
+    from asclepius.normalization.resolver import AliasCache, resolve_specialty
 
-    if canonical:
-        cursor = await db.execute(
-            "SELECT id FROM norm_specialties WHERE canonical_code = ?", (canonical,)
-        )
-        row = await cursor.fetchone()
-        if row:
-            return row[0]
-
-    return None
+    return await resolve_specialty(db, AliasCache(), doctor_data.get("specialty_original") or "")
 
 
 async def _upsert_facility(db: aiosqlite.Connection, facility_data: dict) -> int:
@@ -334,12 +326,9 @@ async def _upsert_doctor(
     if row:
         return row[0]
 
-    # resolve_extraction() populates doctor["norm_specialty_id"] from the
-    # doctor's specialty_original text; fall back to the legacy
-    # canonical-based resolver when that wasn't run.
-    norm_spec_id = doctor_data.get("norm_specialty_id")
-    if norm_spec_id is None and doctor_data.get("specialty_canonical"):
-        norm_spec_id = await _resolve_specialty_from_doctor(db, doctor_data)
+    # This helper also runs on partial/error paths: source wording, not an
+    # ID or canonical code supplied in extraction JSON, determines specialty.
+    norm_spec_id = await _resolve_specialty_from_doctor(db, doctor_data)
 
     try:
         cursor = await db.execute(

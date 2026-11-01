@@ -1,27 +1,21 @@
 """Child-table write helpers for the extraction pipeline.
 
-Each function owns the INSERT (and, for lab results, the belt-and-braces
-date back-fill) for one child table. They were lifted verbatim out of the
-~440-line ``extract_and_store`` monolith in :mod:`extractor`; the SQL,
-column order, dedup/clear semantics, resolver fallbacks, and the order in
-which rows are written are unchanged. ``extract_and_store`` now calls these
-in the same sequence it used to execute the blocks inline.
-
-These writers depend on the salvage helpers
-(:mod:`extraction_sanitize`) and the normalized-reference resolvers
-(:mod:`extractor_db`, :mod:`entity_matching`); those are leaves relative to
-this module, so there is no import cycle.
+Each function owns the INSERT (and, for lab results, date back-fill) for one
+child table. Original medical terms are revalidated through the shared
+normalizer even when extraction JSON already contains normalized IDs. This
+also covers partial extraction and reprocessing paths.
 """
 
 import aiosqlite
 
-from .entity_matching import _resolve_specialty_from_doctor
-from .extraction_sanitize import _clean, _coerce_iso_date, _normalize_lab_row
-from .extractor_db import (
-    _resolve_diagnosis,
-    _resolve_lab_test,
-    _resolve_medication,
+from asclepius.normalization.resolver import (
+    AliasCache,
+    resolve_lab_test,
+    resolve_diagnosis,
+    resolve_medication,
+    resolve_specialty,
 )
+from .extraction_sanitize import _clean, _coerce_iso_date, _normalize_lab_row
 
 
 async def write_lab_results(
@@ -33,6 +27,7 @@ async def write_lab_results(
     logger,
 ) -> None:
     """Insert lab_results rows, then back-fill any NULL test_date from the doc."""
+    cache = AliasCache()
     for lab in extraction.get("lab_results", []):
         if not isinstance(lab, dict):
             continue
@@ -43,12 +38,9 @@ async def write_lab_results(
         if not lab.get("test_name_original"):
             logger.warning("Doc %d: skipping lab result with no test name: %s", doc_id, lab)
             continue
-        # Pre-populated by resolve_extraction above. Fall back to the
-        # legacy LLM-driven resolver for the edge case where
-        # resolve_extraction wasn't called (error path / override).
-        norm_id = lab.get("norm_lab_test_id")
-        if norm_id is None:
-            norm_id = await _resolve_lab_test(db, lab)
+        # Revalidate original wording even on partial/error/override paths.
+        # IDs in extraction JSON are never authoritative.
+        norm_id = await resolve_lab_test(db, cache, lab.get("test_name_original") or "")
         # Strict ISO parse: garbage strings ("unknown", "n/a", malformed
         # dates) are dropped so the parent's event_date fallback fires.
         lab_test_date = _coerce_iso_date(lab.get("test_date")) or doc_best_date
@@ -100,6 +92,7 @@ async def write_encounters(
     event_date_val,
 ) -> None:
     """Insert encounters/diagnoses rows for the document."""
+    cache = AliasCache()
     # Insert encounters/diagnoses
     encounter = extraction.get("encounter", {})
     if not isinstance(encounter, dict):
@@ -107,15 +100,14 @@ async def write_encounters(
     for diag in extraction.get("diagnoses", []):
         if not isinstance(diag, dict):
             continue
-        norm_diag_id = diag.get("norm_diagnosis_id")
-        if norm_diag_id is None:
-            norm_diag_id = await _resolve_diagnosis(db, diag)
-        # Specialty resolution now populates doctor["norm_specialty_id"]
-        # and encounter["norm_specialty_id"] directly. Prefer those, fall
-        # back to the legacy doctor-specialty-canonical path.
-        norm_spec_id = encounter.get("norm_specialty_id") or doctor_data.get("norm_specialty_id")
-        if norm_spec_id is None and doctor_data.get("specialty_canonical"):
-            norm_spec_id = await _resolve_specialty_from_doctor(db, doctor_data)
+        norm_diag_id = await resolve_diagnosis(
+            db, cache, diag.get("diagnosis_original") or "", icd10_code=diag.get("icd10_code")
+        )
+        norm_spec_id = await resolve_specialty(
+            db,
+            cache,
+            encounter.get("specialty_original") or doctor_data.get("specialty_original") or "",
+        )
 
         await db.execute(
             """INSERT INTO encounters
@@ -172,13 +164,14 @@ async def write_medications(
     event_date_val,
 ) -> None:
     """Insert medications rows for the document."""
+    cache = AliasCache()
     # Insert medications
     for med in extraction.get("medications", []):
         if not isinstance(med, dict):
             continue
-        norm_med_id = med.get("norm_medication_id")
-        if norm_med_id is None:
-            norm_med_id = await _resolve_medication(db, med)
+        norm_med_id = await resolve_medication(
+            db, cache, med.get("active_ingredient_original") or med.get("brand_name") or ""
+        )
         await db.execute(
             """INSERT INTO medications
                (document_id, patient_id, norm_medication_id, brand_name,
