@@ -1,0 +1,6 @@
+{
+  "title": "Dokumente",
+  "actions": { "reprocess": "Erneut verarbeiten", "upload": "Dokumente hochladen" },
+  "selected_one": "{{count}} Dokument ausgewählt",
+  "selected_other": "{{count}} Dokumente ausgewählt"
+}

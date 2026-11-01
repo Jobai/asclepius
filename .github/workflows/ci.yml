@@ -80,6 +80,9 @@ jobs:
           else
             npm install --no-audit --no-fund
           fi
+      - name: Validate translation resources
+        working-directory: frontend
+        run: npm run check:i18n
       - name: Type-check
         working-directory: frontend
         run: npx tsc --noEmit

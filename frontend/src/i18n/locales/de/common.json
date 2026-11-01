@@ -1,0 +1,5 @@
+{
+  "actions": { "save": "Speichern", "cancel": "Abbrechen", "close": "Schließen", "retry": "Erneut versuchen", "delete": "Löschen" },
+  "loading": "Wird geladen…",
+  "language": { "label": "Sprache der Oberfläche", "auto": "Automatisch (Browsersprache)", "en": "English", "de": "Deutsch" }
+}

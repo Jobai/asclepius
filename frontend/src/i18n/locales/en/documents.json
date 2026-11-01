@@ -1,0 +1,6 @@
+{
+  "title": "Documents",
+  "actions": { "reprocess": "Reprocess", "upload": "Upload documents" },
+  "selected_one": "{{count}} document selected",
+  "selected_other": "{{count}} documents selected"
+}

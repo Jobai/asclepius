@@ -10,6 +10,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "check:i18n": "node --test scripts/validate-locales.node.mjs && node scripts/validate-locales.mjs",
+    "inventory:i18n": "node scripts/inventory-i18n.mjs",
     "gen:api": "openapi-typescript src/openapi.json -o src/api/schema.ts"
   },
   "dependencies": {
@@ -22,9 +24,11 @@
     "@radix-ui/react-tooltip": "^1.4.1",
     "axios": "^1.20.0",
     "clsx": "^2.1.1",
+    "i18next": "^26.6.0",
     "lucide-react": "^0.577.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "react-i18next": "^17.1.10",
     "react-markdown": "^9.1.0",
     "react-pdf": "^9.2.0",
     "react-router-dom": "^7.18.4",

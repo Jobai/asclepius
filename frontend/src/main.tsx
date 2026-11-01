@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import Root from "./Root";
 import "./index.css";
+import "./i18n";
 
 // pdf.js worker init lives in lib/pdfWorker.ts, imported only by the PDF
 // viewers — keeping pdfjs-dist out of the entry bundle.

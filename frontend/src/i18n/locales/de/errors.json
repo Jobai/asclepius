@@ -1,0 +1,5 @@
+{
+  "unexpected": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+  "network": "Der Server ist nicht erreichbar. Bitte prüfen Sie Ihre Verbindung.",
+  "required": "Bitte geben Sie {{field}} ein."
+}

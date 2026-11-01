@@ -1,0 +1,5 @@
+{
+  "unexpected": "Something went wrong. Please try again.",
+  "network": "The server could not be reached. Please check your connection.",
+  "required": "Please enter {{field}}."
+}
