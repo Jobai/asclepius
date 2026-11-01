@@ -24,6 +24,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useBreakpoint } from "@/hooks/useMediaQuery";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import IconButton from "@/components/ui/IconButton";
+import AppearanceTab from "@/components/settings/AppearanceTab";
+import { useTranslation } from "react-i18next";
 
 // Tabs whose endpoints require admin role on the backend. Non-admins see
 // these gone from the tab bar entirely; if they hit one of these URLs
@@ -37,6 +39,7 @@ const TABS = [
   },
   { key: "pipeline", label: "Pipeline", icon: Workflow, adminOnly: true },
   { key: "columns", label: "Table columns", icon: Columns3, adminOnly: false },
+  { key: "appearance", label: "Appearance", icon: Languages, adminOnly: false },
   { key: "language", label: "Language", icon: Languages, adminOnly: true },
   { key: "access", label: "Access & Identity", icon: Shield, adminOnly: true },
   { key: "email", label: "Email", icon: Mail, adminOnly: true },
@@ -72,6 +75,8 @@ function TabPane({ tab }: { tab: TabKey }) {
       return <PipelineTab />;
     case "columns":
       return <ViewColumnsTab />;
+    case "appearance":
+      return <AppearanceTab />;
     case "language":
       return <LanguageTab />;
     case "access":
@@ -86,6 +91,7 @@ function TabPane({ tab }: { tab: TabKey }) {
 }
 
 export default function SettingsPage() {
+  const { t } = useTranslation("settings");
   // URL-driven active tab so refresh / copy-paste / back-nav all land on the
   // correct page. Nested panes (Document Analysis sub-tabs, Access sub-tabs,
   // Normalization entity type) parse their own slot further down the pathname.
@@ -104,7 +110,15 @@ export default function SettingsPage() {
     }
   }, [slug, navigate]);
 
-  const visibleTabs = TABS.filter((t) => isAdmin || !t.adminOnly);
+  const tabLabel = (key: TabKey, label: string) =>
+    key === "appearance"
+      ? t("appearance")
+      : key === "language"
+        ? t("documentTranslation")
+        : label;
+  const visibleTabs = TABS.filter((tab) => isAdmin || !tab.adminOnly).map(
+    (tab) => ({ ...tab, label: tabLabel(tab.key, tab.label) }),
+  );
   const defaultTab: TabKey = isAdmin
     ? ADMIN_DEFAULT_TAB
     : NON_ADMIN_DEFAULT_TAB;
@@ -151,7 +165,9 @@ export default function SettingsPage() {
             >
               <ArrowLeft className="h-5 w-5" />
             </IconButton>
-            <h1 className="text-lg font-semibold">{activeMeta.label}</h1>
+            <h1 className="text-lg font-semibold">
+              {tabLabel(activeMeta.key, activeMeta.label)}
+            </h1>
           </div>
         </div>
         <div className="pt-2">

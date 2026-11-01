@@ -12,7 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Personal UI-language preferences (`auto`, `en`, `de`) can be saved through
   `PATCH /api/auth/me/preferences` and read through `GET /api/auth/me`.
   Preferences persist per account for all authenticated roles. This supplies
-  the backend for the planned language selector; UI integration follows separately.
+  the backend for the language selector.
+
+- English/German/automatic UI-language selectors in the main app, login/setup,
+  mobile navigation, shared pages, and a personal Appearance settings section.
+  Account preferences synchronize through the existing auth API; guest core and
+  share preferences stay separate. Feature-wide translations follow separately.
 
 ### Changed
 

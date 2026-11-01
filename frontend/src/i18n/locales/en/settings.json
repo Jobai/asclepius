@@ -1,5 +1,7 @@
 {
   "title": "Settings",
+  "appearance": "Appearance",
+  "interfaceLanguageHelp": "Choose your interface language. Document translation and AI output languages are configured separately.",
   "documentTranslation": "Document translation",
   "languageSaveFailed": "The language was applied here, but your preference could not be saved."
 }

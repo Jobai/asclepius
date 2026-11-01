@@ -1,5 +1,17 @@
 {
-  "actions": { "save": "Save", "cancel": "Cancel", "close": "Close", "retry": "Retry", "delete": "Delete" },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "retry": "Retry",
+    "delete": "Delete"
+  },
   "loading": "Loading…",
-  "language": { "label": "Interface language", "auto": "Automatic (browser language)", "en": "English", "de": "Deutsch" }
+  "language": {
+    "label": "Interface language",
+    "auto": "Automatic (browser language)",
+    "en": "English",
+    "de": "Deutsch",
+    "saving": "Saving language preference…"
+  }
 }

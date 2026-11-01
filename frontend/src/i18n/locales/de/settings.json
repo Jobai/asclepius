@@ -1,5 +1,7 @@
 {
   "title": "Einstellungen",
+  "appearance": "Darstellung",
+  "interfaceLanguageHelp": "Wählen Sie die Sprache der Oberfläche. Die Sprachen für Dokumentübersetzungen und KI-Ausgaben werden separat eingestellt.",
   "documentTranslation": "Dokumentübersetzung",
   "languageSaveFailed": "Die Sprache wurde hier angewendet, aber Ihre Einstellung konnte nicht gespeichert werden."
 }

@@ -1,11 +1,19 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import api from "@/api/client";
+import type { UiLanguagePreference } from "@/i18n/types";
 
 interface User {
   id: number;
   username: string;
   display_name: string | null;
   role: string;
+  ui_language: UiLanguagePreference | null;
   patients: { id: number; slug: string; display_name: string; role: string }[];
 }
 
@@ -16,6 +24,7 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  recordUiLanguage: (id: number, language: UiLanguagePreference) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -24,6 +33,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [needsSetup, setNeedsSetup] = useState(false);
+  const recordUiLanguage = useCallback(
+    (id: number, language: UiLanguagePreference) => {
+      setUser((current) =>
+        current?.id === id ? { ...current, ui_language: language } : current,
+      );
+    },
+    [],
+  );
 
   const checkSetup = async () => {
     try {
@@ -70,7 +87,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, needsSetup, login, logout, refreshUser }}
+      value={{
+        user,
+        loading,
+        needsSetup,
+        login,
+        logout,
+        refreshUser,
+        recordUiLanguage,
+      }}
     >
       {children}
     </AuthContext.Provider>

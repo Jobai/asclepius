@@ -11,6 +11,7 @@ import {
   SECONDARY_NAV_ITEMS,
 } from "@/components/layout/nav";
 import packageJson from "../../../package.json";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export interface NavDrawerProps {
   open: boolean;
@@ -74,6 +75,9 @@ export default function NavDrawer({ open, onOpenChange }: NavDrawerProps) {
           {SECONDARY_NAV_ITEMS.map(navLink)}
         </nav>
 
+        <div className="border-t py-2">
+          <LanguageSwitcher />
+        </div>
         <div className="flex items-center justify-between border-t pt-2 pb-safe">
           <a
             href="https://github.com/giovi321/asclepius"

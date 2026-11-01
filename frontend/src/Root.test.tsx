@@ -1,15 +1,18 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // The admin client must never be hit from a share page: the share
 // container 404s every admin endpoint, and the public proxy's fail2ban
 // jail bans an IP after a handful of 4xx responses.
-const adminGet = vi.hoisted(() => vi.fn(() => new Promise(() => {})));
+const adminGet = vi.hoisted(() =>
+  vi.fn((_url?: string) => new Promise<unknown>(() => {})),
+);
 vi.mock("@/api/client", () => ({
   default: {
     get: adminGet,
     post: adminGet,
+    patch: adminGet,
     interceptors: { response: { use: vi.fn() } },
   },
 }));
@@ -55,8 +58,9 @@ function renderAt(path: string) {
 
 describe("Root provider isolation", () => {
   beforeEach(() => {
-    adminGet.mockClear();
+    adminGet.mockReset().mockImplementation(() => new Promise(() => {}));
     shareGet.mockClear();
+    localStorage.clear();
   });
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -76,6 +80,19 @@ describe("Root provider isolation", () => {
         );
         // Give lazy routes and provider effects a tick to fire.
         await new Promise((r) => setTimeout(r, 50));
+        fireEvent.change(
+          await screen.findByRole("combobox", { name: "Interface language" }),
+          {
+            target: { value: "de" },
+          },
+        );
+        expect(document.documentElement.lang).toBe("de");
+        fireEvent.change(
+          screen.getByRole("combobox", { name: "Sprache der Oberfläche" }),
+          {
+            target: { value: "en" },
+          },
+        );
         expect(adminGet).not.toHaveBeenCalled();
       });
     }
@@ -109,5 +126,24 @@ describe("Root provider isolation", () => {
     await new Promise((r) => setTimeout(r, 50));
     const urls = shareGet.mock.calls.map((c) => (c as unknown[])[0]);
     expect(urls).not.toContain("/me");
+  });
+
+  it("preserves the real login form while changing language without a preference request", async () => {
+    mockHealth("core");
+    adminGet.mockImplementation(async (url) => {
+      if (url === "/setup/status") return { data: { needs_setup: false } };
+      if (url === "/auth/oidc/enabled") return { data: { enabled: false } };
+      throw new Error("Unauthenticated");
+    });
+    renderAt("/login");
+    const username = await screen.findByRole("textbox");
+    fireEvent.change(username, { target: { value: "unsaved username" } });
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "de" } });
+    expect(screen.getByRole("textbox")).toBe(username);
+    expect(username).toHaveValue("unsaved username");
+    expect(document.documentElement.lang).toBe("de");
+    expect(adminGet.mock.calls.map(([url]) => url)).not.toContain(
+      "/auth/me/preferences",
+    );
   });
 });

@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -19,6 +19,8 @@ import { resetFourxxBudget } from "@/api/fourxxBudget";
 import { ShareSessionProvider } from "@/contexts/ShareSessionContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastProvider } from "@/contexts/ToastContext";
+import { UiLanguageProvider } from "@/contexts/UiLanguageContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ShareDashboardPage from "./ShareDashboardPage";
 import ShareDocumentPage from "./ShareDocumentPage";
 import ShareLandingPage from "./ShareLandingPage";
@@ -94,22 +96,25 @@ function renderShare(path: string) {
     <ThemeProvider>
       <ToastProvider>
         <MemoryRouter initialEntries={[path]}>
-          <Routes>
-            <Route
-              path="/share"
-              element={
-                <ShareSessionProvider>
-                  <Outlet />
-                </ShareSessionProvider>
-              }
-            >
-              <Route index element={<ShareLandingPage />} />
-              <Route path="dashboard" element={<ShareDashboardPage />} />
-              <Route path="documents/:id" element={<ShareDocumentPage />} />
-              <Route path="waiting" element={<ShareWaitingPage />} />
-              <Route path=":token" element={<ShareLandingPage />} />
-            </Route>
-          </Routes>
+          <UiLanguageProvider>
+            <Routes>
+              <Route
+                path="/share"
+                element={
+                  <ShareSessionProvider>
+                    <LanguageSwitcher />
+                    <Outlet />
+                  </ShareSessionProvider>
+                }
+              >
+                <Route index element={<ShareLandingPage />} />
+                <Route path="dashboard" element={<ShareDashboardPage />} />
+                <Route path="documents/:id" element={<ShareDocumentPage />} />
+                <Route path="waiting" element={<ShareWaitingPage />} />
+                <Route path=":token" element={<ShareLandingPage />} />
+              </Route>
+            </Routes>
+          </UiLanguageProvider>
         </MemoryRouter>
       </ToastProvider>
     </ThemeProvider>,
@@ -141,6 +146,7 @@ function useBackend(handler: (method: string, url: string) => FakeReply) {
 describe("share surface never loops on 4xx", () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    localStorage.clear();
     resetShareSessionEnded();
     resetFourxxBudget();
     setVisibility("visible");
@@ -182,6 +188,16 @@ describe("share surface never loops on 4xx", () => {
     renderShare("/share/documents/302");
     await advance(0);
     expect(screen.getByText("report.pdf")).toBeInTheDocument();
+    const beforeLanguageChange = calls.length;
+    fireEvent.change(
+      screen.getByRole("combobox", { name: "Interface language" }),
+      {
+        target: { value: "de" },
+      },
+    );
+    await advance(0);
+    expect(document.documentElement.lang).toBe("de");
+    expect(calls.length).toBe(beforeLanguageChange);
 
     // A few successful polls, then the session dies server-side.
     await advance(10_000);

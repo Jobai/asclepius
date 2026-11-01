@@ -7,6 +7,7 @@ import { User, Heart, ChevronRight, ChevronLeft, Check } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 type Step = "welcome" | "account" | "patient" | "done";
 
@@ -85,6 +86,9 @@ export default function SetupWizardPage() {
     <div className="flex min-h-dvh flex-col bg-muted/30 pt-safe pb-safe pl-safe pr-safe">
       <div className="flex flex-1 items-center justify-center p-4">
         <div className="w-full max-w-lg rounded-lg border bg-card p-6 sm:p-8 shadow-raised">
+          <div className="mb-4">
+            <LanguageSwitcher />
+          </div>
           {/* Step indicator */}
           <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
             {["welcome", "account", "patient", "done"].map((s, i) => (

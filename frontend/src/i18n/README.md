@@ -1,8 +1,35 @@
 # UI localization foundation
 
-Steps 1 and 2 are implemented. The application still displays its existing English UI;
-the selector, preference synchronization, and feature migrations belong to later
-steps in `LOCALIZATION_PLAN.md` at the repository root.
+Steps 1–3 are implemented. Language selectors and account synchronization work;
+feature-wide translation and locale formatting remain Steps 4–6 in
+`LOCALIZATION_PLAN.md` at the repository root. Most existing UI text is still
+English; the selector and Appearance section are translated.
+
+## Selecting a language (Step 3)
+
+Choose English, Deutsch, or Automatic from the desktop header, mobile navigation,
+login/setup, share header, or Settings → Appearance. Appearance is available to
+all roles. The existing admin Language tab is labeled Document translation.
+
+The shared `UiLanguageProvider` resolves browser language and separate core/share
+guest preferences without fetching. Only the core `AccountLanguageBridge`, inside
+`AuthProvider`, supplies the authenticated save operation. The bridge reads the
+preference from the existing `/auth/me` response and resolves it before revealing
+account content. Password and OIDC authentication use this same path.
+
+Account preferences take precedence, including explicit auto. An unset account
+inherits the core guest preference without saving it on login. An authenticated
+selection is saved only to that account. Logout restores the guest preference.
+Guest choices are stored under the separate keys in `preferences.ts`; blocked
+storage leaves the choice applied for the current session with a failure message.
+Auto follows `navigator.languages` and `languagechange`; explicit choices do not.
+The provider updates `<html lang>` without remounting pages or forms.
+
+`AccountLanguageSession` serializes saves and coalesces intermediate choices.
+Failures retain the session's selected language and show a localized status;
+there are no automatic retries. Disposing a session on logout/account change
+aborts its request and discards queued saves/stale responses. Successful saves
+also update the auth context's cached preference with an account-ID guard.
 
 ## Backend preference contract (Step 2)
 
@@ -17,14 +44,14 @@ The `user_ui_preferences` table is created by normal database initialization on
 new and existing installations. Values persist across sessions and startup;
 deleting an account cascades to its preference. Document language settings are
 independent. Generated API types describe both the nullable read field and the
-validated update body. Connecting this contract to the UI is Step 3.
+validated update body. The Step 3 bridge connects this contract to the selectors.
 
 ## Usage for subsequent steps
 
 `main.tsx` initializes the shared instance before rendering. Both languages are
 bundled and immediately available. No browser detection, storage access, fetch,
-or backend call occurs during initialization. It deliberately starts in English
-until the preference provider is implemented in Step 3.
+or backend call occurs during initialization. The instance starts in English;
+the shared preference provider then applies the resolved language before paint.
 
 In a React component, use `useTranslation("documents")`, then
 `t("actions.reprocess")`. Key checking is inferred from the English JSON resources;
@@ -42,8 +69,8 @@ not to a growing universal dictionary. Add each new key to both languages.
 
 `preferences.ts` contains pure resolution and defensive storage-read helpers;
 it performs no implicit storage writes. `auto` is distinct from a missing account
-preference. Only later integration will apply browser/account preferences and
-change the document language. Formatting locales are `en-GB` and `de-DE`;
+preference. The preference provider applies browser/account preferences and
+changes the document language. Formatting locales are `en-GB` and `de-DE`;
 choosing a language must not change timezone or date parsing.
 
 ## German glossary and editorial rules
@@ -101,8 +128,10 @@ uses Node 20 and does not require this flag.
 
 ## Coverage inventory for later migration
 
-All rows below remain **unmigrated** at the end of Step 1. Migrate labels and their
-consumers together, retaining internal identifiers and existing behavior.
+Feature-wide translations below remain **unmigrated** after Step 3; the new
+language controls, Appearance section, and document-translation tab label are
+localized. Migrate remaining labels and consumers together, retaining internal
+identifiers and existing behavior.
 
 | Group | Source areas | Strings/context to review |
 | --- | --- | --- |

@@ -2,6 +2,7 @@ import App from "./App";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { ConfirmProvider } from "./contexts/ConfirmContext";
+import { UiLanguageProvider } from "./contexts/UiLanguageContext";
 
 /**
  * App-wide providers, shared by the admin app and the doctor share surface.
@@ -12,12 +13,14 @@ import { ConfirmProvider } from "./contexts/ConfirmContext";
  */
 export default function Root() {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <ConfirmProvider>
-          <App />
-        </ConfirmProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <UiLanguageProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <ConfirmProvider>
+            <App />
+          </ConfirmProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </UiLanguageProvider>
   );
 }

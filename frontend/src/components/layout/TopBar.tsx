@@ -2,6 +2,7 @@ import { Menu, PanelLeft } from "lucide-react";
 import IconButton from "@/components/ui/IconButton";
 import MetricsStrip, { PipelineChip } from "@/components/layout/MetricsStrip";
 import PatientSelector from "@/components/PatientSelector";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export interface TopBarProps {
   title: string;
@@ -46,6 +47,9 @@ export default function TopBar({
       </h1>
 
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+        <div className="hidden lg:block">
+          <LanguageSwitcher compact />
+        </div>
         <div className="hidden min-w-0 md:flex">
           <MetricsStrip />
         </div>

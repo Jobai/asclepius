@@ -11,6 +11,8 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import LoginPage from "@/pages/LoginPage";
 import ShareModeIdle from "@/pages/share/ShareModeIdle";
 import { ShareSessionProvider } from "@/contexts/ShareSessionContext";
+import AccountLanguageBridge from "@/components/AccountLanguageBridge";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const SetupWizardPage = lazy(() => import("@/pages/SetupWizardPage"));
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
@@ -128,7 +130,9 @@ function SetupRoute() {
 function AdminProviders() {
   return (
     <AuthProvider>
-      <Outlet />
+      <AccountLanguageBridge>
+        <Outlet />
+      </AccountLanguageBridge>
     </AuthProvider>
   );
 }
@@ -163,7 +167,12 @@ export default function App() {
           path="/share"
           element={
             <ShareSessionProvider>
-              <Outlet />
+              <header className="flex justify-end px-4 pt-3">
+                <LanguageSwitcher compact />
+              </header>
+              <Suspense fallback={<ShareModeIdle />}>
+                <Outlet />
+              </Suspense>
             </ShareSessionProvider>
           }
         >
@@ -199,6 +208,9 @@ export default function App() {
         path="/share"
         element={
           <ShareSessionProvider>
+            <header className="flex justify-end px-4 pt-3">
+              <LanguageSwitcher compact />
+            </header>
             <Suspense fallback={<ShareModeIdle />}>
               <Outlet />
             </Suspense>

@@ -5,6 +5,7 @@ import api from "@/api/client";
 import { Shield } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -52,6 +53,9 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-sm rounded-lg border bg-card p-8 shadow-sm">
+        <div className="mb-4">
+          <LanguageSwitcher />
+        </div>
         <div className="mb-6 flex flex-col items-center gap-2">
           <img
             src="/logo.svg"
