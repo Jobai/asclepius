@@ -17,7 +17,6 @@ import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import Badge from "@/components/ui/Badge";
 import {
   Section,
-  EditableField,
   ActionButton,
   IconButton,
 } from "@/components/document-detail/DocumentDetailHelpers";
@@ -330,7 +329,7 @@ function IcdCodeSelect({
   );
 }
 
-export function EncountersSection({
+export function DiagnosesSection({
   encounters,
   onUpdated,
 }: {
@@ -372,18 +371,14 @@ export function EncountersSection({
 
   return (
     <Section
-      title={tx("clinical:features.encountersSection.encounters")}
+      title={tx("clinical:features.encountersSection.diagnoses")}
       icon={Stethoscope}
-      sectionId="encounters"
+      sectionId="diagnoses"
       defaultOpen={!isMobile}
       headerExtra={<Badge size="sm">{encounters.length}</Badge>}
     >
       {encounters.map((enc, i) => (
         <div key={enc.id} className={i > 0 ? "pt-4 mt-4 border-t" : ""}>
-          {/* Three-tier card: headline (diagnosis + ICD pill + delete) →
-              body (details). The pill keeps clinical metadata on the
-              same row as the headline so the eye parses one unit, not
-              three competing label/value rows. */}
           <div className="flex items-start gap-2">
             <div className="flex-1 min-w-0">
               <DiagnosisHeading
@@ -415,17 +410,6 @@ export function EncountersSection({
                 <Trash2 className="h-3.5 w-3.5" />
               </IconButton>
             </div>
-          </div>
-          <div className="mt-2 pl-3 border-l-2 border-muted">
-            <EditableField
-              label={tx("clinical:features.encountersSection.details")}
-              value={enc.notes || ""}
-              field="notes"
-              docId={enc.id}
-              apiPath={`/encounters/${enc.id}`}
-              onSave={onUpdated || (() => {})}
-              multiline
-            />
           </div>
         </div>
       ))}

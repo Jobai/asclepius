@@ -5,7 +5,8 @@
  * surface (``@/components/document-detail/ChildRecordSections``) so callers
  * are unaffected by the split.
  */
-export { EncountersSection } from "@/components/document-detail/child-records/EncountersSection";
+export { DiagnosesSection } from "@/components/document-detail/child-records/EncountersSection";
+export { EncounterDetailsSection } from "@/components/document-detail/child-records/EncounterDetailsSection";
 export { MedicationsSection } from "@/components/document-detail/child-records/MedicationsSection";
 export { VaccinationsSection } from "@/components/document-detail/child-records/VaccinationsSection";
 export { DocumentSectionsList } from "@/components/document-detail/child-records/DocumentSectionsList";

@@ -48,9 +48,21 @@
       "deleteTheSavedDiagnosis": "Delete the saved diagnosis",
       "noDiagnosisClickToAdd": "No diagnosis — click to add",
       "icd10": "+ ICD-10",
-      "encounters": "Encounters",
+      "diagnoses": "Diagnoses",
       "deleteEncounter": "Delete encounter",
       "details": "Details"
+    },
+    "encounterDetails": {
+      "title": "Encounter details",
+      "entry": "Encounter {{number}}",
+      "encounterDate": "Encounter date",
+      "admissionDate": "Admission date",
+      "dischargeDate": "Discharge date",
+      "findings": "Findings",
+      "followUpDate": "Follow-up date",
+      "followUpInstructions": "Follow-up instructions",
+      "notes": "Summary / notes",
+      "notDocumented": "Not documented"
     },
     "imagingStudiesSection": {
       "bodyPart": "Body Part",

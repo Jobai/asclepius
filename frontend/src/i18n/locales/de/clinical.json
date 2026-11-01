@@ -48,9 +48,21 @@
       "deleteTheSavedDiagnosis": "Gespeicherte Diagnose löschen",
       "noDiagnosisClickToAdd": "Keine Diagnose – zum Hinzufügen klicken",
       "icd10": "+ ICD-10",
-      "encounters": "Behandlungen",
+      "diagnoses": "Diagnosen",
       "deleteEncounter": "Behandlung löschen",
       "details": "Details"
+    },
+    "encounterDetails": {
+      "title": "Behandlungsinformationen",
+      "entry": "Behandlungseintrag {{number}}",
+      "encounterDate": "Behandlungsdatum",
+      "admissionDate": "Aufnahmedatum",
+      "dischargeDate": "Entlassungsdatum",
+      "findings": "Befunde",
+      "followUpDate": "Nachsorgedatum",
+      "followUpInstructions": "Nachsorgeanweisungen",
+      "notes": "Zusammenfassung / Notizen",
+      "notDocumented": "Nicht dokumentiert"
     },
     "imagingStudiesSection": {
       "bodyPart": "Körperregion",

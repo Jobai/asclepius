@@ -146,11 +146,17 @@ A collapsible **Processing details** section shows OCR engine, OCR
 confidence, and LLM provider/model.
 
 Every right-column section (Document Info, Medical Event, Lab Results,
-Encounters, Medications, Vaccinations, Notes, AI Edit, Linked
+Diagnoses, Encounter details, Medications, Vaccinations, Notes, AI Edit, Linked
 Documents, Summary, Translated Text, OCR Text, Document Sections,
 Pipeline Stages, Region Translations) is collapsible. Empty sections
 start collapsed; per-section open/closed state persists across reloads
 in localStorage so the layout you set up stays put.
+
+**Diagnoses** shows the extracted diagnosis names and ICD-10 codes. The separate
+**Encounter details** section shows each entry's encounter, admission, discharge,
+and follow-up dates, doctor, facility, specialty, findings, follow-up instructions,
+and editable summary/notes. Missing clinical fields are labelled **Not documented**.
+Both sections use the existing extracted records; no reprocessing is needed.
 
 ### PDF viewer interactions
 

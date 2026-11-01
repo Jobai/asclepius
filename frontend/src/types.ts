@@ -436,6 +436,12 @@ export interface Encounter {
   patient_id: number;
   doctor_id: number | null;
   facility_id: number | null;
+  doctor_name?: string | null;
+  facility_name?: string | null;
+  specialty_canonical_display?: string | null;
+  specialty_display_names?: Partial<Record<"en" | "de", string>>;
+  diagnosis_canonical_display?: string | null;
+  diagnosis_display_names?: Partial<Record<"en" | "de", string>>;
   encounter_date: string | null;
   admission_date: string | null;
   discharge_date: string | null;

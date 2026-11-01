@@ -24,7 +24,8 @@ import DetailActionsMenu from "@/components/document-detail/DetailActionsMenu";
 import DocumentQueueStatus from "@/components/document-detail/DocumentQueueStatus";
 import MetadataEditor from "@/components/document-detail/MetadataEditor";
 import {
-  EncountersSection,
+  DiagnosesSection,
+  EncounterDetailsSection,
   MedicationsSection,
   VaccinationsSection,
   DocumentSectionsList,
@@ -517,7 +518,11 @@ export default function DocumentDetailPage() {
             onChange={() => loadDoc(false)}
           />
 
-          <EncountersSection
+          <DiagnosesSection
+            encounters={doc.encounters || []}
+            onUpdated={() => loadDoc(false)}
+          />
+          <EncounterDetailsSection
             encounters={doc.encounters || []}
             onUpdated={() => loadDoc(false)}
           />

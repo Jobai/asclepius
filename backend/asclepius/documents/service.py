@@ -346,9 +346,13 @@ async def get_related_records(db: aiosqlite.Connection, table: str, doc_id: int)
         # linked yet.
         cursor = await db.execute(
             """SELECT e.*,
+                      dr.name AS doctor_name,
+                      f.name AS facility_name,
                       ns.canonical_display AS specialty_canonical_display,
                       nd.canonical_display AS diagnosis_canonical_display
                FROM encounters e
+               LEFT JOIN doctors dr ON e.doctor_id = dr.id
+               LEFT JOIN facilities f ON e.facility_id = f.id
                LEFT JOIN norm_specialties ns ON e.norm_specialty_id = ns.id
                LEFT JOIN norm_diagnoses nd ON e.norm_diagnosis_id = nd.id
                WHERE e.document_id = ?
