@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Personal UI-language preferences (`auto`, `en`, `de`) can be saved through
+  `PATCH /api/auth/me/preferences` and read through `GET /api/auth/me`.
+  Preferences persist per account for all authenticated roles. This supplies
+  the backend for the planned language selector; UI integration follows separately.
+
 ### Changed
 
 - `POST /api/share/heartbeat` now answers 200 with `{"active": bool}`

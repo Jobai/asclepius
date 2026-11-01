@@ -5,6 +5,12 @@ from pydantic import BaseModel, Field
 
 import aiosqlite
 from asclepius.auth import rate_limit
+from asclepius.auth.preferences import (
+    UiLanguage,
+    UiPreferences,
+    get_ui_language,
+    save_ui_language,
+)
 from asclepius.auth.cookies import clear_auth_cookie, set_auth_cookie
 from asclepius.auth.session import (
     COOKIE_NAME,
@@ -30,6 +36,18 @@ class UserResponse(BaseModel):
     username: str
     display_name: str | None
     role: str
+
+
+class PatientAccessResponse(BaseModel):
+    id: int
+    slug: str
+    display_name: str
+    role: str
+
+
+class CurrentUserResponse(UserResponse):
+    patients: list[PatientAccessResponse]
+    ui_language: UiLanguage | None
 
 
 @router.post("/login")
@@ -132,7 +150,7 @@ async def logout(
     return {"ok": True}
 
 
-@router.get("/me")
+@router.get("/me", response_model=CurrentUserResponse)
 async def me(
     current_user: dict = Depends(get_current_user),
     db: aiosqlite.Connection = Depends(get_db),
@@ -168,4 +186,19 @@ async def me(
 
     # Drop the internal marker before sending the user record to the client.
     payload = {k: v for k, v in current_user.items() if not k.startswith("_")}
-    return {**payload, "patients": patients}
+    return {
+        **payload,
+        "patients": patients,
+        "ui_language": await get_ui_language(db, current_user["id"]),
+    }
+
+
+@router.patch("/me/preferences", response_model=UiPreferences)
+async def update_preferences(
+    body: UiPreferences,
+    current_user: dict = Depends(get_current_user),
+    db: aiosqlite.Connection = Depends(get_db),
+) -> UiPreferences:
+    """Save the caller's own interface preference, for any authenticated role."""
+    await save_ui_language(db, current_user["id"], body.ui_language)
+    return body

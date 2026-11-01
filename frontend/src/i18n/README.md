@@ -1,8 +1,23 @@
 # UI localization foundation
 
-Step 1 is implemented. The application still displays its existing English UI;
+Steps 1 and 2 are implemented. The application still displays its existing English UI;
 the selector, preference synchronization, and feature migrations belong to later
 steps in `LOCALIZATION_PLAN.md` at the repository root.
+
+## Backend preference contract (Step 2)
+
+`GET /api/auth/me` includes `ui_language`: `null` when no account preference has
+been saved, or `auto`, `en`, or `de`. The response keeps its user and patient fields.
+`PATCH /api/auth/me/preferences` accepts `{ "ui_language": "de" }` and returns
+the saved preference in the same shape. All authenticated roles may update their
+own preference, with the normal CSRF header. Unknown fields (including `user_id`)
+and unsupported language values are rejected. These endpoints are core-only.
+
+The `user_ui_preferences` table is created by normal database initialization on
+new and existing installations. Values persist across sessions and startup;
+deleting an account cascades to its preference. Document language settings are
+independent. Generated API types describe both the nullable read field and the
+validated update body. Connecting this contract to the UI is Step 3.
 
 ## Usage for subsequent steps
 

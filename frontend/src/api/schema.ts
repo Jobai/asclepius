@@ -430,6 +430,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/auth/me/preferences": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Update Preferences
+     * @description Save the caller's own interface preference, for any authenticated role.
+     */
+    patch: operations["update_preferences_api_auth_me_preferences_patch"];
+    trace?: never;
+  };
   "/api/auth/oidc/enabled": {
     parameters: {
       query?: never;
@@ -2941,6 +2961,21 @@ export interface components {
       /** Message */
       message: string;
     };
+    /** CurrentUserResponse */
+    CurrentUserResponse: {
+      /** Id */
+      id: number;
+      /** Username */
+      username: string;
+      /** Display Name */
+      display_name: string | null;
+      /** Role */
+      role: string;
+      /** Patients */
+      patients: components["schemas"]["PatientAccessResponse"][];
+      /** Ui Language */
+      ui_language: ("auto" | "en" | "de") | null;
+    };
     /** DocumentEditRequest */
     DocumentEditRequest: {
       /** Instruction */
@@ -3422,6 +3457,17 @@ export interface components {
        */
       role: string;
     };
+    /** PatientAccessResponse */
+    PatientAccessResponse: {
+      /** Id */
+      id: number;
+      /** Slug */
+      slug: string;
+      /** Display Name */
+      display_name: string;
+      /** Role */
+      role: string;
+    };
     /** PatientCreate */
     PatientCreate: {
       /** Display Name */
@@ -3794,6 +3840,14 @@ export interface components {
        * @default
        */
       llm_provider_id: string;
+    };
+    /** UiPreferences */
+    UiPreferences: {
+      /**
+       * Ui Language
+       * @enum {string}
+       */
+      ui_language: "auto" | "en" | "de";
     };
     /** UserCreate */
     UserCreate: {
@@ -4330,9 +4384,40 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": {
-            [key: string]: unknown;
-          };
+          "application/json": components["schemas"]["CurrentUserResponse"];
+        };
+      };
+    };
+  };
+  update_preferences_api_auth_me_preferences_patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UiPreferences"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UiPreferences"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

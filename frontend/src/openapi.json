@@ -561,9 +561,47 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "type": "object",
-                  "title": "Response Me Api Auth Me Get"
+                  "$ref": "#/components/schemas/CurrentUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me/preferences": {
+      "patch": {
+        "tags": ["auth"],
+        "summary": "Update Preferences",
+        "description": "Save the caller's own interface preference, for any authenticated role.",
+        "operationId": "update_preferences_api_auth_me_preferences_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UiPreferences"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UiPreferences"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -7011,6 +7049,62 @@
         "required": ["message"],
         "title": "ChatRequest"
       },
+      "CurrentUserResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "patients": {
+            "items": {
+              "$ref": "#/components/schemas/PatientAccessResponse"
+            },
+            "type": "array",
+            "title": "Patients"
+          },
+          "ui_language": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": ["auto", "en", "de"]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ui Language"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "display_name",
+          "role",
+          "patients",
+          "ui_language"
+        ],
+        "title": "CurrentUserResponse"
+      },
       "DocumentEditRequest": {
         "properties": {
           "instruction": {
@@ -8806,6 +8900,29 @@
         "required": ["patient_id"],
         "title": "PatientAccessGrant"
       },
+      "PatientAccessResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": ["id", "slug", "display_name", "role"],
+        "title": "PatientAccessResponse"
+      },
       "PatientCreate": {
         "properties": {
           "display_name": {
@@ -10240,6 +10357,19 @@
         },
         "type": "object",
         "title": "TranslationDefaultsUpdate"
+      },
+      "UiPreferences": {
+        "properties": {
+          "ui_language": {
+            "type": "string",
+            "enum": ["auto", "en", "de"],
+            "title": "Ui Language"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["ui_language"],
+        "title": "UiPreferences"
       },
       "UserCreate": {
         "properties": {

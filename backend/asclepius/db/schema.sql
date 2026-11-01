@@ -504,6 +504,14 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_active ON sessions(revoked_at, expires_at);
 
+-- Personal interface language. No row means no explicit account preference;
+-- 'auto' explicitly follows the browser. Independent of document/AI languages.
+CREATE TABLE IF NOT EXISTS user_ui_preferences (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    ui_language TEXT NOT NULL CHECK(ui_language IN ('auto', 'en', 'de')),
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Per-user UI preferences for list views (Documents / Imaging / Lab).
 -- visible_json + order_json are JSON arrays of column ids defined in the
 -- frontend column registry. Defaults live in the frontend; an absent row
