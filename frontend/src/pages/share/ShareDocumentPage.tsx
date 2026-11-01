@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
@@ -66,6 +67,16 @@ interface ShareDocumentDetail {
  * exposes a downloadable URL.
  */
 export default function ShareDocumentPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
@@ -173,7 +184,9 @@ export default function ShareDocumentPage() {
   };
 
   if (loading)
-    return <div className="p-8 text-muted-foreground">Loading...</div>;
+    return (
+      <div className="p-8 text-muted-foreground">{tx("common:ui.loading")}</div>
+    );
   if (error || !doc) {
     return (
       <div className="min-h-dvh bg-muted/30">
@@ -184,7 +197,8 @@ export default function ShareDocumentPage() {
               to="/share/dashboard"
               className="inline-flex items-center gap-1 text-sm hover:underline"
             >
-              <ArrowLeft className="h-4 w-4" /> Back to documents
+              <ArrowLeft className="h-4 w-4" />{" "}
+              {tx("share:features.shareDocument.backToDocuments")}{" "}
             </Link>
           </div>
           <p className="mt-6 text-sm text-destructive">
@@ -205,21 +219,22 @@ export default function ShareDocumentPage() {
               to="/share/dashboard"
               className="inline-flex items-center gap-1.5 text-sm hover:underline"
             >
-              <ArrowLeft className="h-4 w-4" /> Back
+              <ArrowLeft className="h-4 w-4" />{" "}
+              {tx("share:features.shareDocument.back")}{" "}
             </Link>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted-foreground">
-              Read-only view
+              {tx("share:features.shareDocument.readOnlyView")}
             </span>
             <button
               onClick={toggleTheme}
               title={
                 theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
+                  ? tx("common:ui.lightMode")
+                  : tx("common:ui.darkMode")
               }
-              aria-label="Toggle theme"
+              aria-label={tx("share:features.shareDocument.toggleTheme")}
               className="flex items-center justify-center rounded-md border p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground coarse:min-h-11 coarse:min-w-11"
             >
               {theme === "dark" ? (
@@ -248,16 +263,36 @@ export default function ShareDocumentPage() {
         <section className="min-w-0 space-y-6">
           <div>
             <h1 className="text-lg font-semibold break-words">
-              {doc.original_filename || doc.doc_type || "Document"}
+              {doc.original_filename ||
+                doc.doc_type ||
+                tx("share:features.shareDocument.document")}
             </h1>
             <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
               {doc.doc_type && <span>{doc.doc_type}</span>}
-              {doc.event_date && <span>Event: {doc.event_date}</span>}
-              {doc.issued_date && <span>Issued: {doc.issued_date}</span>}
+              {doc.event_date && (
+                <span>
+                  {tx("share:features.shareDocument.event", {
+                    value0: doc.event_date,
+                  })}
+                </span>
+              )}
+              {doc.issued_date && (
+                <span>
+                  {tx("share:features.shareDocument.issued", {
+                    value0: doc.issued_date,
+                  })}
+                </span>
+              )}
               {doc.specialty_display && <span>{doc.specialty_display}</span>}
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
-              {doc.doctor_name && <>Dr. {doc.doctor_name}</>}
+              {doc.doctor_name && (
+                <>
+                  {tx("share:features.shareDocument.dr", {
+                    value0: doc.doctor_name,
+                  })}
+                </>
+              )}
               {doc.doctor_name && doc.facility_name ? " · " : ""}
               {doc.facility_name}
             </div>
@@ -265,7 +300,9 @@ export default function ShareDocumentPage() {
 
           {doc.summary_en && (
             <div>
-              <h2 className="text-sm font-semibold mb-1">Summary (English)</h2>
+              <h2 className="text-sm font-semibold mb-1">
+                {tx("share:features.shareDocument.summaryEnglish")}
+              </h2>
               <p className="text-sm whitespace-pre-wrap">{doc.summary_en}</p>
             </div>
           )}
@@ -273,8 +310,11 @@ export default function ShareDocumentPage() {
           {doc.summary_original && (
             <div>
               <h2 className="text-sm font-semibold mb-1">
-                Summary (original
-                {doc.language_source ? ` · ${doc.language_source}` : ""})
+                {tx("share:features.shareDocument.summaryOriginal", {
+                  value0: doc.language_source
+                    ? ` · ${doc.language_source}`
+                    : "",
+                })}
               </h2>
               <p className="text-sm whitespace-pre-wrap">
                 {doc.summary_original}
@@ -283,7 +323,9 @@ export default function ShareDocumentPage() {
           )}
 
           <div>
-            <h2 className="text-sm font-semibold mb-2">Translation</h2>
+            <h2 className="text-sm font-semibold mb-2">
+              {tx("common:stages.translation")}
+            </h2>
             <ShareTranslateMenu
               documentId={doc.id}
               hasFile={doc.has_file}
@@ -301,7 +343,7 @@ export default function ShareDocumentPage() {
           {doc.region_translations && doc.region_translations.length > 0 && (
             <div>
               <h2 className="text-sm font-semibold mb-2">
-                Region translations
+                {tx("share:features.shareDocument.regionTranslations")}
               </h2>
               <ul className="space-y-2">
                 {doc.region_translations.map((rt) => {
@@ -319,7 +361,11 @@ export default function ShareDocumentPage() {
                       className="rounded-md border bg-card p-3 text-sm"
                     >
                       <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                        <span>Page {rt.page}</span>
+                        <span>
+                          {tx("share:features.shareDocument.page", {
+                            value0: rt.page,
+                          })}
+                        </span>
                         {rt.target_language && (
                           <span className="rounded-full border bg-background px-1.5 py-0.5 text-[10px] font-medium text-foreground">
                             {rt.target_language}
@@ -331,15 +377,23 @@ export default function ShareDocumentPage() {
                             onClick={() =>
                               setLightbox({
                                 src: thumbUrl,
-                                alt: `Region on page ${rt.page}`,
+                                alt: tx(
+                                  "share:features.shareDocument.regionOnPage",
+                                  { value0: rt.page },
+                                ),
                               })
                             }
                             className="ml-auto block flex-shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                            title="View full-size"
+                            title={tx(
+                              "share:features.shareDocument.viewFullSize",
+                            )}
                           >
                             <img
                               src={thumbUrl}
-                              alt={`Region on page ${rt.page}`}
+                              alt={tx(
+                                "share:features.shareDocument.regionOnPage",
+                                { value0: rt.page },
+                              )}
                               className="h-7 w-12 object-cover rounded border bg-background"
                             />
                           </button>
@@ -351,13 +405,13 @@ export default function ShareDocumentPage() {
                         </p>
                       ) : (
                         <p className="text-xs text-muted-foreground italic">
-                          Translating...
+                          {tx("share:features.shareTranslateMenu.translating")}
                         </p>
                       )}
                       {rt.ocr_text && (
                         <details className="mt-2">
                           <summary className="cursor-pointer text-xs text-muted-foreground">
-                            Original text
+                            {tx("share:features.shareDocument.originalText")}
                           </summary>
                           <p className="mt-1 text-xs whitespace-pre-wrap text-muted-foreground">
                             {rt.ocr_text}
@@ -373,16 +427,26 @@ export default function ShareDocumentPage() {
 
           {doc.lab_results && doc.lab_results.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold mb-2">Lab results</h2>
+              <h2 className="text-sm font-semibold mb-2">
+                {tx("clinical:labResults")}
+              </h2>
               {/* md+: the classic 4-column table. */}
               <div className="hidden md:block rounded-md border overflow-hidden">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50 text-xs">
                     <tr>
-                      <th className="text-left px-3 py-2">Test</th>
-                      <th className="text-left px-3 py-2">Value</th>
-                      <th className="text-left px-3 py-2">Unit</th>
-                      <th className="text-left px-3 py-2">Reference</th>
+                      <th className="text-left px-3 py-2">
+                        {tx("share:features.shareDocument.test")}
+                      </th>
+                      <th className="text-left px-3 py-2">
+                        {tx("share:features.shareDocument.value")}
+                      </th>
+                      <th className="text-left px-3 py-2">
+                        {tx("share:features.shareDocument.unit")}
+                      </th>
+                      <th className="text-left px-3 py-2">
+                        {tx("share:features.shareDocument.reference")}
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
@@ -430,7 +494,7 @@ export default function ShareDocumentPage() {
                             size="sm"
                             className="ml-1.5 align-middle"
                           >
-                            Abnormal
+                            {tx("share:features.shareDocument.abnormal")}
                           </Badge>
                         )}
                       </span>
@@ -442,8 +506,10 @@ export default function ShareDocumentPage() {
                     {(lr.reference_range_low != null ||
                       lr.reference_range_high != null) && (
                       <div className="mt-0.5 text-xs text-muted-foreground">
-                        Reference: {lr.reference_range_low ?? ""} -{" "}
-                        {lr.reference_range_high ?? ""}
+                        {tx("share:features.shareDocument.reference2", {
+                          value0: lr.reference_range_low ?? "",
+                          value1: lr.reference_range_high ?? "",
+                        })}
                       </div>
                     )}
                   </li>
@@ -454,7 +520,9 @@ export default function ShareDocumentPage() {
 
           {doc.medications && doc.medications.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold mb-2">Medications</h2>
+              <h2 className="text-sm font-semibold mb-2">
+                {tx("share:features.shareDocument.medications")}
+              </h2>
               <ul className="space-y-1 text-sm">
                 {doc.medications.map((m: any) => (
                   <li key={m.id} className="flex flex-wrap gap-x-3">
@@ -477,7 +545,9 @@ export default function ShareDocumentPage() {
 
           {doc.vaccinations && doc.vaccinations.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold mb-2">Vaccinations</h2>
+              <h2 className="text-sm font-semibold mb-2">
+                {tx("share:features.shareDocument.vaccinations")}
+              </h2>
               <ul className="space-y-1 text-sm">
                 {doc.vaccinations.map((v: any) => (
                   <li key={v.id}>
@@ -492,7 +562,9 @@ export default function ShareDocumentPage() {
 
           {doc.notes && (
             <div>
-              <h2 className="text-sm font-semibold mb-1">Notes</h2>
+              <h2 className="text-sm font-semibold mb-1">
+                {tx("share:features.shareDocument.notes")}
+              </h2>
               <p className="text-sm whitespace-pre-wrap">{doc.notes}</p>
             </div>
           )}

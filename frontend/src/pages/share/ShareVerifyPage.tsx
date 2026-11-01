@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
 import { FormEvent, useEffect, useState } from "react";
@@ -26,6 +27,16 @@ type DeliveryInfo = {
  *    polling state machine takes over.
  */
 export default function ShareVerifyPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const { token } = useParams<{ token: string }>();
   const [code, setCode] = useState("");
@@ -107,12 +118,14 @@ export default function ShareVerifyPage() {
         </div>
         <div className="flex items-center gap-2 text-primary">
           <KeyRound className="h-6 w-6" />
-          <h1 className="text-lg font-semibold">Enter your access code</h1>
+          <h1 className="text-lg font-semibold">
+            {tx("share:features.shareVerify.enterYourAccessCode")}
+          </h1>
         </div>
         <p className="text-sm text-muted-foreground">
           {info?.delivery === "email"
-            ? "Check your inbox for the 6-digit code we just sent. The code is valid for a limited time and can only be used once."
-            : "Enter the 6-digit code provided to you. The code is valid for a limited time and can only be used once."}
+            ? tx("share:features.shareVerify.checkYourInboxForThe6DigitCode")
+            : tx("share:features.shareVerify.enterThe6DigitCodeProvidedToYou")}
         </p>
         <form onSubmit={onSubmit} className="space-y-3">
           <input
@@ -132,7 +145,7 @@ export default function ShareVerifyPage() {
             className="w-full"
             loading={submitting}
           >
-            Verify and continue
+            {tx("share:features.shareVerify.verifyAndContinue")}
           </Button>
           {error && (
             <p className="text-sm text-destructive">
@@ -141,7 +154,7 @@ export default function ShareVerifyPage() {
           )}
         </form>
         <p className="text-xs text-muted-foreground border-t pt-4">
-          If your code was rejected, ask the sender to issue a new one.
+          {tx("share:features.shareVerify.ifYourCodeWasRejectedAskTheSender")}
         </p>
       </div>
     </div>

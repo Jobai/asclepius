@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { Crop, Trash2 } from "lucide-react";
@@ -35,6 +36,16 @@ export default function RegionTranslationsSection({
   items,
   onChanged,
 }: RegionTranslationsSectionProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { formatDateTime: formatTs } = useUiFormat();
   const { toast } = useToast();
   const confirm = useConfirm();
@@ -67,7 +78,10 @@ export default function RegionTranslationsSection({
 
   return (
     <Section
-      title={`Region translations (${items.length})`}
+      title={tx(
+        "documents:features.regionTranslationsSection.regionTranslations",
+        { value0: items.length },
+      )}
       icon={Crop}
       sectionId="region-translations"
       defaultOpen={items.length > 0}
@@ -90,7 +104,9 @@ export default function RegionTranslationsSection({
                   on short translations. */}
               <div className="flex items-center gap-2 flex-wrap text-[11px] text-muted-foreground">
                 <span className="font-medium text-foreground">
-                  Page {item.page}
+                  {tx("documents:features.regionTranslationsSection.page", {
+                    value0: item.page,
+                  })}
                 </span>
                 {item.llm_model && (
                   <span
@@ -107,29 +123,47 @@ export default function RegionTranslationsSection({
                     onClick={() =>
                       setLightbox({
                         src: thumbUrl,
-                        alt: `Region on page ${item.page}`,
+                        alt: tx(
+                          "documents:features.regionTranslationsSection.regionOnPage",
+                          { value0: item.page },
+                        ),
                       })
                     }
                     className="ml-auto block flex-shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    title="View full-size"
+                    title={tx(
+                      "documents:features.regionTranslationsSection.viewFullSize",
+                    )}
                   >
                     <img
                       src={thumbUrl}
-                      alt={`Region on page ${item.page}`}
+                      alt={tx(
+                        "documents:features.regionTranslationsSection.regionOnPage",
+                        { value0: item.page },
+                      )}
                       className="h-7 w-12 object-cover rounded border bg-background"
                     />
                   </button>
                 ) : (
                   <span className="ml-auto text-[10px] italic">
-                    {pending ? "Processing..." : "(no thumbnail)"}
+                    {pending
+                      ? tx(
+                          "documents:features.regionTranslationsSection.processing",
+                        )
+                      : tx(
+                          "documents:features.regionTranslationsSection.noThumbnail",
+                        )}
                   </span>
                 )}
                 <button
                   onClick={() => handleDelete(item.id)}
                   disabled={busyId === item.id}
                   className="flex flex-shrink-0 items-center justify-center rounded p-1 hover:bg-destructive/10 hover:text-destructive disabled:opacity-50 coarse:min-h-11 coarse:min-w-11"
-                  title="Delete this region translation"
-                  aria-label="Delete this region translation"
+                  title={tx(
+                    "documents:features.regionTranslationsSection.deleteThisRegionTranslation",
+                  )}
+                  aria-label={tx(
+                    "documents:features.regionTranslationsSection.deleteThisRegionTranslation",
+                  )}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -138,7 +172,9 @@ export default function RegionTranslationsSection({
               {/* Body — full card width, no left-column indent. */}
               {pending ? (
                 <p className="text-sm italic text-muted-foreground">
-                  Processing - the cropped region is being OCR'd and translated.
+                  {tx(
+                    "documents:features.regionTranslationsSection.processingTheCroppedRegionIsBeingOcrD",
+                  )}
                 </p>
               ) : failed ? (
                 <p className="text-sm text-destructive">
@@ -152,7 +188,10 @@ export default function RegionTranslationsSection({
               {item.ocr_text && (
                 <details className="text-xs">
                   <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                    Show original OCR text ({item.ocr_text.length} chars)
+                    {tx(
+                      "documents:features.regionTranslationsSection.showOriginalOcrTextChars",
+                      { value0: item.ocr_text.length },
+                    )}
                   </summary>
                   <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap rounded border bg-background p-2 text-[11px]">
                     {item.ocr_text}

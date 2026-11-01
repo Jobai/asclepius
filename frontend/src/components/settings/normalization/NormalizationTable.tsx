@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import type { UiMessage } from "@/i18n/messages";
 import { type NormItem } from "./types";
 import NormalizationRow, {
@@ -82,6 +83,16 @@ export default function NormalizationTable({
   onRowNewCodeChange,
   onMerge,
 }: NormalizationTableProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   /** Per-item props shared by the table row (md+) and the card (below md). */
   const itemProps = (item: NormItem): NormalizationRowProps => ({
     item,
@@ -127,7 +138,9 @@ export default function NormalizationTable({
     onMerge: () => mergeTargetId && onMerge(item.id),
   });
 
-  const emptyLabel = searchQuery ? "No matches found" : "No entries";
+  const emptyLabel = searchQuery
+    ? tx("settings:features.extra.noMatches")
+    : tx("settings:features.extra.noEntries");
 
   return (
     <>
@@ -144,17 +157,21 @@ export default function NormalizationTable({
                     selectedIds.size === normItems.length
                   }
                   onChange={onToggleSelectAll}
-                  aria-label="Select all"
+                  aria-label={tx("common:actions.selectAll")}
                 />
               </th>
               <th className="px-2 py-2 text-left font-medium w-6"></th>
-              <th className="px-3 py-2 text-left font-medium">Code</th>
-              <th className="px-3 py-2 text-left font-medium">Display Name</th>
-              <th className="px-3 py-2 text-left font-medium whitespace-nowrap">
-                Aliases
+              <th className="px-3 py-2 text-left font-medium">
+                {tx("settings:features.batchMergeBar.code")}
+              </th>
+              <th className="px-3 py-2 text-left font-medium">
+                {tx("settings:features.normalizationRow.displayName")}
               </th>
               <th className="px-3 py-2 text-left font-medium whitespace-nowrap">
-                Actions
+                {tx("settings:features.normalizationTable.aliases")}
+              </th>
+              <th className="px-3 py-2 text-left font-medium whitespace-nowrap">
+                {tx("settings:features.backupTab.actions")}
               </th>
             </tr>
           </thead>
@@ -194,10 +211,11 @@ export default function NormalizationTable({
                   type="checkbox"
                   checked={selectedIds.size === normItems.length}
                   onChange={onToggleSelectAll}
-                  aria-label="Select all"
+                  aria-label={tx("common:actions.selectAll")}
                 />
               </span>
-              Select all ({normItems.length})
+              {tx("settings:features.normalizationTable.selectAll")}
+              {normItems.length})
             </label>
             {normItems.map((item) => (
               <NormalizationCard key={item.id} {...itemProps(item)} />

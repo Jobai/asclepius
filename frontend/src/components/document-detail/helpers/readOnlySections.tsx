@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
@@ -19,6 +20,16 @@ export function TechnicalDetails({
    * fields the user is actually likely to edit. */
   language?: string | null;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [open, setOpen] = useState(false);
   return (
     <div className="pt-1">
@@ -29,19 +40,19 @@ export function TechnicalDetails({
         <ChevronRight
           className={`h-3 w-3 transition-transform ${open ? "rotate-90" : ""}`}
         />
-        Processing details
+        {tx("documents:features.readOnlySections.processingDetails")}{" "}
       </button>
       {open && (
         <div className="mt-1.5 ml-4 space-y-1 text-xs text-muted-foreground">
           {language && (
             <div className="flex justify-between">
-              <span>Language</span>
+              <span>{tx("documents:features.readOnlySections.language")}</span>
               <span className="font-medium text-foreground/70">{language}</span>
             </div>
           )}
           {ocrEngine && (
             <div className="flex justify-between">
-              <span>OCR Engine</span>
+              <span>{tx("documents:features.readOnlySections.ocrEngine")}</span>
               <span className="font-medium text-foreground/70">
                 {ocrEngine}
               </span>
@@ -49,7 +60,9 @@ export function TechnicalDetails({
           )}
           {ocrConfidence != null && (
             <div className="flex justify-between">
-              <span>OCR Confidence</span>
+              <span>
+                {tx("documents:features.readOnlySections.ocrConfidence")}
+              </span>
               <span className="font-medium text-foreground/70">
                 {ocrConfidence.toFixed(2)}
               </span>
@@ -57,7 +70,9 @@ export function TechnicalDetails({
           )}
           {llmProvider && (
             <div className="flex justify-between">
-              <span>LLM Provider</span>
+              <span>
+                {tx("documents:features.readOnlySections.llmProvider")}
+              </span>
               <span className="font-medium text-foreground/70">
                 {llmProvider}
               </span>
@@ -79,6 +94,16 @@ export function OcrSection({
   /** Extra classes on the card root (e.g. CSS `order-*` utilities). */
   className?: string;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [open, setOpen] = useCollapseState("ocr-text", false);
   if (!text) return null;
   return (
@@ -89,10 +114,15 @@ export function OcrSection({
       >
         <h3 className="flex items-center gap-2 font-medium">
           {open ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          OCR Text
+          {tx("documents:features.readOnlySections.ocrText")}{" "}
         </h3>
         <span className="text-xs text-muted-foreground">
-          {open ? "Hide" : "Show"} ({text.length} chars)
+          {tx("documents:features.readOnlySections.chars", {
+            value0: open
+              ? tx("documents:features.extra.hide")
+              : tx("documents:features.extra.show"),
+            value1: text.length,
+          })}
         </span>
       </button>
       {open && (
@@ -115,6 +145,16 @@ export function TranslatedTextSection({
   model: string | null;
   translatedAt: string | null;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { t: ui } = useTranslation("common");
   const { formatDateTime } = useUiFormat();
   const [open, setOpen] = useCollapseState("translated-text", true);
@@ -138,7 +178,9 @@ export function TranslatedTextSection({
           ) : (
             <Eye className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
           )}
-          <span className="text-sm font-medium">English translation</span>
+          <span className="text-sm font-medium">
+            {tx("documents:features.readOnlySections.englishTranslation")}
+          </span>
           {modelShort && (
             <span
               className="hidden truncate rounded border px-1.5 py-0 font-mono text-[10px] text-muted-foreground sm:inline-block max-w-[180px]"

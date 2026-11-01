@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useEffect, useMemo, useRef, useState } from "react";
 import api from "@/api/client";
@@ -60,6 +61,16 @@ function TestPicker({
   canonicalId: number | null | undefined;
   onPick: (v: { name: string; normId: number | null }) => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState(value || "");
   const { data: labTests, loading } = useLabTests();
@@ -103,7 +114,9 @@ function TestPicker({
             onPick({ name: e.target.value, normId: null });
           }}
           onFocus={() => setOpen(true)}
-          placeholder="Search or create test..."
+          placeholder={tx(
+            "clinical:features.labResultsEditor.searchOrCreateTest",
+          )}
           className="w-full rounded border bg-background pl-7 pr-2 py-1 text-sm"
         />
       </div>
@@ -111,13 +124,15 @@ function TestPicker({
         <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-64 overflow-y-auto rounded-md border bg-background shadow-lg">
           {loading ? (
             <div className="px-3 py-2 text-xs text-muted-foreground">
-              Loading...
+              {tx("common:ui.loading")}
             </div>
           ) : (
             <>
               {options.length === 0 && !canCreate && (
                 <div className="px-3 py-2 text-xs text-muted-foreground">
-                  No matches. Type a name to create one.
+                  {tx(
+                    "clinical:features.labResultsEditor.noMatchesTypeANameToCreateOne",
+                  )}
                 </div>
               )}
               {options.slice(0, 50).map((opt: any) => {
@@ -153,7 +168,8 @@ function TestPicker({
                   className="flex w-full items-center gap-2 border-t px-3 py-1.5 text-left text-xs text-primary hover:bg-primary/10"
                 >
                   <Plus className="h-3 w-3" />
-                  Use: <span className="font-medium">"{query.trim()}"</span>
+                  {tx("clinical:features.labResultsEditor.use")}{" "}
+                  <span className="font-medium">"{query.trim()}"</span>
                 </button>
               )}
             </>
@@ -175,6 +191,16 @@ interface EditorProps {
  * between the md+ table (wrapped in a colSpan row) and the <md stacked
  * card list, which renders it directly. */
 function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const [draft, setDraft] = useState<LabRow>(row);
   const [saving, setSaving] = useState(false);
@@ -226,7 +252,9 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
     <div className="rounded border bg-muted/30 p-3 space-y-2">
       <div className="grid gap-2 sm:grid-cols-2">
         <label className="text-xs">
-          <span className="text-muted-foreground block mb-1">Test</span>
+          <span className="text-muted-foreground block mb-1">
+            {tx("clinical:features.labResultsEditor.test")}
+          </span>
           <TestPicker
             value={draft.test_name_original || ""}
             canonicalId={draft.norm_lab_test_id}
@@ -236,7 +264,9 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
           />
         </label>
         <label className="text-xs">
-          <span className="text-muted-foreground block mb-1">Date</span>
+          <span className="text-muted-foreground block mb-1">
+            {tx("common:columns.date")}
+          </span>
           <input
             type="date"
             value={draft.test_date || ""}
@@ -246,7 +276,7 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
         </label>
         <label className="text-xs">
           <span className="text-muted-foreground block mb-1">
-            Value (numeric)
+            {tx("clinical:features.labResultsEditor.valueNumeric")}
           </span>
           <input
             type="number"
@@ -257,17 +287,23 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
           />
         </label>
         <label className="text-xs">
-          <span className="text-muted-foreground block mb-1">Value (text)</span>
+          <span className="text-muted-foreground block mb-1">
+            {tx("clinical:features.labResultsEditor.valueText")}
+          </span>
           <input
             type="text"
             value={draft.value_text || ""}
             onChange={(e) => set({ value_text: e.target.value })}
-            placeholder="e.g. Positive, Negative"
+            placeholder={tx(
+              "clinical:features.labResultsEditor.eGPositiveNegative",
+            )}
             className="w-full rounded border bg-background px-2 py-1 text-sm"
           />
         </label>
         <label className="text-xs">
-          <span className="text-muted-foreground block mb-1">Unit</span>
+          <span className="text-muted-foreground block mb-1">
+            {tx("clinical:features.labResultsEditor.unit")}
+          </span>
           <input
             type="text"
             value={draft.unit || ""}
@@ -277,7 +313,9 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
         </label>
         <div className="grid grid-cols-2 gap-2">
           <label className="text-xs">
-            <span className="text-muted-foreground block mb-1">Ref low</span>
+            <span className="text-muted-foreground block mb-1">
+              {tx("clinical:features.labResultsEditor.refLow")}
+            </span>
             <input
               type="number"
               step="any"
@@ -289,7 +327,9 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
             />
           </label>
           <label className="text-xs">
-            <span className="text-muted-foreground block mb-1">Ref high</span>
+            <span className="text-muted-foreground block mb-1">
+              {tx("clinical:features.labResultsEditor.refHigh")}
+            </span>
             <input
               type="number"
               step="any"
@@ -302,22 +342,26 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
           </label>
         </div>
         <label className="text-xs">
-          <span className="text-muted-foreground block mb-1">Sample type</span>
+          <span className="text-muted-foreground block mb-1">
+            {tx("clinical:features.labResultsEditor.sampleType")}
+          </span>
           <input
             type="text"
             value={draft.sample_type || ""}
             onChange={(e) => set({ sample_type: e.target.value })}
-            placeholder="e.g. serum, urine"
+            placeholder={tx("clinical:features.labResultsEditor.eGSerumUrine")}
             className="w-full rounded border bg-background px-2 py-1 text-sm"
           />
         </label>
         <label className="text-xs">
-          <span className="text-muted-foreground block mb-1">Panel</span>
+          <span className="text-muted-foreground block mb-1">
+            {tx("clinical:features.labResultsEditor.panel")}
+          </span>
           <input
             type="text"
             value={draft.panel_name || ""}
             onChange={(e) => set({ panel_name: e.target.value })}
-            placeholder="e.g. CBC, Lipid"
+            placeholder={tx("clinical:features.labResultsEditor.eGCbcLipid")}
             className="w-full rounded border bg-background px-2 py-1 text-sm"
           />
         </label>
@@ -329,7 +373,7 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
             checked={!!draft.is_abnormal}
             onChange={(e) => set({ is_abnormal: e.target.checked })}
           />
-          <span>Abnormal</span>
+          <span>{tx("clinical:features.labResultsEditor.abnormal")}</span>
         </label>
         <div className="flex gap-2">
           <button
@@ -338,7 +382,7 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
             disabled={saving}
             className="rounded border px-3 py-1 text-xs coarse:min-h-11"
           >
-            Cancel
+            {tx("common:feedback.cancel")}
           </button>
           <button
             type="button"
@@ -346,7 +390,11 @@ function EditorForm({ docId, row, onCancel, onSaved }: EditorProps) {
             disabled={saving}
             className="rounded bg-primary px-3 py-1 text-xs text-primary-foreground disabled:opacity-50 coarse:min-h-11"
           >
-            {saving ? "Saving..." : draft.id ? "Save" : "Add"}
+            {saving
+              ? tx("common:ui.saving")
+              : draft.id
+                ? tx("common:actions.save")
+                : tx("clinical:features.labResultsEditor.add")}
           </button>
         </div>
       </div>
@@ -378,6 +426,16 @@ export default function LabResultsEditor({
   labResults: LabRow[];
   onChange: () => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const confirm = useConfirm();
   const { isMobile } = useBreakpoint();
@@ -425,7 +483,7 @@ export default function LabResultsEditor({
 
   return (
     <Section
-      title="Lab Results"
+      title={tx("common:nav.labResults")}
       icon={TestTube}
       sectionId="lab-results"
       defaultOpen={!isMobile && (labResults?.length ?? 0) > 0}
@@ -437,11 +495,21 @@ export default function LabResultsEditor({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b">
-              <th className="py-1 text-left font-medium">Test</th>
-              <th className="py-1 text-left font-medium">Value</th>
-              <th className="py-1 text-left font-medium">Unit</th>
-              <th className="py-1 text-left font-medium">Ref</th>
-              <th className="py-1 text-left font-medium">Date</th>
+              <th className="py-1 text-left font-medium">
+                {tx("clinical:features.labResultsEditor.test")}
+              </th>
+              <th className="py-1 text-left font-medium">
+                {tx("clinical:features.dicomViewer.value")}
+              </th>
+              <th className="py-1 text-left font-medium">
+                {tx("clinical:features.labResultsEditor.unit")}
+              </th>
+              <th className="py-1 text-left font-medium">
+                {tx("clinical:features.labResultsEditor.ref")}
+              </th>
+              <th className="py-1 text-left font-medium">
+                {tx("common:columns.date")}
+              </th>
               <th className="py-1 w-16"></th>
             </tr>
           </thead>
@@ -491,8 +559,10 @@ export default function LabResultsEditor({
                         type="button"
                         onClick={() => setEditingId(lr.id!)}
                         className="flex items-center justify-center rounded border p-1 hover:bg-accent coarse:min-h-11 coarse:min-w-11"
-                        title="Edit"
-                        aria-label="Edit lab result"
+                        title={tx("clinical:features.labResultsEditor.edit")}
+                        aria-label={tx(
+                          "clinical:features.labResultsEditor.editLabResult",
+                        )}
                       >
                         <Pencil className="h-3 w-3" />
                       </button>
@@ -500,8 +570,10 @@ export default function LabResultsEditor({
                         type="button"
                         onClick={() => del(lr.id!)}
                         className="flex items-center justify-center rounded border p-1 hover:bg-accent text-destructive coarse:min-h-11 coarse:min-w-11"
-                        title="Delete"
-                        aria-label="Delete lab result"
+                        title={tx("common:actions.delete")}
+                        aria-label={tx(
+                          "clinical:features.labResultsEditor.deleteLabResult",
+                        )}
                       >
                         <Trash2 className="h-3 w-3" />
                       </button>
@@ -524,7 +596,7 @@ export default function LabResultsEditor({
                   colSpan={6}
                   className="py-3 text-center text-xs text-muted-foreground"
                 >
-                  No lab results yet.
+                  {tx("clinical:features.labResultsEditor.noLabResultsYet")}
                 </td>
               </tr>
             )}
@@ -555,7 +627,7 @@ export default function LabResultsEditor({
                 </span>
                 {lr.is_abnormal && (
                   <Badge variant="destructive" size="sm">
-                    Abnormal
+                    {tx("clinical:features.labResultsEditor.abnormal")}
                   </Badge>
                 )}
               </div>
@@ -574,10 +646,11 @@ export default function LabResultsEditor({
                 {lr.reference_range_low != null &&
                   lr.reference_range_high != null && (
                     <span className="text-muted-foreground">
-                      {" "}
-                      · Ref {lr.reference_range_low}
-                      {"–"}
-                      {lr.reference_range_high}
+                      {tx("clinical:features.labResultsEditor.ref2", {
+                        value0: lr.reference_range_low,
+                        value1: "–",
+                        value2: lr.reference_range_high,
+                      })}
                     </span>
                   )}
               </div>
@@ -590,8 +663,10 @@ export default function LabResultsEditor({
                     type="button"
                     onClick={() => setEditingId(lr.id!)}
                     className="inline-flex h-9 w-9 items-center justify-center rounded-md border hover:bg-accent coarse:h-11 coarse:w-11"
-                    title="Edit"
-                    aria-label="Edit lab result"
+                    title={tx("clinical:features.labResultsEditor.edit")}
+                    aria-label={tx(
+                      "clinical:features.labResultsEditor.editLabResult",
+                    )}
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
@@ -599,8 +674,10 @@ export default function LabResultsEditor({
                     type="button"
                     onClick={() => del(lr.id!)}
                     className="inline-flex h-9 w-9 items-center justify-center rounded-md border text-destructive hover:bg-destructive-soft coarse:h-11 coarse:w-11"
-                    title="Delete"
-                    aria-label="Delete lab result"
+                    title={tx("common:actions.delete")}
+                    aria-label={tx(
+                      "clinical:features.labResultsEditor.deleteLabResult",
+                    )}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -621,7 +698,7 @@ export default function LabResultsEditor({
         )}
         {rows.length === 0 && editingId !== "new" && (
           <p className="py-3 text-center text-xs text-muted-foreground">
-            No lab results yet.
+            {tx("clinical:features.labResultsEditor.noLabResultsYet")}
           </p>
         )}
       </div>
@@ -633,7 +710,8 @@ export default function LabResultsEditor({
             onClick={startAdd}
             className="inline-flex items-center gap-1 rounded border px-3 py-1 text-xs hover:bg-accent coarse:min-h-11"
           >
-            <Plus className="h-3 w-3" /> Add test
+            <Plus className="h-3 w-3" />{" "}
+            {tx("clinical:features.labResultsEditor.addTest")}{" "}
           </button>
         </div>
       )}

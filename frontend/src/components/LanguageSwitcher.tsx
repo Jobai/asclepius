@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { useUiLanguage } from "@/contexts/UiLanguageContext";
@@ -8,6 +9,16 @@ export default function LanguageSwitcher({
 }: {
   compact?: boolean;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const id = useId();
   const { t } = useTranslation(["common", "settings"]);
   const { preference, selectLanguage, saving, failed } = useUiLanguage();
@@ -34,7 +45,7 @@ export default function LanguageSwitcher({
           English
         </option>
         <option value="de" lang="de">
-          Deutsch
+          {tx("common:language.de")}
         </option>
       </select>
       {(saving || failed) && (

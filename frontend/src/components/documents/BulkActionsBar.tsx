@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { ChevronDown, Share2 } from "lucide-react";
 import Button from "@/components/ui/Button";
@@ -51,6 +52,16 @@ export default function BulkActionsBar({
   onShare,
   shareTooltip,
 }: BulkActionsBarProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [open, setOpen] = useState(false);
 
   // Collapse the dropdown whenever the selection count changes, so a
@@ -63,7 +74,11 @@ export default function BulkActionsBar({
 
   return (
     <div className="hidden md:flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md border border-dashed bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
-      <span>{selectedCount} selected</span>
+      <span>
+        {tx("documents:features.bulkActionsBar.selected", {
+          value0: selectedCount,
+        })}
+      </span>
       <span className="text-muted-foreground/40">|</span>
       <Button
         variant="ghost"
@@ -72,7 +87,9 @@ export default function BulkActionsBar({
         disabled={!!bulkBusy}
         className="text-xs text-muted-foreground hover:text-destructive"
       >
-        {bulkBusy === "Delete" ? "Deleting..." : "Delete"}
+        {bulkBusy === "Delete"
+          ? tx("documents:features.bulkActionsBar.deleting")
+          : tx("common:actions.delete")}
       </Button>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -82,7 +99,9 @@ export default function BulkActionsBar({
             disabled={!!bulkBusy}
             className="gap-0.5 text-xs text-muted-foreground hover:text-foreground"
           >
-            {bulkBusy?.startsWith("Reprocess") ? bulkBusy + "..." : "Reprocess"}
+            {bulkBusy?.startsWith("Reprocess")
+              ? tx("documents:features.extra.reprocessingBusy")
+              : tx("documents:actions.reprocess")}
             <ChevronDown className="h-3 w-3" />
           </Button>
         </PopoverTrigger>
@@ -107,8 +126,8 @@ export default function BulkActionsBar({
         className="text-xs text-muted-foreground hover:text-foreground"
       >
         {bulkBusy === "Regenerate filename"
-          ? "Renaming..."
-          : "Regenerate filename"}
+          ? tx("documents:features.bulkActionsBar.renaming")
+          : tx("documents:features.bulkActionsBar.regenerateFilename")}
       </Button>
       {onShare && (
         <Button
@@ -118,11 +137,14 @@ export default function BulkActionsBar({
           disabled={!!bulkBusy || !!shareTooltip}
           title={
             shareTooltip ||
-            "Create one share link covering all selected documents"
+            tx(
+              "documents:features.bulkActionsBar.createOneShareLinkCoveringAllSelectedDocuments",
+            )
           }
           className="gap-1 text-xs text-muted-foreground hover:text-foreground"
         >
-          <Share2 className="h-3 w-3" /> Share with doctor
+          <Share2 className="h-3 w-3" />{" "}
+          {tx("documents:features.bulkActionsBar.shareWithDoctor")}{" "}
         </Button>
       )}
       <Button
@@ -132,7 +154,7 @@ export default function BulkActionsBar({
         disabled={!!bulkBusy}
         className="ml-auto text-xs text-muted-foreground hover:text-foreground"
       >
-        Clear
+        {tx("common:actions.clear")}
       </Button>
     </div>
   );

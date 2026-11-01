@@ -1,3 +1,5 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
@@ -38,21 +40,37 @@ export default function EventForm({
   onSubmit,
   onCancel,
 }: EventFormProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const set = (patch: Partial<EventFormData>) =>
     onChange({ ...value, ...patch });
 
   return (
     <div className="space-y-3">
       {mode === "create" ? (
-        <h3 className="font-medium">New Medical Event</h3>
+        <h3 className="font-medium">
+          {tx("clinical:features.eventForm.newMedicalEvent")}
+        </h3>
       ) : (
-        <h4 className="text-sm font-medium">Edit Event</h4>
+        <h4 className="text-sm font-medium">
+          {tx("clinical:features.eventForm.editEvent")}
+        </h4>
       )}
       <div className="grid gap-3 md:grid-cols-2">
         <Input
           type="text"
           placeholder={
-            mode === "create" ? "Title (e.g. Sleep Apnea Treatment)" : "Title"
+            mode === "create"
+              ? tx("clinical:features.eventForm.titleEGSleepApneaTreatment")
+              : tx("clinical:features.eventForm.title")
           }
           value={value.title}
           onChange={(e) => set({ title: e.target.value })}
@@ -63,14 +81,14 @@ export default function EventForm({
         >
           {EVENT_TYPES.map((t) => (
             <option key={t} value={t}>
-              {t.replace(/_/g, " ")}
+              {enumLabel("eventType", t)}
             </option>
           ))}
         </Select>
         {mode === "create" ? (
           <>
             <label className="flex flex-col gap-1 text-xs text-muted-foreground">
-              Start date
+              {tx("clinical:features.eventForm.startDate")}{" "}
               <Input
                 type="date"
                 value={value.date_start}
@@ -78,9 +96,9 @@ export default function EventForm({
               />
             </label>
             <label className="flex flex-col gap-1 text-xs text-muted-foreground">
-              End date{" "}
+              {tx("clinical:features.eventForm.endDate")}{" "}
               <span className="text-muted-foreground/70">
-                (leave empty if ongoing)
+                {tx("clinical:features.eventForm.leaveEmptyIfOngoing")}
               </span>
               <Input
                 type="date"
@@ -105,7 +123,7 @@ export default function EventForm({
         )}
         <Input
           type="text"
-          placeholder="Diagnosis"
+          placeholder={tx("clinical:features.eventForm.diagnosis")}
           value={value.diagnosis_text}
           onChange={(e) => set({ diagnosis_text: e.target.value })}
         />
@@ -113,15 +131,21 @@ export default function EventForm({
           value={value.severity || ""}
           onChange={(e) => set({ severity: e.target.value })}
         >
-          <option value="">Severity...</option>
-          <option value="mild">Mild</option>
-          <option value="moderate">Moderate</option>
-          <option value="severe">Severe</option>
-          <option value="critical">Critical</option>
+          <option value="">{tx("clinical:features.eventForm.severity")}</option>
+          <option value="mild">{tx("clinical:features.eventForm.mild")}</option>
+          <option value="moderate">
+            {tx("clinical:features.eventForm.moderate")}
+          </option>
+          <option value="severe">
+            {tx("clinical:features.eventForm.severe")}
+          </option>
+          <option value="critical">
+            {tx("clinical:features.eventForm.critical")}
+          </option>
         </Select>
       </div>
       <Textarea
-        placeholder="Description..."
+        placeholder={tx("clinical:features.eventForm.description")}
         value={value.description}
         onChange={(e) => set({ description: e.target.value })}
         rows={2}
@@ -129,7 +153,7 @@ export default function EventForm({
       />
       {mode === "edit" && (
         <Textarea
-          placeholder="Notes..."
+          placeholder={tx("clinical:features.eventForm.notes")}
           value={value.notes}
           onChange={(e) => set({ notes: e.target.value })}
           rows={2}
@@ -143,14 +167,16 @@ export default function EventForm({
           onChange={(e) => set({ is_ongoing: e.target.checked })}
           className="h-4 w-4 accent-primary"
         />
-        Ongoing condition
+        {tx("clinical:features.eventForm.ongoingCondition")}{" "}
       </label>
       <div className="flex flex-wrap gap-2">
         <Button size="md" onClick={onSubmit}>
-          {mode === "create" ? "Create" : "Save"}
+          {mode === "create"
+            ? tx("clinical:features.eventForm.create")
+            : tx("common:actions.save")}
         </Button>
         <Button variant="secondary" size="md" onClick={onCancel}>
-          Cancel
+          {tx("common:feedback.cancel")}
         </Button>
       </div>
     </div>

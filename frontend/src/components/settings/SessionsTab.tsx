@@ -1,3 +1,6 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
+import { i18n as featureI18n } from "@/i18n";
 import { useUiFormat } from "@/lib/formatting";
 import { message } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
@@ -31,7 +34,11 @@ function describeUserAgent(ua: string | null): {
   label: string;
   icon: typeof Monitor;
 } {
-  if (!ua) return { label: "unknown", icon: Globe };
+  if (!ua)
+    return {
+      label: featureI18n.t("settings:features.sessionsTab.unknown"),
+      icon: Globe,
+    };
   const s = ua.toLowerCase();
   let icon: typeof Monitor = Monitor;
   if (/mobile|android|iphone|ipad/.test(s)) icon = Smartphone;
@@ -44,8 +51,8 @@ function describeUserAgent(ua: string | null): {
         : /safari\//.test(s) && !/chrome\//.test(s)
           ? "Safari"
           : /curl|python|httpx|axios/.test(s)
-            ? "API client"
-            : "Browser";
+            ? featureI18n.t("settings:features.extra.apiClient")
+            : featureI18n.t("settings:features.extra.browser");
   const os = /windows nt/.test(s)
     ? "Windows"
     : /mac os x|macintosh/.test(s)
@@ -57,7 +64,15 @@ function describeUserAgent(ua: string | null): {
           : /linux/.test(s)
             ? "Linux"
             : "";
-  return { label: os ? `${browser} on ${os}` : browser, icon };
+  return {
+    label: os
+      ? featureI18n.t("settings:features.sessionsTab.on", {
+          value0: browser,
+          value1: os,
+        })
+      : browser,
+    icon,
+  };
 }
 
 /** Status chip shared by the md+ table and the phone cards. */
@@ -66,13 +81,40 @@ function statusBadge(
   isExpired: boolean,
   isCurrent: boolean,
 ) {
-  if (isRevoked) return <Badge variant="neutral">revoked</Badge>;
-  if (isExpired) return <Badge variant="warning">expired</Badge>;
-  if (isCurrent) return <Badge variant="info">current</Badge>;
-  return <Badge variant="success">active</Badge>;
+  if (isRevoked)
+    return (
+      <Badge variant="neutral">
+        {featureI18n.t("settings:features.sessionsTab.revoked")}
+      </Badge>
+    );
+  if (isExpired)
+    return (
+      <Badge variant="warning">{featureI18n.t("common:dates.expired")}</Badge>
+    );
+  if (isCurrent)
+    return (
+      <Badge variant="info">
+        {featureI18n.t("settings:features.sessionsTab.current")}
+      </Badge>
+    );
+  return (
+    <Badge variant="success">
+      {featureI18n.t("settings:features.sessionsTab.active")}
+    </Badge>
+  );
 }
 
 export default function SessionsTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { formatDateTime, formatRelative } = useUiFormat();
   const confirm = useConfirm();
   const { toast } = useToast();
@@ -127,7 +169,7 @@ export default function SessionsTab() {
 
   const revoke = async (row: SessionRow) => {
     const warningSelf = row.is_current
-      ? " This is your current session — you will be logged out immediately."
+      ? message("settings:features.extra.selfRevokeWarning")
       : "";
     const ok = await confirm({
       title: message("feedback.revokeSessionFor", {
@@ -135,7 +177,7 @@ export default function SessionsTab() {
       }),
       description: message(
         "feedback.theUserWillBeSignedOutOnTheirNextRequest",
-        { value0: String(warningSelf) },
+        { value0: warningSelf },
       ),
       variant: "destructive",
       confirmText: message("feedback.revoke"),
@@ -166,10 +208,18 @@ export default function SessionsTab() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="font-medium">Active Sessions</h3>
+          <h3 className="font-medium">
+            {tx("settings:features.sessionsTab.activeSessions")}
+          </h3>
           <p className="text-xs text-muted-foreground">
-            {counts.active} active
-            {includeRevoked ? ` • ${counts.revoked} revoked/expired` : ""}
+            {tx("settings:features.sessionsTab.active2", {
+              value0: counts.active,
+              value1: includeRevoked
+                ? tx("settings:features.extra.revokedCount", {
+                    count: counts.revoked,
+                  })
+                : "",
+            })}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -180,30 +230,33 @@ export default function SessionsTab() {
               onChange={(e) => setIncludeRevoked(e.target.checked)}
               className="coarse:h-5 coarse:w-5"
             />
-            Include revoked / expired
+            {tx("settings:features.sessionsTab.includeRevokedExpired")}{" "}
           </label>
           <Button variant="secondary" onClick={load}>
-            <RefreshCw className="h-3.5 w-3.5" /> Refresh
+            <RefreshCw className="h-3.5 w-3.5" />{" "}
+            {tx("settings:features.backupTab.refresh")}{" "}
           </Button>
         </div>
       </div>
 
       <Input
         type="text"
-        placeholder="Filter by user, IP, or browser..."
+        placeholder={tx(
+          "settings:features.sessionsTab.filterByUserIpOrBrowser",
+        )}
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
       />
 
       {loading ? (
         <div className="rounded-lg border p-6 text-center text-sm text-muted-foreground">
-          Loading...
+          {tx("common:ui.loading")}
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-lg border p-6 text-center text-sm text-muted-foreground">
           {sessions.length === 0
-            ? "No sessions."
-            : "No sessions match the filter."}
+            ? tx("settings:features.sessionsTab.noSessions")
+            : tx("settings:features.sessionsTab.noSessionsMatchTheFilter")}
         </div>
       ) : (
         <>
@@ -212,17 +265,29 @@ export default function SessionsTab() {
             <table className="w-full text-sm">
               <thead className="border-b bg-muted/50">
                 <tr>
-                  <th className="px-3 py-2 text-left font-medium">User</th>
-                  <th className="px-3 py-2 text-left font-medium">Client</th>
-                  <th className="px-3 py-2 text-left font-medium">IP</th>
                   <th className="px-3 py-2 text-left font-medium">
-                    Last active
+                    {tx("settings:features.sessionsTab.user")}
                   </th>
-                  <th className="px-3 py-2 text-left font-medium">Created</th>
-                  <th className="px-3 py-2 text-left font-medium">Expires</th>
-                  <th className="px-3 py-2 text-left font-medium">Status</th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("settings:features.sessionsTab.client")}
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("settings:features.sessionsTab.ip")}
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("settings:features.sessionsTab.lastActive")}
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("settings:features.backupTab.created")}
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("settings:features.sessionsTab.expires")}
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("common:columns.status")}
+                  </th>
                   <th className="px-3 py-2 text-left font-medium w-px whitespace-nowrap">
-                    Actions
+                    {tx("settings:features.backupTab.actions")}
                   </th>
                 </tr>
               </thead>
@@ -251,7 +316,7 @@ export default function SessionsTab() {
                           {s.display_name || s.username}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          @{s.username} • {s.role}
+                          @{s.username} • {enumLabel("role", s.role)}
                         </div>
                       </td>
                       <td className="px-3 py-1.5">
@@ -295,9 +360,12 @@ export default function SessionsTab() {
                             onClick={() => revoke(s)}
                             disabled={busyId === s.session_id}
                             className="flex items-center gap-1 rounded-md border border-destructive/30 px-2 py-1 text-xs text-destructive hover:bg-destructive-soft disabled:opacity-50 coarse:min-h-11"
-                            title="Revoke this session"
+                            title={tx(
+                              "settings:features.sessionsTab.revokeThisSession",
+                            )}
                           >
-                            <Trash2 className="h-3 w-3" /> Revoke
+                            <Trash2 className="h-3 w-3" />{" "}
+                            {tx("common:feedback.revoke")}{" "}
                           </button>
                         )}
                       </td>
@@ -335,7 +403,7 @@ export default function SessionsTab() {
                         {s.display_name || s.username}
                       </p>
                       <p className="truncate text-xs text-muted-foreground">
-                        @{s.username} · {s.role}
+                        @{s.username} · {enumLabel("role", s.role)}
                       </p>
                     </div>
                     <span className="shrink-0">
@@ -356,13 +424,19 @@ export default function SessionsTab() {
                   </div>
                   <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
                     <span title={formatDateTime(s.last_active_at)}>
-                      active {formatRelative(s.last_active_at, "past")}
+                      {tx("settings:features.sessionsTab.active3", {
+                        value0: formatRelative(s.last_active_at, "past"),
+                      })}
                     </span>
                     <span title={formatDateTime(s.created_at)}>
-                      created {formatRelative(s.created_at, "past")}
+                      {tx("settings:features.sessionsTab.created", {
+                        value0: formatRelative(s.created_at, "past"),
+                      })}
                     </span>
                     <span title={formatDateTime(s.expires_at)}>
-                      expires {formatRelative(s.expires_at, "future")}
+                      {tx("settings:features.sessionsTab.expires2", {
+                        value0: formatRelative(s.expires_at, "future"),
+                      })}
                     </span>
                   </div>
                   {!isRevoked && !isExpired && (
@@ -372,7 +446,8 @@ export default function SessionsTab() {
                       disabled={busyId === s.session_id}
                       className="border-destructive/30 text-destructive hover:bg-destructive-soft active:bg-destructive-soft"
                     >
-                      <Trash2 className="h-3.5 w-3.5" /> Revoke
+                      <Trash2 className="h-3.5 w-3.5" />{" "}
+                      {tx("common:feedback.revoke")}{" "}
                     </Button>
                   )}
                 </li>

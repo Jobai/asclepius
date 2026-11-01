@@ -69,6 +69,8 @@ describe("Root provider isolation", () => {
   for (const mode of ["share", "core"] as const) {
     for (const path of [
       "/share/abc",
+      "/share/abc/verify",
+      "/share/waiting",
       "/share/dashboard",
       "/share/documents/1",
     ]) {
@@ -87,6 +89,12 @@ describe("Root provider isolation", () => {
           },
         );
         expect(document.documentElement.lang).toBe("de");
+        if (path === "/share/abc")
+          expect(
+            await screen.findByRole("heading", {
+              name: "Sichere Dokumentfreigabe",
+            }),
+          ).toBeInTheDocument();
         fireEvent.change(
           screen.getByRole("combobox", { name: "Sprache der Oberfläche" }),
           {

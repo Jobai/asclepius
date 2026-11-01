@@ -1,3 +1,5 @@
+import { useUiFormat } from "@/lib/formatting";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useState } from "react";
@@ -41,13 +43,6 @@ interface TreeNode {
 const HOVER_REVEAL =
   "opacity-100 md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100";
 
-function formatSize(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
 function getFileExtension(name: string): string {
   const dot = name.lastIndexOf(".");
   return dot >= 0 ? name.slice(dot + 1).toLowerCase() : "";
@@ -77,6 +72,17 @@ function TreeItem({
   onDelete: (path: string, name: string) => void;
   onMove: (path: string, name: string, isDir: boolean) => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
+  const { formatFileSize } = useUiFormat();
   const [expanded, setExpanded] = useState(depth < 1);
 
   // Filter: show if name matches or any child matches
@@ -109,11 +115,13 @@ function TreeItem({
             <FolderOpen className="h-4 w-4 text-warning flex-shrink-0" />
             <span className="font-medium truncate">{node.name}</span>
             <span className="ml-auto text-xs text-muted-foreground flex-shrink-0">
-              {node.children.length} item(s)
+              {tx("common:features.fileBrowser.itemS", {
+                count: node.children.length,
+              })}
             </span>
           </button>
           <IconButton
-            label="Move folder"
+            label={tx("common:features.fileBrowser.moveFolder")}
             size="sm"
             className={`mr-1 ${HOVER_REVEAL}`}
             onClick={(e) => {
@@ -151,10 +159,10 @@ function TreeItem({
       <span className="truncate">{node.name}</span>
       <span className="ml-auto flex items-center gap-1 flex-shrink-0">
         <span className="text-xs text-muted-foreground">
-          {formatSize(node.size)}
+          {formatFileSize(node.size)}
         </span>
         <IconButton
-          label="Move file"
+          label={tx("common:features.fileBrowser.moveFile")}
           size="sm"
           className={HOVER_REVEAL}
           onClick={(e) => {
@@ -165,7 +173,7 @@ function TreeItem({
           <Move className="h-3.5 w-3.5" />
         </IconButton>
         <IconButton
-          label="Delete file"
+          label={tx("common:features.fileBrowser.deleteFile")}
           size="sm"
           className={`hover:text-destructive hover:bg-destructive-soft active:bg-destructive-soft ${HOVER_REVEAL}`}
           onClick={(e) => {
@@ -181,6 +189,16 @@ function TreeItem({
 }
 
 export default function FileBrowserPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const confirm = useConfirm();
   const [tree, setTree] = useState<TreeNode | null>(null);
@@ -281,7 +299,7 @@ export default function FileBrowserPage() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Filter files..."
+            placeholder={tx("common:features.fileBrowser.filterFiles")}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="pl-10"
@@ -296,14 +314,14 @@ export default function FileBrowserPage() {
           }
         >
           <RefreshCw className="h-4 w-4" />
-          Refresh
+          {tx("common:features.fileBrowser.refresh")}{" "}
         </Button>
       </div>
 
       {/* Breadcrumb */}
       <div className="flex items-center gap-1 text-sm text-muted-foreground flex-wrap">
         <IconButton
-          label="Vault root"
+          label={tx("common:features.fileBrowser.vaultRoot")}
           size="sm"
           onClick={() => navigateToBreadcrumb(-1)}
         >
@@ -327,15 +345,19 @@ export default function FileBrowserPage() {
         <div className="rounded-lg border bg-card p-4 space-y-3">
           <p className="text-sm font-medium flex items-center gap-2">
             <Move className="h-4 w-4" />
-            Move <span className="font-mono break-all">{moveDialog.name}</span>
-            {moveDialog.isDir ? " (folder)" : ""}
+            {tx("common:features.fileBrowser.move")}{" "}
+            <span className="font-mono break-all">{moveDialog.name}</span>
+            {moveDialog.isDir ? tx("common:features.fileBrowser.folder") : ""}
           </p>
           <p className="text-xs text-muted-foreground">
-            Edit the destination path. The matching document record (and any
-            child rows) will follow the file so existing references stay intact.
+            {tx(
+              "common:features.fileBrowser.editTheDestinationPathTheMatchingDocumentRecord",
+            )}
           </p>
           <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">From</label>
+            <label className="text-xs text-muted-foreground">
+              {tx("common:features.fileBrowser.from")}
+            </label>
             <Input
               value={moveDialog.path}
               readOnly
@@ -343,13 +365,17 @@ export default function FileBrowserPage() {
             />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">To</label>
+            <label className="text-xs text-muted-foreground">
+              {tx("common:features.fileBrowser.to")}
+            </label>
             <Input
               value={moveTarget}
               onChange={(e) => setMoveTarget(e.target.value)}
               autoFocus
               className="font-mono"
-              placeholder="patients/giovi/2026/20260101_consultation.pdf"
+              placeholder={tx(
+                "common:features.fileBrowser.patientsGiovi202620260101ConsultationPdf",
+              )}
             />
           </div>
           <div className="flex flex-wrap gap-2">
@@ -359,7 +385,9 @@ export default function FileBrowserPage() {
               loading={moving}
               disabled={!moveTarget || moveTarget === moveDialog.path}
             >
-              {moving ? "Moving..." : "Move"}
+              {moving
+                ? tx("common:features.fileBrowser.moving")
+                : tx("common:features.fileBrowser.move")}
             </Button>
             <Button
               variant="secondary"
@@ -369,7 +397,7 @@ export default function FileBrowserPage() {
                 setMoveTarget("");
               }}
             >
-              Cancel
+              {tx("common:feedback.cancel")}
             </Button>
           </div>
         </div>
@@ -408,8 +436,12 @@ export default function FileBrowserPage() {
                 {visibleChildren.length === 0 ? (
                   <EmptyState
                     icon={FolderOpen}
-                    title="No files found in vault"
-                    description="Uploaded documents are filed here automatically once they are processed."
+                    title={tx(
+                      "common:features.fileBrowser.noFilesFoundInVault",
+                    )}
+                    description={tx(
+                      "common:features.fileBrowser.uploadedDocumentsAreFiledHereAutomaticallyOnceThey",
+                    )}
                   />
                 ) : (
                   visibleChildren.map((child) => (

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 /**
@@ -37,10 +38,11 @@ export default function ProviderSelect({
   value,
   onChange,
   options,
-  defaultLabel = "Default (highest priority)",
+  defaultLabel,
   className,
   disabled,
 }: ProviderSelectProps) {
+  const { t } = useTranslation("common");
   return (
     <select
       // Inert marker identifying which provider list this picker drives.
@@ -55,7 +57,9 @@ export default function ProviderSelect({
         className,
       )}
     >
-      <option value="">{defaultLabel}</option>
+      <option value="">
+        {defaultLabel ?? t("features.extra.providerDefault")}
+      </option>
       {options.map((p) => (
         <option key={p.id} value={p.id}>
           {p.name || p.id}

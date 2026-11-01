@@ -273,7 +273,7 @@
     "passwordMustBeAtLeastCharacters": "Password must be at least 4 characters",
     "passwordsDoNotMatch": "Passwords do not match",
     "permanentlyDeleteThisShare": "Permanently delete this share?",
-    "pickANewFileEGTheOriginalPdfFor": "Pick a new file (e.g. the original PDF for a scan). The stored file is swapped and the old one deleted, but the extracted data â€” OCR text, fields, lab results â€” is kept. It is not reprocessed.",
+    "pickANewFileEGTheOriginalPdfFor": "Pick a new file (e.g. the original PDF for a scan). The stored file is swapped and the old one deleted, but the extracted data — OCR text, fields, lab results — is kept. It is not reprocessed.",
     "queueEntryDropped": "Queue entry dropped",
     "regenerate": "Regenerate",
     "regionTranslateFailed": "Region translate failed",
@@ -315,9 +315,9 @@
     "testFailedFor": "Test failed for \"{{value0}}\"",
     "testNameIsRequired": "Test name is required",
     "testSendFailed": "Test send failed",
-    "thePdfDocumentStaysInThePatientSDocumentsList": "The PDF document stays in the patient's documents list â€” only its link to this imaging study is removed. You can re-attach it (or a different one) anytime.",
+    "thePdfDocumentStaysInThePatientSDocumentsList": "The PDF document stays in the patient's documents list — only its link to this imaging study is removed. You can re-attach it (or a different one) anytime.",
     "thePdfIsBeingProcessedItWillAppearHereWhen": "The PDF is being processed; it will appear here when extraction finishes.",
-    "thePdfStaysInThePatientSDocumentsAndThe": "The PDF stays in the patient's documents and the DICOM study stays in /imaging â€” only the link between them is removed. The study will fall back to a placeholder report; you can re-attach this (or any other PDF) from the imaging view.",
+    "thePdfStaysInThePatientSDocumentsAndThe": "The PDF stays in the patient's documents and the DICOM study stays in /imaging — only the link between them is removed. The study will fall back to a placeholder report; you can re-attach this (or any other PDF) from the imaging view.",
     "theCroppedImageAndItsTranslationWillBeRemoved": "The cropped image and its translation will be removed.",
     "theCurrentStageOnWillBeAbortedAndTheDocument": "The current stage on {{value0}} will be aborted and the document marked as cancelled.",
     "theDoctorSSessionWillBeKilledImmediately": "The doctor's session will be killed immediately.",
@@ -330,7 +330,7 @@
     "theUserSLoginWillBeRemovedAndTheirPatient": "The user's login will be removed and their patient-access grants revoked. Documents they uploaded stay.",
     "theRecordCurrentlyCalledWillBeRenamedToEveryDocument": "The {{value0}} record currently called \"{{value1}}\" will be renamed to \"{{value2}}\". Every document, encounter and other record linked to it will display the new name. This affects all linked records, not just the current document.",
     "theseDocumentsAreAlreadyLinked": "These documents are already linked",
-    "theseResultsReferenceDocumentsThatNoLongerExistRemovingThem": "These results reference documents that no longer exist. Removing them keeps the list clean â€” the non-existent source documents are already gone.",
+    "theseResultsReferenceDocumentsThatNoLongerExistRemovingThem": "These results reference documents that no longer exist. Removing them keeps the list clean — the non-existent source documents are already gone.",
     "theyWillBeBouncedBackToTheLandingPage": "They will be bounced back to the landing page.",
     "thisPdfWasAlreadyUploadedItHasBeenLinkedTo": "This PDF was already uploaded; it has been linked to this imaging study.",
     "thisDocumentHasPagesReprocessingWillRunOcrAndThe": "This document has {{value0}} pages. Reprocessing will run OCR and the LLM on every page, which can take a while and consume tokens if you're on a paid provider. Continue?",
@@ -414,5 +414,218 @@
     "points_one": "Trend — {{count}} data point",
     "points_other": "Trend — {{count}} data points",
     "reference": "Reference band (shaded): {{low}}–{{high}}"
+  },
+  "features": {
+    "reportSlot": {
+      "thePdfDocumentStaysInThePatientS": "The PDF document stays in the patient's documents list — only its link to this imaging study is removed. You can re-attach it (or a different one) anytime.",
+      "radiologyReport": "Radiology report",
+      "uploadADifferentPdfAndReplaceTheCurrent": "Upload a different PDF and replace the current one",
+      "uploading": "Uploading...",
+      "replaceWithPdf": "Replace with PDF",
+      "pickADifferentExistingPdf": "Pick a different existing PDF",
+      "pickDifferentPdf": "Pick different PDF",
+      "removeTheReportFromThisStudyThePdf": "Remove the report from this study (the PDF stays in documents)",
+      "searchPdfsForThisPatient": "Search PDFs for this patient...",
+      "noPdfsFoundForThisPatient": "No PDFs found for this patient",
+      "noType": "no type",
+      "noDate": "no date",
+      "useThis": "Use this",
+      "noReportAttachedYet": "No report attached yet",
+      "uploadTheDoctorSPdfReportOrPick": "Upload the doctor's PDF report or pick one from this patient's existing documents.",
+      "uploadPdf": "Upload PDF",
+      "pickExistingPdf": "Pick existing PDF",
+      "attach": "Attach"
+    },
+    "navDrawer": {
+      "asclepiusV": "Asclepius v{{value0}}"
+    },
+    "pipelineProgress": {
+      "pipelineStopped": "Pipeline stopped",
+      "pipelineIdle": "Pipeline idle",
+      "lastProcessed": "Last processed: {{value0}}",
+      "noDocumentsInFlight": "No documents in flight",
+      "part0Part0ProcessedPart1Part1Part2Part2Errors": "<part0>{{value0}}</part0> processed <part1>|</part1> <part2> {{value1}} </part2> errors",
+      "processed": "Processed",
+      "errors": "Errors",
+      "flow": "Flow: {{value0}}",
+      "document": "Document #{{value0}}",
+      "unknown": "(unknown)",
+      "pipelineStageOf": "Pipeline · stage {{value0}} of {{value1}}",
+      "pipeline": "Pipeline",
+      "details": "Details",
+      "pageOf": "{{value0}}page {{value1}} of {{value2}}",
+      "queue": "Queue",
+      "waiting": "{{value0}} waiting",
+      "moreQueued": "+ {{value0}} more queued",
+      "models": "Models"
+    },
+    "multiSelect": {
+      "filterBy": "Filter by {{value0}}"
+    },
+    "selectionOverlay": {
+      "resizeSelection": "Resize selection ({{value0}})"
+    },
+    "pipelineStages": {
+      "visionLlm": "Vision-LLM",
+      "ocrLlm": "OCR + LLM"
+    },
+    "chat": {
+      "documentsTheAssistantCitesWillShowUpHere": "Documents the assistant cites will show up here.",
+      "selectAPatientToStartAConversation": "Select a patient to start a conversation",
+      "sources": "Sources (",
+      "startNewChat": "Start new chat",
+      "askAQuestionAboutSMedicalHistory": "Ask a question about {{value0}}'s medical history",
+      "sources2": "Sources",
+      "openDocument": "Open document",
+      "thinking": "Thinking...",
+      "askAboutMedicalHistory": "Ask about medical history...",
+      "send": "Send",
+      "sourceDocuments": "Source documents",
+      "sourceDocuments2": "Source documents ({{value0}})"
+    },
+    "dashboard": {
+      "totalDocuments": "Total Documents",
+      "recentErrors": "Recent errors",
+      "recentDocuments": "Recent Documents",
+      "viewAll": "View all",
+      "noDocumentsYetDropFilesIntoTheInbox": "No documents yet. Drop files into the inbox to get started."
+    },
+    "fileBrowser": {
+      "moveFolder": "Move folder",
+      "moveFile": "Move file",
+      "deleteFile": "Delete file",
+      "filterFiles": "Filter files...",
+      "refresh": "Refresh",
+      "vaultRoot": "Vault root",
+      "move": "Move",
+      "folder": "(folder)",
+      "editTheDestinationPathTheMatchingDocumentRecord": "Edit the destination path. The matching document record (and any child rows) will follow the file so existing references stay intact.",
+      "from": "From",
+      "to": "To",
+      "patientsGiovi202620260101ConsultationPdf": "patients/giovi/2026/20260101_consultation.pdf",
+      "moving": "Moving...",
+      "noFilesFoundInVault": "No files found in vault",
+      "uploadedDocumentsAreFiledHereAutomaticallyOnceThey": "Uploaded documents are filed here automatically once they are processed.",
+      "itemS_one": "{{count, number}} item",
+      "itemS_other": "{{count, number}} items"
+    },
+    "search": {
+      "searchAcrossAllDocumentsLabResultsAndNotes": "Search across all documents, lab results, and notes...",
+      "resultFound_one": "{{count, number}} result found",
+      "resultFound_other": "{{count, number}} results found"
+    },
+    "unclassified": {
+      "unclassified": "unclassified",
+      "allDocumentsAreClassified": "All documents are classified.",
+      "assignToPatient": "Assign to patient",
+      "assignToPatient2": "Assign to patient..."
+    },
+    "extra": {
+      "cannotCancelUpload": "Upload jobs can't be cancelled from the queue yet",
+      "cancelExtraction": "Cancel this extraction",
+      "removeFromQueue": "Remove from queue",
+      "active": "Active",
+      "idle": "Idle",
+      "stopped": "Stopped",
+      "enums": {
+        "eventType": {
+          "symptom": "Symptom",
+          "diagnosis": "Diagnosis",
+          "hospitalization": "Hospitalization",
+          "surgery": "Surgery",
+          "treatment": "Treatment",
+          "follow_up": "Follow-up",
+          "emergency": "Emergency",
+          "pregnancy": "Pregnancy",
+          "chronic_condition": "Chronic condition",
+          "injury": "Injury",
+          "screening": "Screening",
+          "other": "Other"
+        },
+        "role": {
+          "admin": "Admin",
+          "editor": "Editor",
+          "viewer": "Viewer",
+          "owner": "Owner"
+        },
+        "language": {
+          "English": "English",
+          "Italian": "Italian",
+          "German": "German",
+          "French": "French",
+          "Spanish": "Spanish",
+          "Russian": "Russian",
+          "Portuguese": "Portuguese",
+          "Dutch": "Dutch",
+          "Polish": "Polish",
+          "Romanian": "Romanian",
+          "Czech": "Czech"
+        },
+        "linkType": {
+          "related": "Related",
+          "invoice_for": "Invoice for",
+          "report_for": "Report for",
+          "imaging_for": "Imaging for",
+          "follow_up": "Follow-up"
+        },
+        "shareStatus": {
+          "active": "Active",
+          "expired": "Expired",
+          "revoked": "Revoked"
+        },
+        "normalization": {
+          "doctors": "Doctors",
+          "facilities": "Facilities",
+          "specialties": "Specialties",
+          "lab_tests": "Lab tests",
+          "diagnoses": "Diagnoses",
+          "medications": "Medications"
+        },
+        "normalizationSingular": {
+          "doctors": "doctor",
+          "facilities": "facility",
+          "specialties": "specialty"
+        },
+        "flow": {
+          "ocr_llm": "OCR + LLM",
+          "vision_llm": "Vision-LLM",
+          "ocr_only": "OCR only",
+          "llm_only": "LLM only"
+        },
+        "modality": {
+          "CT": "CT scan",
+          "MR": "MRI",
+          "US": "Ultrasound",
+          "XR": "X-ray",
+          "CR": "X-ray (computed)",
+          "DX": "X-ray (digital)",
+          "MG": "Mammography",
+          "PT": "PET",
+          "NM": "Nuclear medicine",
+          "RF": "Fluoroscopy",
+          "OT": "Other",
+          "unknown": "Unknown"
+        },
+        "sectionType": {
+          "lab_results_page": "Lab results page",
+          "clinical_notes": "Clinical notes",
+          "nursing_notes": "Nursing notes",
+          "vital_signs": "Vital signs",
+          "consent_form": "Consent form",
+          "cover_page": "Cover page",
+          "medication_chart": "Medication chart",
+          "operative_notes": "Operative notes",
+          "discharge_summary": "Discharge summary",
+          "imaging_report": "Imaging report",
+          "correspondence": "Correspondence",
+          "invoice_page": "Invoice page"
+        }
+      },
+      "documentCount_one": "{{count, number}} document",
+      "documentCount_other": "{{count, number}} documents",
+      "providerDefault": "Default (highest priority)",
+      "metricsStages": "Stages: {{stages}}",
+      "pipelineStageCount": "Stage {{current}} of {{total}}"
+    }
   }
 }

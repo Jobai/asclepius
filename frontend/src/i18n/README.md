@@ -1,9 +1,63 @@
 # UI localization foundation
 
-Steps 1–5 are implemented: language selection, account synchronization, shared
-labels/formatting, reactive application messages, and compatible API error codes.
-Feature-wide translation remains Step 6 in `LOCALIZATION_PLAN.md`. Some
-feature-specific static copy is still English.
+Steps 1–6 are implemented. The core app, login/setup, settings, document and
+clinical views, and public doctor-share pages use bundled English/German UI text.
+Account and guest preferences remain independent of document-processing languages.
+
+## Feature translation (Step 6)
+
+Feature messages live under semantic `features` keys in the corresponding
+namespace. Components subscribe through `useTranslation`; option registries store
+keys and resolve labels during rendering. `lib/labels.ts` maps known event types,
+roles, modalities, languages, section types, and link types by stable identifiers.
+Keep option values, route slugs, React keys, API identifiers, and form values
+independent of language. Unknown source values remain readable original content.
+
+Stored outcomes use `message(...)` descriptors. This includes upload results,
+page-scoped AI-edit notifications, local form validation, and chat failures.
+Generated chat replies remain literal. Whole sentences use interpolation, plural
+variants, or `Trans` for links/emphasis; do not build German sentences from English
+fragments or plural suffixes. Interpolated source values render as escaped text.
+
+Prompt titles, descriptions, and placeholder help are mapped by prompt/variable
+IDs in `components/settings/promptLabels.ts`. Prompt bodies and placeholder tokens
+remain editable content. Changing UI language does not change a prompt, canonical
+LLM language, document translation target, selected provider, or processing mode.
+The share language selector stays outside the session guard, so it remains usable
+after a session ends without restarting polling or making an access request.
+
+`npm run check:i18n` checks resource parity, variables, plural forms, UTF-8 text,
+and literal presentation boundaries. The UI check flags raw JSX text, visible
+string props/options, and translated option values/React keys. Its explicit
+literal exemptions and reasons live in `scripts/check-ui-text.mjs`. It is narrow:
+React tests and source review cover conditional copy, render helpers, metadata,
+charts, and stateful outcomes. The inventory command remains a wider review aid.
+
+Intentional exceptions:
+
+- Product/provider/browser names and technical acronyms (Asclepius, OpenAI, LLM,
+  OCR, DICOM, SQL, SMTP, OIDC), units, codes, example URLs/email addresses, protocol
+  field names, version strings, and the selector's native English/Deutsch names.
+- Patient names, filenames/paths, diagnoses, extracted drug names/doses/forms,
+  clinical free text, document content, generated answers, and unknown source
+  classifications. Known application enum labels are translated separately.
+- Prompt bodies, email subjects/templates and their previews, exported/downloaded
+  content, saved configuration values/default identifiers, and document translation
+  or canonical output languages. These are independent content/settings.
+- Raw application/provider logs, audit details, explicit batch diagnostic reports,
+  exception messages in the error boundary, developer-only route labels, and
+  unknown extension prompt metadata. Their surrounding controls are translated.
+- Fixed numeric countdowns, DICOM tags/VR values, and source identifiers preserve
+  their notation. File-size numbers follow the UI locale; their byte values do not.
+
+Verification includes language changes with unsaved event/patient/setup forms,
+provider selections, document reprocessing controls, edited prompt text, language
+settings payloads, clinical values, escaped rich text, and zero/one/two grammar.
+Core/share routing and session-ending tests exercise switching without extra
+admin requests, retries, or restarted polling. A local synthetic-data preview was
+reviewed at desktop width and 390 × 844 for settings navigation, long German help
+text, and public share invitation copy. This is representative layout review,
+not a claim of automated visual coverage for every medical viewer/third-party UI.
 
 ## Localizable API errors (Step 5)
 
@@ -68,8 +122,7 @@ be used for operation names inside summary messages. Bulk actions use complete
 pluralized sentences rather than English `s` suffixes.
 
 `getErrorMessage` resolves API/local errors to reactive descriptors; explicit
-technical detail access uses `getErrorDetails`. Feature-specific static headings
-and help text are Step 6.
+technical detail access uses `getErrorDetails`. Feature-specific headings and help text use the same subscriptions.
 
 ## Selecting a language (Step 3)
 
@@ -192,13 +245,12 @@ see Node's storage instead of browser storage. For local runs on those versions,
 set `NODE_OPTIONS=--no-experimental-webstorage` before `npm test`. CI currently
 uses Node 20 and does not require this flag.
 
-## Coverage inventory for later migration
+## Coverage inventory
 
-The feature-wide inventory below still guides Step 6. Shared navigation, column
-labels, statuses/types/stages, controls, formatting, and persistent application
-messages and common API errors are now localized. Feature-specific static copy
-remains pending. Migrate remaining labels and consumers together,
-retaining internal identifiers and existing behavior.
+All feature groups below have been migrated. Use this inventory when adding UI
+or reviewing future changes; retain the intentional content/diagnostic exceptions
+above and stable internal identifiers. Existing labels and messages must update
+without remounting forms or causing network work.
 
 | Group | Source areas | Strings/context to review |
 | --- | --- | --- |
@@ -218,10 +270,10 @@ retaining internal identifiers and existing behavior.
 | Analysis/pipeline settings | `components/settings/{DocumentAnalysis,Providers,Priority,Pipeline,Prompts,Language}Tab` | Configuration labels, prompt-editor descriptions; preserve prompt bodies/model IDs |
 | Identity/operations settings | `components/settings/` access, users, OIDC, sessions, SMTP, backup, logs and columns tabs | Forms, validation, warnings, action results; preserve logs/config values |
 | Normalization | `components/settings/normalization/` | Entity/alias controls, status labels; preserve clinical terminology and codes |
-| Helpers and formatting | `lib/{utils,datetime,pipelineStages,errors}.ts*`, `pages/shares/format.ts`, inline `toLocale*` calls | English relative times, hard-coded en-GB, status/type fallbacks, raw backend messages |
+| Helpers and formatting | `lib/{utils,datetime,pipelineStages,errors}.ts*`, `pages/shares/format.ts`, inline `toLocale*` calls | Locale-aware relative times and numbers, stable status/type fallbacks, explicit diagnostic exceptions |
 | Backend error producers | Auth/session/authz, document/upload, share public/doctor routes | Common codes implemented in Step 5; add explicit codes for future domain-specific failures, retain legacy details |
 
-Future acceptance checks must include open dialogs, stateful error messages,
+Regression checks include open dialogs, stateful error messages,
 memoized labels, chart callbacks, table registries, mobile-only labels, dates and
 relative times. Existing share isolation tests in `Root.test.tsx` and
-`pages/share/shareNo4xxLoops.test.tsx` must stay green when integration begins.
+`pages/share/shareNo4xxLoops.test.tsx` must stay green for future changes.

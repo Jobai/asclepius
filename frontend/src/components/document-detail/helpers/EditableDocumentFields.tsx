@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
@@ -17,6 +18,16 @@ export function EditableSummary({
   docId: number;
   onSave: (updated?: any) => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { t: ui } = useTranslation("common");
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
@@ -62,7 +73,9 @@ export function EditableSummary({
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between gap-2 px-4 py-3 hover:bg-primary/10 transition-colors"
       >
-        <h3 className="text-sm font-medium text-primary">Summary</h3>
+        <h3 className="text-sm font-medium text-primary">
+          {tx("documents:features.editableDocumentFields.summary")}
+        </h3>
         <ChevronDown
           className={`h-4 w-4 text-primary/60 transition-transform ${
             open ? "" : "-rotate-90"
@@ -94,7 +107,9 @@ export function EditableSummary({
                     onClick={handleDelete}
                     disabled={saving}
                     variant="danger"
-                    title="Delete the saved summary"
+                    title={tx(
+                      "documents:features.editableDocumentFields.deleteTheSavedSummary",
+                    )}
                   >
                     {ui("actions.delete")}
                   </ActionButton>
@@ -117,7 +132,9 @@ export function EditableSummary({
               <p className="text-sm">
                 {value || (
                   <span className="text-muted-foreground italic">
-                    No summary - click to add
+                    {tx(
+                      "documents:features.editableDocumentFields.noSummaryClickToAdd",
+                    )}
                   </span>
                 )}
               </p>
@@ -143,6 +160,16 @@ export function EditableFilename({
   docId: number;
   onSave: (updated?: any) => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { t: ui } = useTranslation("common");
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
@@ -240,8 +267,10 @@ export function EditableFilename({
         <button
           onClick={() => setEditing(true)}
           className="inline-flex items-center justify-center rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground coarse:min-h-11 coarse:min-w-11"
-          title="Edit filename"
-          aria-label="Edit filename"
+          title={tx("documents:features.editableDocumentFields.editFilename")}
+          aria-label={tx(
+            "documents:features.editableDocumentFields.editFilename",
+          )}
         >
           <Pencil className="h-4 w-4" />
         </button>
@@ -249,8 +278,12 @@ export function EditableFilename({
           onClick={handleGenerate}
           disabled={generating}
           className="inline-flex items-center justify-center rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-primary disabled:opacity-50 coarse:min-h-11 coarse:min-w-11"
-          title="Generate filename from document data"
-          aria-label="Generate filename from document data"
+          title={tx(
+            "documents:features.editableDocumentFields.generateFilenameFromDocumentData",
+          )}
+          aria-label={tx(
+            "documents:features.editableDocumentFields.generateFilenameFromDocumentData",
+          )}
         >
           <RefreshCw
             className={`h-4 w-4 ${generating ? "animate-spin" : ""}`}

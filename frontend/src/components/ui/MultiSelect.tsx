@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Check, ChevronDown, X } from "lucide-react";
@@ -30,6 +31,16 @@ export default function MultiSelect({
   onChange,
   searchable = true,
 }: MultiSelectProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { t: ui } = useTranslation("common");
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -68,7 +79,9 @@ export default function MultiSelect({
     <PickerShell
       open={open}
       onOpenChange={handleOpenChange}
-      title={`Filter by ${label.toLowerCase()}`}
+      title={tx("common:features.multiSelect.filterBy", {
+        value0: label.toLowerCase(),
+      })}
       searchable={searchable}
       search={search}
       onSearchChange={setSearch}

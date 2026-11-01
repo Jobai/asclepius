@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { Eye, EyeOff, Loader2, RefreshCw } from "lucide-react";
 import type { ActiveOtp } from "./types";
 import CopyCodeButton from "./CopyCodeButton";
@@ -17,20 +18,31 @@ export default function OtpCell({
   onHide: () => void;
   onRefresh: () => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   if (!visible) {
     return (
       <button
         onClick={onShow}
         className="inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs hover:bg-accent coarse:min-h-11 coarse:px-3"
       >
-        <Eye className="h-3 w-3" /> Show
+        <Eye className="h-3 w-3" /> {tx("common:actions.show")}{" "}
       </button>
     );
   }
   if (loading) {
     return (
       <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-        <Loader2 className="h-3 w-3 animate-spin" /> Loading...
+        <Loader2 className="h-3 w-3 animate-spin" />{" "}
+        {tx("common:ui.loading")}{" "}
       </span>
     );
   }
@@ -51,22 +63,22 @@ export default function OtpCell({
         // Fixed width + whitespace-normal forces the help text to wrap
         // inside the column instead of pushing every other column out.
         <p className="text-[11px] italic text-muted-foreground leading-tight w-[170px] whitespace-normal">
-          No code yet. Doctor needs to click "Request access code" first.
+          {tx("share:features.otpCell.noCodeYetDoctorNeedsToClickRequest")}
         </p>
       )}
       <button
         onClick={onRefresh}
         className="rounded p-0.5 hover:bg-accent flex-shrink-0 coarse:p-2.5"
-        title="Refetch"
-        aria-label="Refetch code"
+        title={tx("share:features.otpCell.refetch")}
+        aria-label={tx("share:features.shareDialog.refetchCode")}
       >
         <RefreshCw className="h-3 w-3" />
       </button>
       <button
         onClick={onHide}
         className="rounded p-0.5 hover:bg-accent flex-shrink-0 coarse:p-2.5"
-        title="Hide"
-        aria-label="Hide code"
+        title={tx("common:actions.hide")}
+        aria-label={tx("share:features.shareDialog.hideCode")}
       >
         <EyeOff className="h-3 w-3" />
       </button>

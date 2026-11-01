@@ -101,10 +101,12 @@ function renderShare(path: string) {
               <Route
                 path="/share"
                 element={
-                  <ShareSessionProvider>
+                  <>
                     <LanguageSwitcher />
-                    <Outlet />
-                  </ShareSessionProvider>
+                    <ShareSessionProvider>
+                      <Outlet />
+                    </ShareSessionProvider>
+                  </>
                 }
               >
                 <Route index element={<ShareLandingPage />} />
@@ -210,7 +212,15 @@ describe("share surface never loops on 4xx", () => {
     expect(calls.filter((c) => c.url === "/documents/302").length).toBe(
       before + 1,
     );
+    expect(screen.getByText("Sitzung nicht mehr aktiv")).toBeInTheDocument();
+    const beforeSwitchBack = calls.length;
+    fireEvent.change(
+      screen.getByRole("combobox", { name: "Sprache der Oberfläche" }),
+      { target: { value: "en" } },
+    );
+    await advance(0);
     expect(screen.getByText("Session no longer active")).toBeInTheDocument();
+    expect(calls.length).toBe(beforeSwitchBack);
   });
 
   it("ends the session from a heartbeat reporting inactive, with zero 4xx", async () => {

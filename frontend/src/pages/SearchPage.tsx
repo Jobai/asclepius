@@ -1,3 +1,5 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
@@ -7,6 +9,16 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
 export default function SearchPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { selectedPatient } = usePatient();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
@@ -34,19 +46,21 @@ export default function SearchPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && doSearch()}
-            placeholder="Search across all documents, lab results, and notes..."
+            placeholder={tx(
+              "common:features.search.searchAcrossAllDocumentsLabResultsAndNotes",
+            )}
             className="pl-9"
             autoFocus
           />
         </div>
         <Button size="md" className="h-10" onClick={doSearch}>
-          Search
+          {tx("common:nav.search")}
         </Button>
       </div>
 
       {searched && (
         <p className="text-sm text-muted-foreground">
-          {total} result{total !== 1 ? "s" : ""} found
+          {tx("common:features.search.resultFound", { count: total })}
         </p>
       )}
 
@@ -62,8 +76,9 @@ export default function SearchPage() {
               <span className="font-medium">{doc.original_filename}</span>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              {doc.doc_type?.replace(/_/g, " ")} | {doc.event_date || "no date"}{" "}
-              | {doc.patient_name || "Unclassified"}
+              {enumLabel("docType", doc.doc_type)} |{" "}
+              {doc.event_date || tx("common:features.reportSlot.noDate")} |{" "}
+              {doc.patient_name || tx("common:nav.unclassified")}
             </p>
             {doc.ocr_text && (
               <p className="mt-1 text-xs text-muted-foreground line-clamp-2">

@@ -1,3 +1,5 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import {
@@ -36,6 +38,16 @@ export default function LinksSection({
   links,
   onLinksChange,
 }: LinksSectionProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isMobile } = useBreakpoint();
@@ -190,7 +202,7 @@ export default function LinksSection({
 
   return (
     <Section
-      title="Linked Documents"
+      title={tx("documents:features.linksSection.linkedDocuments")}
       icon={Link2}
       sectionId="linked-documents"
       defaultOpen={!isMobile && (links.length > 0 || relevantDocs.length > 0)}
@@ -207,7 +219,10 @@ export default function LinksSection({
               link.source_document_id === docId ? "target" : "source";
             const linkedDocId = link[`${otherSide}_document_id`];
             const linkedName =
-              link[`${otherSide}_filename`] || `Document #${linkedDocId}`;
+              link[`${otherSide}_filename`] ||
+              tx("documents:features.extra.linkedDocumentId", {
+                id: linkedDocId,
+              });
             const studyId = link[`${otherSide}_imaging_study_id`];
             const modality = link[`${otherSide}_modality`];
             const isImaging = Boolean(studyId);
@@ -233,18 +248,22 @@ export default function LinksSection({
                 {isImaging && (
                   <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-info-soft px-2 py-0.5 text-[10px] font-medium text-info">
                     <ImageIcon className="h-3 w-3" />
-                    Imaging{modality ? ` · ${modality}` : ""}
+                    {tx("clinical:imaging")}
+                    {modality ? ` · ${modality}` : ""}
                   </span>
                 )}
                 <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                  {link.link_type || "related"}
+                  {link.link_type ||
+                    tx("documents:features.linksSection.related")}
                 </span>
                 {!isSynthetic && (
                   <button
                     onClick={() => unlink(link.id)}
                     className="ml-2 flex items-center justify-center rounded p-1 text-muted-foreground hover:text-destructive coarse:min-h-11 coarse:min-w-11"
-                    title="Remove link"
-                    aria-label="Remove link"
+                    title={tx("documents:features.linksSection.removeLink")}
+                    aria-label={tx(
+                      "documents:features.linksSection.removeLink",
+                    )}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -254,17 +273,21 @@ export default function LinksSection({
           })}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">No linked documents</p>
+        <p className="text-sm text-muted-foreground">
+          {tx("documents:features.linksSection.noLinkedDocuments")}
+        </p>
       )}
 
       {(relevantDocs.length > 0 || loadingRelevant) && (
         <div className="mt-3 pt-3 border-t">
           <h4 className="text-xs font-medium text-muted-foreground mb-2">
-            Suggested by AI
+            {tx("documents:features.linksSection.suggestedByAi")}
           </h4>
           {loadingRelevant ? (
             <p className="text-xs text-muted-foreground">
-              Analyzing document relationships...
+              {tx(
+                "documents:features.linksSection.analyzingDocumentRelationships",
+              )}
             </p>
           ) : (
             <div className="space-y-2">
@@ -278,11 +301,15 @@ export default function LinksSection({
                       href={`/documents/${sg.document_id}`}
                       className="text-primary hover:underline block truncate font-medium"
                     >
-                      {sg.filename || `Document #${sg.document_id}`}
+                      {sg.filename ||
+                        tx("documents:features.linksSection.document", {
+                          value0: sg.document_id,
+                        })}
                     </a>
                     <span className="text-muted-foreground">
-                      {sg.doc_type?.replace(/_/g, " ")} |{" "}
-                      {sg.event_date || "no date"}
+                      {enumLabel("docType", sg.doc_type)} |{" "}
+                      {sg.event_date ||
+                        tx("documents:features.linksSection.noDate")}
                     </span>
                     {sg.reason && (
                       <p className="text-muted-foreground italic mt-0.5">
@@ -294,7 +321,7 @@ export default function LinksSection({
                     onClick={() => acceptSuggestion(sg)}
                     className="rounded bg-primary/10 px-2 py-1 text-primary hover:bg-primary/20 whitespace-nowrap"
                   >
-                    Link
+                    {tx("documents:features.linksSection.link")}
                   </button>
                   <button
                     onClick={() =>
@@ -303,7 +330,9 @@ export default function LinksSection({
                       )
                     }
                     className="flex items-center justify-center rounded p-1 text-muted-foreground hover:text-destructive coarse:min-h-11 coarse:min-w-11"
-                    aria-label="Dismiss suggestion"
+                    aria-label={tx(
+                      "documents:features.linksSection.dismissSuggestion",
+                    )}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -324,7 +353,8 @@ export default function LinksSection({
             }}
             className="flex items-center gap-1 rounded-md border border-dashed px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
           >
-            <Plus className="h-3 w-3" /> Link manually
+            <Plus className="h-3 w-3" />{" "}
+            {tx("documents:features.linksSection.linkManually")}{" "}
           </button>
           <SuggestLinksButton
             docId={docId}
@@ -343,7 +373,9 @@ export default function LinksSection({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && runSearch()}
-                placeholder="Search documents..."
+                placeholder={tx(
+                  "documents:features.linksSection.searchDocuments",
+                )}
                 className="w-full rounded-md border bg-background pl-7 pr-2 py-1.5 text-xs"
                 autoFocus
               />
@@ -353,17 +385,27 @@ export default function LinksSection({
               onChange={(e) => setLinkType(e.target.value)}
               className="rounded-md border bg-background px-2 py-1.5 text-xs"
             >
-              <option value="related">Related</option>
-              <option value="invoice_for">Invoice for</option>
-              <option value="report_for">Report for</option>
-              <option value="imaging_for">Imaging for</option>
-              <option value="follow_up">Follow-up</option>
+              <option value="related">
+                {tx("documents:features.linksSection.related2")}
+              </option>
+              <option value="invoice_for">
+                {tx("documents:features.linksSection.invoiceFor")}
+              </option>
+              <option value="report_for">
+                {tx("documents:features.linksSection.reportFor")}
+              </option>
+              <option value="imaging_for">
+                {tx("documents:features.linksSection.imagingFor")}
+              </option>
+              <option value="follow_up">
+                {tx("documents:features.linksSection.followUp")}
+              </option>
             </select>
             <button
               onClick={runSearch}
               className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground"
             >
-              Search
+              {tx("common:nav.search")}
             </button>
             <button
               onClick={() => {
@@ -392,8 +434,11 @@ export default function LinksSection({
                           {d.original_filename}
                         </span>
                         <span className="block text-muted-foreground">
-                          {d.doc_type?.replace(/_/g, " ") || "no type"} |{" "}
-                          {d.event_date || "no date"}
+                          {enumLabel("docType", d.doc_type) ||
+                            tx("documents:features.linksSection.noType")}{" "}
+                          |{" "}
+                          {d.event_date ||
+                            tx("documents:features.linksSection.noDate")}
                           {d.doctor_name && ` | ${d.doctor_name}`}
                           {d.facility_name && ` | ${d.facility_name}`}
                         </span>
@@ -404,7 +449,7 @@ export default function LinksSection({
                         )}
                       </div>
                       <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-primary text-[10px] whitespace-nowrap">
-                        Link
+                        {tx("documents:features.linksSection.link")}
                       </span>
                     </button>
                   </div>

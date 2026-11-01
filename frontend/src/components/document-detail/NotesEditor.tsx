@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { StickyNote } from "lucide-react";
@@ -12,6 +13,16 @@ export interface NotesEditorProps {
 }
 
 export default function NotesEditor({ docId, initialNotes }: NotesEditorProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const { isMobile } = useBreakpoint();
   const [notes, setNotes] = useState(initialNotes);
@@ -28,7 +39,7 @@ export default function NotesEditor({ docId, initialNotes }: NotesEditorProps) {
 
   return (
     <Section
-      title="Notes"
+      title={tx("documents:features.notesEditor.notes")}
       icon={StickyNote}
       sectionId="notes"
       defaultOpen={!isMobile && !!initialNotes?.trim()}
@@ -47,7 +58,7 @@ export default function NotesEditor({ docId, initialNotes }: NotesEditorProps) {
               onClick={handleSave}
               className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground hover:bg-primary/90"
             >
-              Save
+              {tx("common:actions.save")}
             </button>
             <button
               onClick={() => {
@@ -56,7 +67,7 @@ export default function NotesEditor({ docId, initialNotes }: NotesEditorProps) {
               }}
               className="rounded-md border px-3 py-1.5 text-xs hover:bg-accent"
             >
-              Cancel
+              {tx("common:feedback.cancel")}
             </button>
           </div>
         </div>
@@ -65,7 +76,7 @@ export default function NotesEditor({ docId, initialNotes }: NotesEditorProps) {
           onClick={() => setEditing(true)}
           className="cursor-pointer rounded-md border border-dashed p-3 text-sm text-muted-foreground hover:bg-accent/50 min-h-[60px]"
         >
-          {notes || "Click to add notes..."}
+          {notes || tx("documents:features.notesEditor.clickToAddNotes")}
         </div>
       )}
     </Section>

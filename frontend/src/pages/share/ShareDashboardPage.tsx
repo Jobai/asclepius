@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { LogOut, FileText, Calendar, Moon, Sun } from "lucide-react";
@@ -17,6 +18,16 @@ import { Skeleton } from "@/components/ui/Skeleton";
  * doctor sees this share's documents and nothing else.
  */
 export default function ShareDashboardPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { me, loading, logout, theme, toggleTheme } = useShareSession();
 
   if (loading) {
@@ -46,13 +57,15 @@ export default function ShareDashboardPage() {
                 {me.patient_name}
               </h1>
               <p className="text-xs text-muted-foreground truncate">
-                Shared with {me.recipient_label}
+                {tx("share:features.shareDashboard.sharedWith", {
+                  value0: me.recipient_label,
+                })}
               </p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <p className="mr-auto text-xs text-muted-foreground sm:mr-0">
-              Automatic logout in{" "}
+              {tx("share:features.shareDashboard.automaticLogoutIn")}{" "}
               <SessionCountdown iso={me.session_expires_at} />
             </p>
             <IconButton
@@ -60,8 +73,8 @@ export default function ShareDashboardPage() {
               variant="secondary"
               label={
                 theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
+                  ? tx("common:ui.lightMode")
+                  : tx("common:ui.darkMode")
               }
             >
               {theme === "dark" ? (
@@ -71,7 +84,8 @@ export default function ShareDashboardPage() {
               )}
             </IconButton>
             <Button variant="secondary" size="md" onClick={logout}>
-              <LogOut className="h-4 w-4" /> Log out
+              <LogOut className="h-4 w-4" />{" "}
+              {tx("share:features.shareDashboard.logOut")}{" "}
             </Button>
           </div>
         </div>
@@ -80,7 +94,7 @@ export default function ShareDashboardPage() {
       <main className="max-w-5xl mx-auto px-4 py-6">
         {me.documents.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No documents in this share.
+            {tx("share:features.shareDashboard.noDocumentsInThisShare")}
           </p>
         ) : (
           <ul className="space-y-2">
@@ -93,7 +107,9 @@ export default function ShareDashboardPage() {
                   <FileText className="h-5 w-5 text-primary mt-0.5" />
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">
-                      {d.original_filename || d.doc_type || "Untitled"}
+                      {d.original_filename ||
+                        d.doc_type ||
+                        tx("share:features.shareDashboard.untitled")}
                     </div>
                     <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                       {d.doc_type && <span>{d.doc_type}</span>}

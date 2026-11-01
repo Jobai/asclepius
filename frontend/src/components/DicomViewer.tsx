@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -75,6 +76,16 @@ export default function DicomViewer({
   seriesId,
   modality,
 }: DicomViewerProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const viewportRef = useRef<HTMLDivElement>(null);
   const [currentFrame, setCurrentFrame] = useState(0);
@@ -432,7 +443,7 @@ export default function DicomViewer({
   if (loading) {
     return (
       <div className="flex h-full min-h-[280px] items-center justify-center text-muted-foreground">
-        Loading DICOM series...
+        {tx("clinical:features.dicomViewer.loadingDicomSeries")}
       </div>
     );
   }
@@ -448,7 +459,7 @@ export default function DicomViewer({
   if (totalFrames === 0) {
     return (
       <div className="flex h-full min-h-[280px] items-center justify-center text-muted-foreground">
-        No frames found in this series
+        {tx("clinical:features.dicomViewer.noFramesFoundInThisSeries")}
       </div>
     );
   }
@@ -466,7 +477,7 @@ export default function DicomViewer({
   const viewControls = (
     <>
       <IconButton
-        label="Zoom out"
+        label={tx("clinical:features.dicomViewer.zoomOut")}
         size="md"
         onClick={() => setZoom((z) => Math.max(ZOOM_MIN, z / ZOOM_STEP))}
       >
@@ -476,17 +487,21 @@ export default function DicomViewer({
         {Math.round(zoom * 100)}%
       </span>
       <IconButton
-        label="Zoom in"
+        label={tx("clinical:features.dicomViewer.zoomIn")}
         size="md"
         onClick={() => setZoom((z) => Math.min(ZOOM_MAX, z * ZOOM_STEP))}
       >
         <ZoomIn className="h-4 w-4" />
       </IconButton>
-      <IconButton label="Reset view (zoom + pan)" size="md" onClick={resetView}>
+      <IconButton
+        label={tx("clinical:features.dicomViewer.resetViewZoomPan")}
+        size="md"
+        onClick={resetView}
+      >
         <Maximize className="h-4 w-4" />
       </IconButton>
       <IconButton
-        label="Go to first frame"
+        label={tx("clinical:features.dicomViewer.goToFirstFrame")}
         size="md"
         onClick={() => setCurrentFrame(0)}
       >
@@ -499,7 +514,9 @@ export default function DicomViewer({
     <div className="flex flex-wrap items-center gap-3 text-xs">
       <Sun className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
       <div className="flex min-w-[240px] flex-1 items-center gap-2">
-        <span className="w-12 flex-shrink-0 text-muted-foreground">Center</span>
+        <span className="w-12 flex-shrink-0 text-muted-foreground">
+          {tx("clinical:features.dicomViewer.center")}
+        </span>
         <input
           type="number"
           step={1}
@@ -516,16 +533,18 @@ export default function DicomViewer({
           value={Math.round(effectiveWc)}
           onChange={(e) => setWc(Number(e.target.value))}
           className={cn("flex-1 accent-primary", coarse && "slider-touch")}
-          aria-label="Window center"
+          aria-label={tx("clinical:features.dicomViewer.windowCenter")}
         />
         {wc == null && (
           <span className="flex-shrink-0 text-[10px] text-muted-foreground">
-            auto
+            {tx("clinical:features.dicomViewer.auto")}
           </span>
         )}
       </div>
       <div className="flex min-w-[240px] flex-1 items-center gap-2">
-        <span className="w-12 flex-shrink-0 text-muted-foreground">Width</span>
+        <span className="w-12 flex-shrink-0 text-muted-foreground">
+          {tx("clinical:features.dicomViewer.width")}
+        </span>
         <input
           type="number"
           step={1}
@@ -543,11 +562,11 @@ export default function DicomViewer({
           value={Math.round(effectiveWw)}
           onChange={(e) => setWw(Math.max(1, Number(e.target.value)))}
           className={cn("flex-1 accent-primary", coarse && "slider-touch")}
-          aria-label="Window width"
+          aria-label={tx("clinical:features.dicomViewer.windowWidth")}
         />
         {ww == null && (
           <span className="flex-shrink-0 text-[10px] text-muted-foreground">
-            auto
+            {tx("clinical:features.dicomViewer.auto")}
           </span>
         )}
       </div>
@@ -561,16 +580,18 @@ export default function DicomViewer({
               ? "border-primary bg-primary/10 text-primary"
               : "hover:bg-accent",
           )}
-          title="Windowing drag: one-finger drag adjusts width (horizontal) and center (vertical)"
+          title={tx(
+            "clinical:features.dicomViewer.windowingDragOneFingerDragAdjustsWidthHorizontal",
+          )}
         >
-          Drag mode
+          {tx("clinical:features.dicomViewer.dragMode")}
         </button>
         <button
           onClick={resetContrast}
           className="flex-shrink-0 rounded border px-2 py-0.5 hover:bg-accent coarse:min-h-9"
-          title="Reset to file defaults"
+          title={tx("clinical:features.dicomViewer.resetToFileDefaults")}
         >
-          Reset
+          {tx("common:feedback.reset")}
         </button>
       </div>
     </div>
@@ -582,7 +603,7 @@ export default function DicomViewer({
       <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-surface px-2 py-1">
         <div className="flex items-center gap-0.5">
           <IconButton
-            label="Previous frame"
+            label={tx("clinical:features.dicomViewer.previousFrame")}
             size="md"
             onClick={() => setCurrentFrame((f) => Math.max(0, f - 1))}
             disabled={currentFrame <= 0}
@@ -594,7 +615,7 @@ export default function DicomViewer({
             {currentFrame + 1} / {totalFrames}
           </span>
           <IconButton
-            label="Next frame"
+            label={tx("clinical:features.dicomViewer.nextFrame")}
             size="md"
             onClick={() =>
               setCurrentFrame((f) => Math.min(totalFrames - 1, f + 1))
@@ -610,7 +631,7 @@ export default function DicomViewer({
             {viewControls}
           </div>
           <IconButton
-            label="Invert colours"
+            label={tx("clinical:features.dicomViewer.invertColours")}
             size="md"
             onClick={() => setInvert((v) => !v)}
             aria-pressed={invert}
@@ -619,7 +640,7 @@ export default function DicomViewer({
             <Contrast className="h-4 w-4" />
           </IconButton>
           <IconButton
-            label="Viewer tools"
+            label={tx("clinical:features.dicomViewer.viewerTools")}
             size="md"
             onClick={() => setToolsOpen(true)}
             className="md:hidden"
@@ -627,7 +648,7 @@ export default function DicomViewer({
             <SlidersHorizontal className="h-4 w-4" />
           </IconButton>
           <IconButton
-            label="View DICOM metadata"
+            label={tx("clinical:features.dicomViewer.viewDicomMetadata")}
             size="md"
             onClick={openMetadata}
           >
@@ -635,8 +656,10 @@ export default function DicomViewer({
           </IconButton>
         </div>
         <span className="hidden text-[10px] text-muted-foreground lg:block">
-          <Move className="inline h-3 w-3" /> shift-drag · Ctrl+wheel zoom ·
-          arrows scroll
+          <Move className="inline h-3 w-3" />{" "}
+          {tx(
+            "clinical:features.dicomViewer.shiftDragCtrlWheelZoomArrowsScroll",
+          )}{" "}
         </span>
       </div>
 
@@ -660,7 +683,9 @@ export default function DicomViewer({
       >
         <img
           src={displayUrl ?? frameUrl}
-          alt={`Frame ${currentFrame + 1}`}
+          alt={tx("clinical:features.dicomViewer.frame", {
+            value0: currentFrame + 1,
+          })}
           draggable={false}
           className="pointer-events-none max-h-full max-w-full object-contain"
           style={{
@@ -673,7 +698,10 @@ export default function DicomViewer({
         />
         {windowingMode && isMR && (
           <div className="absolute left-2 top-2 rounded bg-black/70 px-2 py-1 text-[11px] tabular-nums text-white">
-            WC {Math.round(effectiveWc)} · WW {Math.round(effectiveWw)}
+            {tx("clinical:features.dicomViewer.wcWw", {
+              value0: Math.round(effectiveWc),
+              value1: Math.round(effectiveWw),
+            })}
           </div>
         )}
       </div>
@@ -692,19 +720,23 @@ export default function DicomViewer({
               "block w-full accent-primary",
               coarse && "slider-touch",
             )}
-            aria-label="Frame"
+            aria-label={tx("clinical:features.dicomViewer.frame2")}
           />
         </div>
       )}
 
       {/* Tools sheet (below md): zoom/view controls, contrast, gesture
           legend. */}
-      <Sheet open={toolsOpen} onOpenChange={setToolsOpen} title="Viewer tools">
+      <Sheet
+        open={toolsOpen}
+        onOpenChange={setToolsOpen}
+        title={tx("clinical:features.dicomViewer.viewerTools")}
+      >
         <div className="space-y-4">
           <div className="flex items-center justify-center gap-1">
             {viewControls}
             <IconButton
-              label="Invert colours"
+              label={tx("clinical:features.dicomViewer.invertColours")}
               size="md"
               onClick={() => setInvert((v) => !v)}
               aria-pressed={invert}
@@ -715,10 +747,12 @@ export default function DicomViewer({
           </div>
           {contrastControls}
           <p className="text-xs text-muted-foreground">
-            Drag up/down to move through frames · pinch to zoom · two-finger
-            drag to pan · double-tap to reset
-            {isMR &&
-              " · with Drag mode on, drag adjusts contrast (horizontal) and brightness (vertical)"}
+            {tx(
+              "clinical:features.dicomViewer.dragUpDownToMoveThroughFramesPinch",
+              {
+                value0: isMR ? tx("clinical:features.extra.dragWindowing") : "",
+              },
+            )}
           </p>
         </div>
       </Sheet>
@@ -728,8 +762,11 @@ export default function DicomViewer({
       <Sheet
         open={metaOpen}
         onOpenChange={setMetaOpen}
-        title="DICOM metadata"
-        description={`Frame ${currentFrame + 1} / ${totalFrames}`}
+        title={tx("clinical:features.dicomViewer.dicomMetadata")}
+        description={tx("clinical:features.dicomViewer.frame3", {
+          value0: currentFrame + 1,
+          value1: totalFrames,
+        })}
         contentClassName="sm:max-w-[min(800px,90vw)]"
       >
         <div className="sticky top-0 -mx-1 bg-card px-1 pb-2">
@@ -737,22 +774,24 @@ export default function DicomViewer({
             type="text"
             value={metaQuery}
             onChange={(e) => setMetaQuery(e.target.value)}
-            placeholder="Filter by tag, keyword or value..."
+            placeholder={tx(
+              "clinical:features.dicomViewer.filterByTagKeywordOrValue",
+            )}
             className="h-9 w-full rounded border bg-background px-2 text-base sm:text-sm coarse:h-11"
             autoFocus={!coarse}
           />
         </div>
         {metaLoading ? (
           <div className="px-1 py-6 text-sm text-muted-foreground">
-            Loading metadata...
+            {tx("clinical:features.dicomViewer.loadingMetadata")}
           </div>
         ) : !metaItems || metaItems.length === 0 ? (
           <div className="px-1 py-6 text-sm text-muted-foreground">
-            No metadata available.
+            {tx("clinical:features.dicomViewer.noMetadataAvailable")}
           </div>
         ) : filteredMetaItems.length === 0 ? (
           <div className="px-1 py-6 text-sm text-muted-foreground">
-            No tags match the filter.
+            {tx("clinical:features.dicomViewer.noTagsMatchTheFilter")}
           </div>
         ) : (
           <>
@@ -761,11 +800,17 @@ export default function DicomViewer({
               <thead className="sticky top-9 border-b bg-surface">
                 <tr>
                   <th className="w-20 px-3 py-1.5 text-left font-medium">
-                    Tag
+                    {tx("clinical:features.dicomViewer.tag")}
                   </th>
-                  <th className="w-12 px-3 py-1.5 text-left font-medium">VR</th>
-                  <th className="px-3 py-1.5 text-left font-medium">Name</th>
-                  <th className="px-3 py-1.5 text-left font-medium">Value</th>
+                  <th className="w-12 px-3 py-1.5 text-left font-medium">
+                    {tx("clinical:features.dicomViewer.vr")}
+                  </th>
+                  <th className="px-3 py-1.5 text-left font-medium">
+                    {tx("clinical:features.dicomViewer.name")}
+                  </th>
+                  <th className="px-3 py-1.5 text-left font-medium">
+                    {tx("clinical:features.dicomViewer.value")}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -781,7 +826,7 @@ export default function DicomViewer({
                     <td className="break-all px-3 py-1">
                       {it.value === null || it.value === undefined ? (
                         <span className="italic text-muted-foreground">
-                          none
+                          {tx("clinical:features.dicomViewer.none")}
                         </span>
                       ) : (
                         String(it.value)
@@ -801,7 +846,9 @@ export default function DicomViewer({
                   <div className="text-sm">{it.name}</div>
                   <div className="break-all text-xs text-muted-foreground">
                     {it.value === null || it.value === undefined ? (
-                      <span className="italic">none</span>
+                      <span className="italic">
+                        {tx("clinical:features.dicomViewer.none")}
+                      </span>
                     ) : (
                       String(it.value)
                     )}
@@ -819,7 +866,7 @@ export default function DicomViewer({
               className="w-full"
               onClick={() => setMetaOpen(false)}
             >
-              Close
+              {tx("common:actions.close")}
             </Button>
           </div>
         )}

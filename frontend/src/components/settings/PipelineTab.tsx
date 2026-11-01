@@ -1,3 +1,5 @@
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { statusLabel } from "@/lib/utils";
 import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
@@ -22,6 +24,16 @@ import { useConfirm } from "@/contexts/ConfirmContext";
 import { useSettings } from "@/hooks/data";
 
 export default function PipelineTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { data: settingsData } = useSettings();
   const [s, setS] = useState<any>(null);
   const [f, setF] = useState<any>({});
@@ -89,7 +101,10 @@ export default function PipelineTab() {
     loadFailed();
   };
 
-  if (!s) return <div className="text-muted-foreground">Loading...</div>;
+  if (!s)
+    return (
+      <div className="text-muted-foreground">{tx("common:ui.loading")}</div>
+    );
 
   const startPipeline = async () => {
     setStartingPipeline(true);
@@ -134,12 +149,17 @@ export default function PipelineTab() {
           <AlertTriangle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="font-medium text-warning">
-              Pipeline automatically paused
+              {tx("settings:features.pipelineTab.pipelineAutomaticallyPaused")}
             </p>
             <p className="text-sm text-warning/90 mt-1">
-              {pipelineStatus.auto_stop_reason ||
-                "All providers appear unreachable after consecutive failures."}{" "}
-              Check your provider settings and restart when ready.
+              {tx(
+                "settings:features.pipelineTab.checkYourProviderSettingsAndRestartWhenReady",
+                {
+                  value0:
+                    pipelineStatus.auto_stop_reason ||
+                    tx("settings:features.extra.providersUnreachable"),
+                },
+              )}
             </p>
           </div>
           <button
@@ -152,7 +172,7 @@ export default function PipelineTab() {
             ) : (
               <Play className="h-3.5 w-3.5" />
             )}
-            Restart
+            {tx("settings:features.pipelineTab.restart")}{" "}
           </button>
         </div>
       )}
@@ -189,12 +209,14 @@ export default function PipelineTab() {
                     }`}
                   />
                   <span className="font-semibold">
-                    {isActive ? "Pipeline Running" : "Pipeline Stopped"}
+                    {isActive
+                      ? tx("settings:features.pipelineTab.pipelineRunning")
+                      : tx("settings:features.pipelineTab.pipelineStopped")}
                   </span>
                 </div>
                 {isActive && pipelineStatus.processing ? (
                   <p className="text-sm text-muted-foreground mt-0.5">
-                    Processing:{" "}
+                    {tx("settings:features.pipelineTab.processing")}{" "}
                     <span className="font-medium">
                       {pipelineStatus.processing}
                     </span>
@@ -206,11 +228,15 @@ export default function PipelineTab() {
                   </p>
                 ) : isActive ? (
                   <p className="text-sm text-muted-foreground mt-0.5">
-                    Watching inbox for new documents
+                    {tx(
+                      "settings:features.pipelineTab.watchingInboxForNewDocuments",
+                    )}
                   </p>
                 ) : (
                   <p className="text-sm text-muted-foreground mt-0.5">
-                    Documents in inbox will not be processed
+                    {tx(
+                      "settings:features.pipelineTab.documentsInInboxWillNotBeProcessed",
+                    )}
                   </p>
                 )}
               </div>
@@ -219,14 +245,18 @@ export default function PipelineTab() {
             <div className="flex items-center gap-3">
               <div className="text-right text-xs text-muted-foreground mr-2">
                 <div>
-                  Processed:{" "}
-                  <span className="font-medium">
-                    {pipelineStatus.total_processed}
-                  </span>
+                  <FeatureTrans
+                    ns="settings"
+                    i18nKey="features.pipelineTab.processedPart0Part0"
+                    components={{ part0: <span className="font-medium" /> }}
+                    values={{ value0: pipelineStatus.total_processed }}
+                  />
                 </div>
                 {pipelineStatus.total_errors > 0 && (
                   <div className="text-destructive">
-                    Errors: {pipelineStatus.total_errors}
+                    {tx("settings:features.pipelineTab.errors", {
+                      value0: pipelineStatus.total_errors,
+                    })}
                   </div>
                 )}
               </div>
@@ -241,7 +271,7 @@ export default function PipelineTab() {
                   ) : (
                     <Power className="h-4 w-4" />
                   )}
-                  Stop Pipeline
+                  {tx("settings:features.pipelineTab.stopPipeline")}{" "}
                 </button>
               ) : (
                 <button
@@ -254,7 +284,7 @@ export default function PipelineTab() {
                   ) : (
                     <Play className="h-4 w-4" />
                   )}
-                  Start Pipeline
+                  {tx("settings:features.pipelineTab.startPipeline")}{" "}
                 </button>
               )}
             </div>
@@ -263,7 +293,7 @@ export default function PipelineTab() {
       )}
 
       <SettingsForm
-        title="Pipeline Settings"
+        title={tx("settings:features.pipelineTab.pipelineSettings")}
         saving={saving}
         saved={saved}
         onSave={() =>
@@ -292,16 +322,22 @@ export default function PipelineTab() {
         }
       >
         <SelectField
-          label="Default Processing Flow"
+          label={tx("settings:features.pipelineTab.defaultProcessingFlow")}
           value={f.pipeline_default_flow || "ocr_llm"}
           onChange={(v) => setF({ ...f, pipeline_default_flow: v })}
           options={[
-            { value: "ocr_llm", label: "OCR + LLM (text pipeline)" },
-            { value: "vision_llm", label: "Vision-LLM (single-step)" },
+            {
+              value: "ocr_llm",
+              label: tx("settings:features.pipelineTab.ocrLlmTextPipeline"),
+            },
+            {
+              value: "vision_llm",
+              label: tx("settings:features.pipelineTab.visionLlmSingleStep"),
+            },
           ]}
         />
         <NumberField
-          label="Poll Interval (seconds)"
+          label={tx("settings:features.pipelineTab.pollIntervalSeconds")}
           value={f.pipeline_poll_interval}
           onChange={(v) => setF({ ...f, pipeline_poll_interval: v })}
           min={1}
@@ -309,7 +345,7 @@ export default function PipelineTab() {
           step={1}
         />
         <NumberField
-          label="Retry Interval (seconds)"
+          label={tx("settings:features.pipelineTab.retryIntervalSeconds")}
           value={f.pipeline_retry_interval}
           onChange={(v) => setF({ ...f, pipeline_retry_interval: v })}
           min={60}
@@ -317,7 +353,7 @@ export default function PipelineTab() {
           step={60}
         />
         <NumberField
-          label="Max Retries"
+          label={tx("settings:features.pipelineTab.maxRetries")}
           value={f.pipeline_max_retries}
           onChange={(v) => setF({ ...f, pipeline_max_retries: v })}
           min={0}
@@ -325,7 +361,7 @@ export default function PipelineTab() {
           step={1}
         />
         <NumberField
-          label="Session TTL (hours)"
+          label={tx("settings:features.pipelineTab.sessionTtlHours")}
           value={f.session_ttl_hours}
           onChange={(v) => setF({ ...f, session_ttl_hours: v })}
           min={1}
@@ -338,7 +374,7 @@ export default function PipelineTab() {
       <div className="rounded-lg border p-4 space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-medium">
-            Failed Documents
+            {tx("settings:features.pipelineTab.failedDocuments")}{" "}
             {failedDocs.length > 0 && (
               <span className="ml-2 rounded-full bg-destructive-soft px-2 py-0.5 text-xs font-medium text-destructive">
                 {failedDocs.length}
@@ -350,7 +386,7 @@ export default function PipelineTab() {
               onClick={loadFailed}
               className="rounded-md border px-3 py-1.5 text-xs hover:bg-accent"
             >
-              Refresh
+              {tx("settings:features.backupTab.refresh")}
             </button>
             {failedDocs.length > 0 && (
               <button
@@ -359,7 +395,9 @@ export default function PipelineTab() {
                 className="flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
               >
                 <RotateCcw className="h-3 w-3" />{" "}
-                {retryingAll ? "Retrying..." : "Retry All"}
+                {retryingAll
+                  ? tx("settings:features.pipelineTab.retrying")
+                  : tx("settings:features.pipelineTab.retryAll")}
               </button>
             )}
           </div>
@@ -367,7 +405,7 @@ export default function PipelineTab() {
 
         {failedDocs.length === 0 ? (
           <p className="text-sm text-muted-foreground py-2">
-            No failed documents. All good!
+            {tx("settings:features.pipelineTab.noFailedDocumentsAllGood")}
           </p>
         ) : (
           <div className="rounded-lg border divide-y max-h-[400px] overflow-y-auto">
@@ -394,7 +432,9 @@ export default function PipelineTab() {
                     </span>
                     {doc.retry_count > 0 && (
                       <span className="text-[10px] text-muted-foreground">
-                        {doc.retry_count} retries
+                        {tx("settings:features.pipelineTab.retries", {
+                          value0: doc.retry_count,
+                        })}
                       </span>
                     )}
                   </div>
@@ -403,12 +443,15 @@ export default function PipelineTab() {
                       onClick={() => retryDoc(doc.id)}
                       className="flex items-center gap-1 rounded-md border px-2 py-1 text-xs hover:bg-accent"
                     >
-                      <RotateCcw className="h-3 w-3" /> Retry
+                      <RotateCcw className="h-3 w-3" />{" "}
+                      {tx("common:actions.retry")}{" "}
                     </button>
                     <button
                       onClick={() => deleteDoc(doc.id)}
                       className="flex items-center justify-center rounded p-1 text-muted-foreground hover:text-destructive coarse:min-h-11 coarse:min-w-11"
-                      aria-label="Delete document"
+                      aria-label={tx(
+                        "settings:features.pipelineTab.deleteDocument",
+                      )}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -420,7 +463,9 @@ export default function PipelineTab() {
                   </div>
                 )}
                 <div className="text-[10px] text-muted-foreground">
-                  Last attempt: {doc.updated_at?.replace("T", " ").slice(0, 19)}
+                  {tx("settings:features.pipelineTab.lastAttempt", {
+                    value0: doc.updated_at?.replace("T", " ").slice(0, 19),
+                  })}
                 </div>
               </div>
             ))}

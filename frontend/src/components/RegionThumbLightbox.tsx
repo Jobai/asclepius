@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,16 @@ export default function RegionThumbLightbox({
   src,
   alt,
 }: RegionThumbLightboxProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -47,7 +58,7 @@ export default function RegionThumbLightbox({
           )}
         >
           <Dialog.Title className="sr-only">
-            {alt || "Image preview"}
+            {alt || tx("documents:features.regionThumbLightbox.imagePreview")}
           </Dialog.Title>
           {src && (
             <img
@@ -60,7 +71,7 @@ export default function RegionThumbLightbox({
           )}
           <Dialog.Close asChild>
             <IconButton
-              label="Close"
+              label={tx("common:actions.close")}
               size="lg"
               className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] text-white hover:bg-white/15 hover:text-white active:bg-white/15"
             >

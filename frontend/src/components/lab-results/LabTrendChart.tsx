@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { useTranslation } from "react-i18next";
 import {
@@ -51,6 +52,16 @@ interface Props {
  * bands).
  */
 export default function LabTrendChart({ rows, selectedCodes }: Props) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { t: ui } = useTranslation("common");
   const { formatDate, formatClinicalValue } = useUiFormat();
   if (selectedCodes.length === 0) return null;
@@ -67,7 +78,9 @@ export default function LabTrendChart({ rows, selectedCodes }: Props) {
   if (usable.length === 0) {
     return (
       <div className="rounded-lg border bg-muted/20 p-6 text-center text-sm text-muted-foreground">
-        No numeric values to chart for the selected tests.
+        {tx(
+          "clinical:features.labTrendChart.noNumericValuesToChartForTheSelected",
+        )}
       </div>
     );
   }

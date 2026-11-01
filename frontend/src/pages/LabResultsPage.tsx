@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -25,6 +26,16 @@ import { OrphanReviewModal } from "@/pages/lab-results/OrphanReviewModal";
 import { RowsTable } from "@/pages/lab-results/RowsTable";
 
 export default function LabResultsPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { selectedPatient } = usePatient();
   const confirm = useConfirm();
   const { toast } = useToast();
@@ -64,7 +75,7 @@ export default function LabResultsPage() {
       if (!m.has(key)) {
         m.set(key, {
           key,
-          date: effectiveDate || "no date",
+          date: effectiveDate || "",
           document_id: r.document_id,
           filename: r.document_filename,
           rows: [],
@@ -142,7 +153,7 @@ export default function LabResultsPage() {
               ? ` = ${row.value}${row.unit ? " " + row.unit : ""}`
               : "",
           ),
-          value2: String(row.test_date || "unknown date"),
+          value2: row.test_date || message("common:dates.noDate"),
         },
       ),
       variant: "destructive",
@@ -182,8 +193,9 @@ export default function LabResultsPage() {
       title: message("feedback.orphanResultsDelete", {
         count: Number(orphans.length),
       }),
-      description:
-        "These results reference documents that no longer exist. Removing them keeps the list clean — the non-existent source documents are already gone.",
+      description: tx(
+        "clinical:features.labResults.theseResultsReferenceDocumentsThatNoLongerExist",
+      ),
       variant: "destructive",
       confirmText: message("feedback.deleteAll"),
     });
@@ -216,7 +228,9 @@ export default function LabResultsPage() {
     return (
       <div className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
         <TestTube className="h-8 w-8" />
-        <p>Select a patient to view lab results</p>
+        <p>
+          {tx("clinical:features.labResults.selectAPatientToViewLabResults")}
+        </p>
       </div>
     );
   }
@@ -229,8 +243,10 @@ export default function LabResultsPage() {
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-warning" />
             <span>
-              {orphans.length} lab result{orphans.length === 1 ? "" : "s"}{" "}
-              reference a document that no longer exists.
+              {tx(
+                "clinical:features.labResults.labResultReferenceADocumentThatNoLonger",
+                { count: orphans.length },
+              )}
             </span>
           </div>
           <div className="flex gap-2">
@@ -238,14 +254,16 @@ export default function LabResultsPage() {
               onClick={() => setShowOrphans(true)}
               className="rounded-md border px-2.5 py-1 text-xs hover:bg-accent"
             >
-              Review
+              {tx("clinical:features.labResults.review")}
             </button>
             <button
               onClick={deleteAllOrphans}
               disabled={orphanBusy === "all"}
               className="rounded-md bg-destructive px-2.5 py-1 text-xs text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
             >
-              {orphanBusy === "all" ? "Deleting..." : "Delete all"}
+              {orphanBusy === "all"
+                ? tx("clinical:features.orphanReviewModal.deleting")
+                : tx("common:feedback.deleteAll")}
             </button>
           </div>
         </div>
@@ -257,7 +275,7 @@ export default function LabResultsPage() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search by test name..."
+            placeholder={tx("clinical:features.labResults.searchByTestName")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-md border bg-background pl-9 pr-3 py-2 text-sm"
@@ -269,10 +287,12 @@ export default function LabResultsPage() {
             checked={groupByDate}
             onChange={(e) => setGroupByDate(e.target.checked)}
           />
-          Group by test date
+          {tx("clinical:features.labResults.groupByTestDate")}{" "}
         </label>
         <span className="ml-auto text-xs text-muted-foreground">
-          {results.length} results
+          {tx("clinical:features.labResults.results", {
+            value0: results.length,
+          })}
         </span>
       </div>
 
@@ -286,11 +306,16 @@ export default function LabResultsPage() {
         <div className="rounded-lg border">
           <EmptyState
             icon={TestTube}
-            title="No lab results"
+            title={tx("clinical:features.labResults.noLabResults")}
             description={
               search.trim()
-                ? `No tests match "${search.trim()}". Try a different search.`
-                : "Lab values extracted from uploaded documents show up here. Upload a lab report and run extraction to populate this list."
+                ? tx(
+                    "clinical:features.labResults.noTestsMatchTryADifferentSearch",
+                    { value0: search.trim() },
+                  )
+                : tx(
+                    "clinical:features.labResults.labValuesExtractedFromUploadedDocumentsShowUp",
+                  )
             }
           />
         </div>
@@ -322,19 +347,23 @@ export default function LabResultsPage() {
                     </Link>
                   ) : (
                     <span className="text-xs italic text-muted-foreground">
-                      no document
+                      {tx("clinical:features.rowsTable.noDocument")}
                     </span>
                   )}
                   <span className="ml-auto text-xs text-muted-foreground">
-                    {g.rows.length} test{g.rows.length === 1 ? "" : "s"}
+                    {tx("clinical:features.extra.testCount", {
+                      count: g.rows.length,
+                    })}
                     {g.abnormal > 0 && (
                       <span className="ml-2 text-destructive">
-                        {g.abnormal} abnormal
+                        {tx("clinical:features.labResults.abnormal", {
+                          value0: g.abnormal,
+                        })}
                       </span>
                     )}
                     {ogtt && (
                       <span className="ml-2 inline-flex items-center gap-0.5 rounded-full bg-info-soft px-1.5 py-0.5 text-[10px] font-medium text-info">
-                        OGTT
+                        {tx("clinical:features.labResults.ogtt")}
                       </span>
                     )}
                   </span>

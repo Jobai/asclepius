@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { statusLabel } from "@/lib/utils";
 import { message } from "@/i18n/messages";
@@ -44,6 +45,16 @@ const DOC_TYPE_OPTIONS = [
  * ``imaging_dicom`` because that pipeline does not produce them.
  */
 export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { formatDocType } = useUiFormat();
   const { toast } = useToast();
   const [markingReviewed, setMarkingReviewed] = useState(false);
@@ -77,16 +88,26 @@ export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
   };
 
   return (
-    <Section title="Document Info" sectionId="document-info">
-      <InfoRow label="Status" value={statusLabel(doc.status)} />
+    <Section
+      title={tx("documents:features.metadataEditor.documentInfo")}
+      sectionId="document-info"
+    >
+      <InfoRow
+        label={tx("common:columns.status")}
+        value={statusLabel(doc.status)}
+      />
       {(doc.status === "failed" || doc.status === "needs_review") &&
         doc.error_message && (
           <div className="rounded-md bg-destructive-soft border border-destructive/25 p-3 space-y-2">
             <p className="text-xs font-semibold text-destructive">
-              {doc.status === "failed" ? "Processing Error" : "Review Required"}
+              {doc.status === "failed"
+                ? tx("documents:features.metadataEditor.processingError")
+                : tx("documents:features.metadataEditor.reviewRequired")}
               {doc.retry_count > 0 && (
                 <span className="font-normal ml-2 text-destructive/80">
-                  ({doc.retry_count} retries)
+                  {tx("documents:features.metadataEditor.retries", {
+                    value0: doc.retry_count,
+                  })}
                 </span>
               )}
             </p>
@@ -100,31 +121,35 @@ export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
                 className="rounded-md border border-destructive/40 bg-card px-2.5 py-1 text-xs font-medium text-destructive hover:bg-destructive/10 disabled:opacity-50"
                 title={
                   doc.status === "failed"
-                    ? "Dismiss the error banner — fix anything left, mark the document as reviewed."
-                    : "Confirm you've reviewed the document and the data is correct. Status flips to 'done' and the banner clears."
+                    ? tx(
+                        "documents:features.metadataEditor.dismissTheErrorBannerFixAnythingLeftMark",
+                      )
+                    : tx(
+                        "documents:features.metadataEditor.confirmYouVeReviewedTheDocumentAndThe",
+                      )
                 }
               >
                 {markingReviewed
-                  ? "Marking…"
+                  ? tx("documents:features.metadataEditor.marking")
                   : doc.status === "failed"
-                    ? "Dismiss & mark done"
-                    : "Mark as reviewed"}
+                    ? tx("documents:features.metadataEditor.dismissMarkDone")
+                    : tx("documents:features.metadataEditor.markAsReviewed")}
               </button>
             </div>
           </div>
         )}
       <EditableSearchableSelect
-        label="Type"
+        label={tx("common:columns.type")}
         value={doc.doc_type}
         field="doc_type"
         docId={doc.id}
         onSave={onSave}
         options={DOC_TYPE_OPTIONS}
         formatLabel={formatDocType}
-        placeholder="Search type..."
+        placeholder={tx("documents:features.metadataEditor.searchType")}
       />
       <EditableField
-        label="Event Date"
+        label={tx("documents:features.metadataEditor.eventDate")}
         value={doc.event_date}
         field="event_date"
         type="date"
@@ -133,7 +158,7 @@ export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
       />
       {!isImaging && (
         <EditableField
-          label="Issued Date"
+          label={tx("documents:features.metadataEditor.issuedDate")}
           value={doc.issued_date}
           field="issued_date"
           type="date"
@@ -142,7 +167,7 @@ export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
         />
       )}
       <EditableCombobox
-        label="Doctor"
+        label={tx("common:columns.doctor")}
         value={doc.doctor_name}
         field="doctor_name"
         docId={doc.id}
@@ -151,7 +176,7 @@ export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
         currentEntityId={doc.doctor_id}
       />
       <EditableCombobox
-        label="Facility"
+        label={tx("common:columns.facility")}
         value={doc.facility_name}
         field="facility_name"
         docId={doc.id}
@@ -161,7 +186,7 @@ export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
       />
       {!isImaging && (
         <EditableCombobox
-          label="Specialty"
+          label={tx("common:columns.specialty")}
           value={doc.specialty_display || doc.specialty_original}
           field="specialty_original"
           docId={doc.id}

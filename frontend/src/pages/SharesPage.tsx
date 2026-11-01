@@ -1,3 +1,5 @@
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { Fragment, useMemo, useState } from "react";
 import { Trash2, RefreshCw, ChevronDown, ChevronRight } from "lucide-react";
@@ -34,6 +36,16 @@ import ShareCard from "@/pages/shares/ShareCard";
  * second navigation step for what's usually a quick lookup.
  */
 export default function SharesPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const confirm = useConfirm();
   const { shares, loading, refresh } = useShares();
@@ -121,10 +133,7 @@ export default function SharesPage() {
   const onDelete = async (id: number) => {
     const ok = await confirm({
       title: message("feedback.permanentlyDeleteThisShare"),
-      description:
-        "It will be removed from the database along with its OTPs, sessions, " +
-        "and audit history. Any live doctor session is killed. This cannot " +
-        "be undone.",
+      description: message("share:features.extra.purgeDescription"),
       confirmText: message("feedback.delete"),
       variant: "destructive",
     });
@@ -282,7 +291,11 @@ export default function SharesPage() {
                     ? "bg-primary text-primary-foreground"
                     : "hover:bg-accent text-muted-foreground"
                 }`}
-                title={on ? `Hide ${s} shares` : `Show ${s} shares`}
+                title={
+                  on
+                    ? tx("share:features.shares.hideShares", { value0: s })
+                    : tx("share:features.shares.showShares", { value0: s })
+                }
               >
                 {s}
                 <span className="ml-1.5 text-xs opacity-70">{counts[s]}</span>
@@ -294,47 +307,61 @@ export default function SharesPage() {
             onClick={() => setStatusFilter(new Set(ALL_STATUSES))}
             disabled={statusFilter.size === ALL_STATUSES.length}
             className="rounded px-2 py-1 text-xs text-muted-foreground hover:bg-accent disabled:opacity-40 disabled:cursor-default coarse:min-h-11"
-            title="Show all statuses"
+            title={tx("share:features.shares.showAllStatuses")}
           >
-            All
+            {tx("common:ui.all")}
           </button>
           <button
             onClick={() => setStatusFilter(new Set())}
             disabled={statusFilter.size === 0}
             className="rounded px-2 py-1 text-xs text-muted-foreground hover:bg-accent disabled:opacity-40 disabled:cursor-default coarse:min-h-11"
-            title="Hide all statuses"
+            title={tx("share:features.shares.hideAllStatuses")}
           >
-            None
+            {tx("share:features.shares.none")}
           </button>
         </div>
         <Input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Filter by recipient, patient, contact..."
+          placeholder={tx(
+            "share:features.shares.filterByRecipientPatientContact",
+          )}
           className="w-full sm:w-auto sm:flex-1 sm:min-w-[200px]"
         />
         <Button variant="secondary" size="md" onClick={refresh}>
-          <RefreshCw className="h-4 w-4" aria-hidden /> Refresh
+          <RefreshCw className="h-4 w-4" aria-hidden />{" "}
+          {tx("share:features.shares.refresh")}{" "}
         </Button>
       </div>
 
       <p className="text-sm text-muted-foreground">
-        {counts.total} share{counts.total === 1 ? "" : "s"} total ·{" "}
-        <span className="text-success">{counts.active} active</span> ·{" "}
-        <span className="text-warning">{counts.expired} expired</span> ·{" "}
-        <span className="text-muted-foreground">{counts.revoked} revoked</span>
+        <FeatureTrans
+          ns="share"
+          i18nKey="features.shares.shareTotalPart0ActivePart0Part1ExpiredPart1"
+          components={{
+            part0: <span className="text-success" />,
+            part1: <span className="text-warning" />,
+            part2: <span className="text-muted-foreground" />,
+          }}
+          values={{
+            value2: counts.active,
+            value3: counts.expired,
+            value4: counts.revoked,
+          }}
+          count={counts.total}
+        />
       </p>
 
       {loading ? (
         <div className="rounded-lg border p-8 text-center text-muted-foreground">
-          Loading shares...
+          {tx("share:features.shares.loadingShares")}
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-lg border p-8 text-center text-muted-foreground">
           {shares.length === 0
-            ? "No doctor shares yet. Open a document and click 'Share with doctor' to create one."
-            : "No shares match the current filter."}
+            ? tx("share:features.shares.noDoctorSharesYetOpenADocumentAnd")
+            : tx("share:features.shares.noSharesMatchTheCurrentFilter")}
         </div>
       ) : (
         <>
@@ -345,15 +372,33 @@ export default function SharesPage() {
               <thead className="bg-muted/50 text-xs uppercase">
                 <tr>
                   <th className="text-left px-3 py-2 w-8"></th>
-                  <th className="text-left px-3 py-2">Recipient</th>
-                  <th className="text-left px-3 py-2">Patient</th>
-                  <th className="text-left px-3 py-2">Docs</th>
-                  <th className="text-left px-3 py-2">Status</th>
-                  <th className="text-left px-3 py-2">Expires</th>
-                  <th className="text-left px-3 py-2">Accesses</th>
-                  <th className="text-left px-3 py-2">Last access</th>
-                  <th className="text-left px-3 py-2 w-[230px]">Active code</th>
-                  <th className="text-left px-3 py-2">Actions</th>
+                  <th className="text-left px-3 py-2">
+                    {tx("share:features.shares.recipient")}
+                  </th>
+                  <th className="text-left px-3 py-2">
+                    {tx("errors:fields.patient_id")}
+                  </th>
+                  <th className="text-left px-3 py-2">
+                    {tx("share:features.shares.docs")}
+                  </th>
+                  <th className="text-left px-3 py-2">
+                    {tx("common:columns.status")}
+                  </th>
+                  <th className="text-left px-3 py-2">
+                    {tx("share:features.sessionsPanel.expires")}
+                  </th>
+                  <th className="text-left px-3 py-2">
+                    {tx("share:features.shares.accesses")}
+                  </th>
+                  <th className="text-left px-3 py-2">
+                    {tx("share:features.shares.lastAccess")}
+                  </th>
+                  <th className="text-left px-3 py-2 w-[230px]">
+                    {tx("share:features.shares.activeCode")}
+                  </th>
+                  <th className="text-left px-3 py-2">
+                    {tx("share:features.shares.actions")}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -374,7 +419,7 @@ export default function SharesPage() {
                           <button
                             onClick={() => onToggleAudit(s.id)}
                             className="rounded p-0.5 hover:bg-accent"
-                            title="Toggle audit log"
+                            title={tx("share:features.shares.toggleAuditLog")}
                           >
                             {isOpen ? (
                               <ChevronDown className="h-4 w-4" />
@@ -407,12 +452,12 @@ export default function SharesPage() {
                         <td className="px-3 py-2 align-top text-xs text-muted-foreground">
                           {s.last_accessed_at
                             ? formatLocal(s.last_accessed_at)
-                            : "never"}
+                            : tx("share:features.shares.never")}
                         </td>
                         <td className="px-3 py-2 align-top">
                           {isRevoked || isExpired ? (
                             <span className="text-xs text-muted-foreground italic">
-                              n/a
+                              {tx("share:features.extra.notAvailable")}
                             </span>
                           ) : s.otp_delivery === "email" ? (
                             // The OTP plaintext is never persisted for
@@ -420,10 +465,16 @@ export default function SharesPage() {
                             // back. Showing the Show button would just
                             // dead-end on an empty `active_otp`.
                             <span className="text-xs text-muted-foreground italic whitespace-normal">
-                              Emailed to{" "}
-                              <span className="font-mono not-italic">
-                                {s.recipient_contact}
-                              </span>
+                              <FeatureTrans
+                                ns="share"
+                                i18nKey="features.shares.emailedToPart0Part0"
+                                components={{
+                                  part0: (
+                                    <span className="font-mono not-italic" />
+                                  ),
+                                }}
+                                values={{ value0: s.recipient_contact }}
+                              />
                             </span>
                           ) : (
                             <OtpCell
@@ -457,9 +508,12 @@ export default function SharesPage() {
                               <button
                                 onClick={() => onRevoke(s.id)}
                                 className="inline-flex items-center gap-1 rounded-md border border-destructive/40 px-2 py-1 text-xs text-destructive hover:bg-destructive/10"
-                                title="Revoke share (keeps the row, kills the session)"
+                                title={tx(
+                                  "share:features.shares.revokeShareKeepsTheRowKillsTheSession",
+                                )}
                               >
-                                <Trash2 className="h-3 w-3" /> Revoke
+                                <Trash2 className="h-3 w-3" />{" "}
+                                {tx("common:feedback.revoke")}{" "}
                               </button>
                             )}
                             {/* Permanent delete — removes the row and all
@@ -468,9 +522,12 @@ export default function SharesPage() {
                             <button
                               onClick={() => onDelete(s.id)}
                               className="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs text-muted-foreground hover:bg-accent hover:text-destructive"
-                              title="Permanently delete this share from the database"
+                              title={tx(
+                                "share:features.shares.permanentlyDeleteThisShareFromTheDatabase",
+                              )}
                             >
-                              <Trash2 className="h-3 w-3" /> Delete
+                              <Trash2 className="h-3 w-3" />{" "}
+                              {tx("common:actions.delete")}{" "}
                             </button>
                           </div>
                         </td>

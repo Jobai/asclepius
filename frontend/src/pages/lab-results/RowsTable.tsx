@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { Link } from "react-router-dom";
 import { AlertTriangle, Check, Edit3, FileText, Trash2, X } from "lucide-react";
@@ -30,6 +31,16 @@ export function RowsTable({
   saving,
   showDocument = true,
 }: RowsTableProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { formatClinicalValue, formatClinicalResult, formatDate } =
     useUiFormat();
   return (
@@ -54,7 +65,7 @@ export function RowsTable({
                         test_name_original: e.target.value,
                       })
                     }
-                    placeholder="Test name"
+                    placeholder={tx("clinical:features.rowsTable.testName")}
                     className="w-full rounded border bg-background px-2 py-1.5 text-base sm:text-sm"
                   />
                   <div className="grid grid-cols-2 gap-2">
@@ -71,7 +82,7 @@ export function RowsTable({
                               : Number(e.target.value),
                         })
                       }
-                      placeholder="Value"
+                      placeholder={tx("clinical:features.dicomViewer.value")}
                       className="w-full rounded border bg-background px-2 py-1.5 text-base sm:text-sm"
                     />
                     <input
@@ -80,7 +91,9 @@ export function RowsTable({
                       onChange={(e) =>
                         setEditVals({ ...editVals, unit: e.target.value })
                       }
-                      placeholder="Unit"
+                      placeholder={tx(
+                        "clinical:features.labResultsEditor.unit",
+                      )}
                       className="w-full rounded border bg-background px-2 py-1.5 text-base sm:text-sm"
                     />
                   </div>
@@ -98,7 +111,7 @@ export function RowsTable({
                               : Number(e.target.value),
                         })
                       }
-                      placeholder="Ref. low"
+                      placeholder={tx("clinical:features.rowsTable.refLow")}
                       className="w-full rounded border bg-background px-2 py-1.5 text-base sm:text-sm"
                     />
                     <span className="text-muted-foreground">–</span>
@@ -115,7 +128,7 @@ export function RowsTable({
                               : Number(e.target.value),
                         })
                       }
-                      placeholder="Ref. high"
+                      placeholder={tx("clinical:features.rowsTable.refHigh")}
                       className="w-full rounded border bg-background px-2 py-1.5 text-base sm:text-sm"
                     />
                   </div>
@@ -133,7 +146,7 @@ export function RowsTable({
                       className="inline-flex min-h-9 items-center justify-center rounded-md border px-3 text-sm hover:bg-accent coarse:min-h-11 coarse:min-w-11"
                     >
                       <X className="mr-1 h-3.5 w-3.5" />
-                      Cancel
+                      {tx("common:feedback.cancel")}{" "}
                     </button>
                     <button
                       onClick={() => saveEdit(lr.id)}
@@ -141,7 +154,7 @@ export function RowsTable({
                       className="inline-flex min-h-9 items-center justify-center rounded-md bg-primary px-3 text-sm text-primary-foreground disabled:opacity-50 coarse:min-h-11 coarse:min-w-11"
                     >
                       <Check className="mr-1 h-3.5 w-3.5" />
-                      Save
+                      {tx("common:actions.save")}{" "}
                     </button>
                   </div>
                 </div>
@@ -155,7 +168,9 @@ export function RowsTable({
                       {lr.is_abnormal && (
                         <AlertTriangle
                           className="h-3.5 w-3.5 flex-shrink-0 text-destructive"
-                          aria-label="Abnormal"
+                          aria-label={tx(
+                            "clinical:features.labResultsEditor.abnormal",
+                          )}
                         />
                       )}
                     </div>
@@ -169,8 +184,14 @@ export function RowsTable({
                       {lr.reference_range_low != null &&
                         lr.reference_range_high != null && (
                           <span className="ml-2 text-muted-foreground">
-                            ref {formatClinicalValue(lr.reference_range_low)}–
-                            {formatClinicalValue(lr.reference_range_high)}
+                            {tx("clinical:features.rowsTable.ref", {
+                              value0: formatClinicalValue(
+                                lr.reference_range_low,
+                              ),
+                              value1: formatClinicalValue(
+                                lr.reference_range_high,
+                              ),
+                            })}
                           </span>
                         )}
                     </div>
@@ -191,7 +212,9 @@ export function RowsTable({
                             </span>
                           </Link>
                         ) : (
-                          <span className="italic">no document</span>
+                          <span className="italic">
+                            {tx("clinical:features.rowsTable.noDocument")}
+                          </span>
                         ))}
                     </div>
                   </div>
@@ -199,16 +222,16 @@ export function RowsTable({
                     <button
                       onClick={() => startEdit(lr)}
                       className="inline-flex h-9 w-9 items-center justify-center rounded-md border hover:bg-accent coarse:h-11 coarse:w-11"
-                      title="Edit"
-                      aria-label="Edit"
+                      title={tx("clinical:features.labResultsEditor.edit")}
+                      aria-label={tx("clinical:features.labResultsEditor.edit")}
                     >
                       <Edit3 className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => deleteRow(lr)}
                       className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-destructive/30 text-destructive hover:bg-destructive/10 coarse:h-11 coarse:w-11"
-                      title="Delete"
-                      aria-label="Delete"
+                      title={tx("common:actions.delete")}
+                      aria-label={tx("common:actions.delete")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -226,15 +249,27 @@ export function RowsTable({
           <thead className="border-b bg-muted/50">
             <tr>
               {showDocument && (
-                <th className="px-3 py-2 text-left font-medium">Document</th>
+                <th className="px-3 py-2 text-left font-medium">
+                  {tx("clinical:features.rowsTable.document")}
+                </th>
               )}
-              <th className="px-3 py-2 text-left font-medium">Test</th>
-              <th className="px-3 py-2 text-left font-medium">Value</th>
-              <th className="px-3 py-2 text-left font-medium">Unit</th>
-              <th className="px-3 py-2 text-left font-medium">Reference</th>
-              <th className="px-3 py-2 text-left font-medium">Date</th>
+              <th className="px-3 py-2 text-left font-medium">
+                {tx("clinical:features.labResultsEditor.test")}
+              </th>
+              <th className="px-3 py-2 text-left font-medium">
+                {tx("clinical:features.dicomViewer.value")}
+              </th>
+              <th className="px-3 py-2 text-left font-medium">
+                {tx("clinical:features.labResultsEditor.unit")}
+              </th>
+              <th className="px-3 py-2 text-left font-medium">
+                {tx("clinical:features.rowsTable.reference")}
+              </th>
+              <th className="px-3 py-2 text-left font-medium">
+                {tx("common:columns.date")}
+              </th>
               <th className="px-3 py-2 text-left font-medium w-px whitespace-nowrap">
-                Actions
+                {tx("clinical:features.rowsTable.actions")}
               </th>
             </tr>
           </thead>
@@ -261,7 +296,7 @@ export function RowsTable({
                         </Link>
                       ) : (
                         <span className="text-xs italic text-muted-foreground">
-                          no document
+                          {tx("clinical:features.rowsTable.noDocument")}
                         </span>
                       )}
                     </td>
@@ -339,7 +374,7 @@ export function RowsTable({
                             })
                           }
                           className="w-16 rounded border bg-background px-1.5 py-0.5 text-sm"
-                          placeholder="low"
+                          placeholder={tx("clinical:features.rowsTable.low")}
                         />
                         <span>–</span>
                         <input
@@ -358,7 +393,7 @@ export function RowsTable({
                             })
                           }
                           className="w-16 rounded border bg-background px-1.5 py-0.5 text-sm"
-                          placeholder="high"
+                          placeholder={tx("clinical:features.rowsTable.high")}
                         />
                       </div>
                     ) : lr.reference_range_low != null &&
@@ -410,14 +445,14 @@ export function RowsTable({
                         <button
                           onClick={() => startEdit(lr)}
                           className="rounded-md border px-2 py-1 text-xs hover:bg-accent"
-                          title="Edit"
+                          title={tx("clinical:features.labResultsEditor.edit")}
                         >
                           <Edit3 className="h-3 w-3" />
                         </button>
                         <button
                           onClick={() => deleteRow(lr)}
                           className="rounded-md border border-destructive/30 px-2 py-1 text-xs text-destructive hover:bg-destructive/10"
-                          title="Delete"
+                          title={tx("common:actions.delete")}
                         >
                           <Trash2 className="h-3 w-3" />
                         </button>

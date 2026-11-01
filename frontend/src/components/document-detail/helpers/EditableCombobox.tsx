@@ -1,3 +1,7 @@
+import { enumLabel } from "@/lib/labels";
+import type { MessageKey } from "@/i18n/messages";
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useRef, useState } from "react";
@@ -13,13 +17,6 @@ import { ActionButton, IconButton } from "./inlineEditPrimitives";
 /** Proper singular noun for each normalization entity type. The previous
  * copy used ``normType.slice(0, -1)`` which produced "facilitie" and
  * "specialtie" — close, no cigar. */
-const NORM_SINGULAR: Record<"doctors" | "facilities" | "specialties", string> =
-  {
-    doctors: "doctor",
-    facilities: "facility",
-    specialties: "specialty",
-  };
-
 // ─── EditableCombobox ─────────────────────────────────────────
 // Searchable dropdown backed by a normalization endpoint (doctors, facilities,
 // specialties). Shows existing entries filtered by the typed query, plus a
@@ -49,6 +46,16 @@ export function EditableCombobox({
    * Without it, only the doc-only path is offered. */
   currentEntityId?: number | null;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { t: ui } = useTranslation("common");
   const { toast } = useToast();
   const confirm = useConfirm();
@@ -63,7 +70,13 @@ export function EditableCombobox({
     entityId: number | null;
   } | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
-  const singular = NORM_SINGULAR[normType];
+  const singularKey = {
+    doctors: "common:features.extra.enums.normalizationSingular.doctors",
+    facilities: "common:features.extra.enums.normalizationSingular.facilities",
+    specialties:
+      "common:features.extra.enums.normalizationSingular.specialties",
+  }[normType] as MessageKey;
+  const singular = tx(singularKey);
   const fromLabel = String(value || "").trim();
 
   const doctors = useDoctors();
@@ -157,14 +170,14 @@ export function EditableCombobox({
               value0: String(fromLabel),
               value1: String(newDisplay),
               value2: String(fromLabel),
-              value3: String(singular),
+              value3: message(singularKey),
               value4: String(newDisplay),
             },
           )
         : message(
             "feedback.theRecordCurrentlyCalledWillBeRenamedToEveryDocument",
             {
-              value0: String(singular),
+              value0: message(singularKey),
               value1: String(fromLabel),
               value2: String(newDisplay),
             },
@@ -291,7 +304,9 @@ export function EditableCombobox({
                     }
                   }
                 }}
-                placeholder={`Search ${normType}...`}
+                placeholder={tx("documents:features.editableCombobox.search", {
+                  value0: enumLabel("normalization", normType),
+                })}
                 className="w-full h-7 rounded border bg-background pl-7 pr-2 text-sm"
                 autoFocus
                 disabled={saving}
@@ -301,7 +316,9 @@ export function EditableCombobox({
               onClick={() => commitDocOnly(null)}
               disabled={saving}
               variant="danger"
-              title="Delete this field's saved value"
+              title={tx(
+                "documents:features.editableCombobox.deleteThisFieldSSavedValue",
+              )}
             >
               {ui("actions.delete")}
             </ActionButton>
@@ -320,13 +337,16 @@ export function EditableCombobox({
           <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-64 overflow-y-auto rounded-md border bg-background shadow-lg">
             {loadingOptions ? (
               <div className="px-3 py-2 text-xs text-muted-foreground">
-                Loading...
+                {tx("common:ui.loading")}
               </div>
             ) : (
               <>
                 {filtered.length === 0 && !canCreate && (
                   <div className="px-3 py-2 text-xs text-muted-foreground">
-                    No {normType} yet. Type a name to create one.
+                    {tx(
+                      "documents:features.editableCombobox.noYetTypeANameToCreateOne",
+                      { value0: enumLabel("normalization", normType) },
+                    )}
                   </div>
                 )}
                 {!pendingChange &&
@@ -359,12 +379,12 @@ export function EditableCombobox({
                     <Plus className="h-3 w-3" />
                     {currentEntityId ? (
                       <>
-                        Use{" "}
+                        {tx("documents:features.editableCombobox.use")}{" "}
                         <span className="font-medium">"{query.trim()}"</span>
                       </>
                     ) : (
                       <>
-                        Create new:{" "}
+                        {tx("documents:features.editableCombobox.createNew")}{" "}
                         <span className="font-medium">"{query.trim()}"</span>
                       </>
                     )}
@@ -381,13 +401,15 @@ export function EditableCombobox({
                   <div className="border-t bg-muted/30 p-2 space-y-2">
                     <div className="rounded border bg-background px-2 py-1.5">
                       <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                        Change {singular}
+                        {tx("documents:features.editableCombobox.change", {
+                          value0: singular,
+                        })}
                       </div>
                       <div className="mt-0.5 flex items-center gap-1.5 text-xs">
                         <span className="rounded bg-muted px-1.5 py-0.5 font-medium break-all">
                           {fromLabel || (
                             <span className="text-muted-foreground italic">
-                              (empty)
+                              {tx("documents:features.editableCombobox.empty")}
                             </span>
                           )}
                         </span>
@@ -403,15 +425,24 @@ export function EditableCombobox({
                         disabled={saving}
                         className="rounded border bg-background px-2 py-1.5 text-left text-xs hover:bg-accent disabled:opacity-50"
                       >
-                        <span className="font-medium">Just this document</span>
+                        <span className="font-medium">
+                          {tx(
+                            "documents:features.editableCombobox.justThisDocument",
+                          )}
+                        </span>
                         <span className="mt-0.5 block text-[10px] leading-snug text-muted-foreground">
-                          Only this document switches to{" "}
-                          <span className="font-medium">
-                            "{pendingChange.display}"
-                          </span>
-                          . Other documents labelled{" "}
-                          <span className="font-medium">"{fromLabel}"</span>{" "}
-                          stay as they are.
+                          <FeatureTrans
+                            ns="documents"
+                            i18nKey="features.editableCombobox.onlyThisDocumentSwitchesToPart0Part0Other"
+                            components={{
+                              part0: <span className="font-medium" />,
+                              part1: <span className="font-medium" />,
+                            }}
+                            values={{
+                              value0: pendingChange.display,
+                              value1: fromLabel,
+                            }}
+                          />
                         </span>
                       </button>
                       <button
@@ -425,33 +456,23 @@ export function EditableCombobox({
                         className="rounded border border-primary/40 bg-primary/5 px-2 py-1.5 text-left text-xs hover:bg-primary/10 disabled:opacity-50"
                       >
                         <span className="font-medium">
-                          Every document with "{fromLabel}"
+                          {tx(
+                            "documents:features.editableCombobox.everyDocumentWith",
+                            { value0: fromLabel },
+                          )}
                         </span>
                         <span className="mt-0.5 block text-[10px] leading-snug text-muted-foreground">
                           {pendingChange.entityId &&
-                          pendingChange.entityId !== currentEntityId ? (
-                            <>
-                              All documents currently labelled{" "}
-                              <span className="font-medium">"{fromLabel}"</span>{" "}
-                              will be relabelled{" "}
-                              <span className="font-medium">
-                                "{pendingChange.display}"
-                              </span>
-                              . The two {normType} are merged. Confirmation
-                              required.
-                            </>
-                          ) : (
-                            <>
-                              The {singular} record{" "}
-                              <span className="font-medium">"{fromLabel}"</span>{" "}
-                              is renamed to{" "}
-                              <span className="font-medium">
-                                "{pendingChange.display}"
-                              </span>
-                              , so every linked document picks up the new name.
-                              Confirmation required.
-                            </>
-                          )}
+                          pendingChange.entityId !== currentEntityId
+                            ? tx("documents:features.extra.mergeScope", {
+                                from: fromLabel,
+                                to: pendingChange.display,
+                              })
+                            : tx("documents:features.extra.renameScope", {
+                                entity: singular,
+                                from: fromLabel,
+                                to: pendingChange.display,
+                              })}
                         </span>
                       </button>
                       <button

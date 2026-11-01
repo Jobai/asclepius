@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useRef, useState } from "react";
@@ -140,6 +141,16 @@ export function EditableSearchableSelect({
   formatLabel?: (v: string) => string;
   placeholder?: string;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { t: ui } = useTranslation("common");
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
@@ -231,7 +242,7 @@ export function EditableSearchableSelect({
           <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-64 overflow-y-auto rounded-md border bg-background shadow-lg">
             {filtered.length === 0 && (
               <div className="px-3 py-2 text-xs text-muted-foreground">
-                No match.
+                {tx("documents:features.editableSelects.noMatch")}
               </div>
             )}
             {filtered.map((opt) => {

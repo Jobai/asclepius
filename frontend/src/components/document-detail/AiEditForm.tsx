@@ -1,3 +1,5 @@
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { Stethoscope } from "lucide-react";
@@ -38,6 +40,16 @@ interface PendingChoice {
 }
 
 export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const [instruction, setInstruction] = useState("");
   const [busy, setBusy] = useState(false);
@@ -104,12 +116,20 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
           ? data.out_of_range_pages
           : [];
         const queued = data.status === "queued";
-        let description = queued
-          ? `Queued page${pages.length === 1 ? "" : "s"} ${pages.join(", ")} — watch the pipeline timeline below for progress.`
-          : `Re-extracted from page${pages.length === 1 ? "" : "s"} ${pages.join(", ")}`;
-        if (oor.length) {
-          description += ` (skipped out-of-range: ${oor.join(", ")})`;
-        }
+        const description = message(
+          queued
+            ? "documents:features.extra.pagesQueued"
+            : "documents:features.extra.pagesExtracted",
+          {
+            count: pages.length,
+            pages: pages.join(", "),
+            skipped: oor.length
+              ? message("documents:features.extra.outOfRangeSuffix", {
+                  pages: oor.join(", "),
+                })
+              : "",
+          },
+        );
         toast({
           title: queued
             ? message("feedback.aiEditQueued")
@@ -150,7 +170,7 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
 
   return (
     <Section
-      title="AI Edit"
+      title={tx("documents:features.aiEditForm.aiEdit")}
       icon={Stethoscope}
       sectionId="ai-edit"
       defaultOpen={false}
@@ -162,7 +182,9 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
             value={instruction}
             onChange={(e) => setInstruction(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submit()}
-            placeholder='e.g. "doctor is Dr. Bianchi", "reprocess pages 41-45 for lab tests"'
+            placeholder={tx(
+              "documents:features.aiEditForm.eGDoctorIsDrBianchiReprocessPages",
+            )}
             className="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm"
             disabled={busy || !!pending}
           />
@@ -171,7 +193,7 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
             disabled={busy || !!pending || !instruction.trim()}
             className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground disabled:opacity-50"
           >
-            {busy ? "..." : "Apply"}
+            {busy ? "..." : tx("documents:features.aiEditForm.apply")}
           </button>
         </div>
 
@@ -179,20 +201,30 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
           <div className="rounded-md border bg-muted/30 p-3 text-xs space-y-3">
             <div>
               <div>
-                Reprocess page
-                {pending.pages.length === 1 ? "" : "s"}{" "}
-                <span className="font-medium">{pending.pages.join(", ")}</span>{" "}
-                of {pending.pageCount}.
+                <FeatureTrans
+                  ns="documents"
+                  i18nKey="features.aiEditForm.reprocessPagePart0Part0Of"
+                  components={{ part0: <span className="font-medium" /> }}
+                  values={{
+                    value1: pending.pages.join(", "),
+                    value2: pending.pageCount,
+                  }}
+                  count={pending.pages.length}
+                />
               </div>
               {pending.outOfRange.length > 0 && (
                 <div className="mt-1 text-muted-foreground">
-                  Out of range, skipped: {pending.outOfRange.join(", ")}
+                  {tx("documents:features.aiEditForm.outOfRangeSkipped", {
+                    value0: pending.outOfRange.join(", "),
+                  })}
                 </div>
               )}
               {pending.missingFromCache.length > 0 && (
                 <div className="mt-1 text-muted-foreground">
-                  Not in OCR cache: {pending.missingFromCache.join(", ")} —
-                  re-OCR is recommended.
+                  {tx(
+                    "documents:features.aiEditForm.notInOcrCacheReOcrIsRecommended",
+                    { value0: pending.missingFromCache.join(", ") },
+                  )}
                 </div>
               )}
             </div>
@@ -208,10 +240,10 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
                   className="mt-0.5"
                 />
                 <span className="flex-1">
-                  Re-run OCR on these pages
+                  {tx("documents:features.aiEditForm.reRunOcrOnThesePages")}{" "}
                   {pending.recommendReRunOcr && (
                     <span className="ml-1 text-[10px] uppercase tracking-wide text-primary">
-                      recommended
+                      {tx("documents:features.aiEditForm.recommended")}
                     </span>
                   )}
                 </span>
@@ -243,10 +275,10 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
                   className="mt-0.5"
                 />
                 <span className="flex-1">
-                  Use existing cached OCR
+                  {tx("documents:features.aiEditForm.useExistingCachedOcr")}{" "}
                   {pending.cachedPages.length === 0 && (
                     <span className="ml-1 text-[10px] uppercase tracking-wide text-muted-foreground">
-                      no cached pages
+                      {tx("documents:features.aiEditForm.noCachedPages")}
                     </span>
                   )}
                 </span>
@@ -255,7 +287,7 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
 
             <div className="space-y-1">
               <div className="text-muted-foreground">
-                LLM provider for re-extraction
+                {tx("documents:features.aiEditForm.llmProviderForReExtraction")}
               </div>
               <select
                 value={pending.selectedLlm}
@@ -266,7 +298,9 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
                 className="w-full rounded border bg-background px-2 py-1 text-xs"
               >
                 {pending.llmProviders.length === 0 && (
-                  <option value="">(no providers configured)</option>
+                  <option value="">
+                    {tx("documents:features.aiEditForm.noProvidersConfigured")}
+                  </option>
                 )}
                 {pending.llmProviders.map((p) => (
                   <option key={p.id || p.name} value={p.id}>
@@ -283,7 +317,7 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
                 disabled={busy}
                 className="rounded border px-2.5 py-1 text-xs"
               >
-                Cancel
+                {tx("common:feedback.cancel")}
               </button>
               <button
                 onClick={confirmChoice}
@@ -295,21 +329,19 @@ export default function AiEditForm({ docId, onApplied }: AiEditFormProps) {
                 className="rounded bg-primary px-2.5 py-1 text-xs text-primary-foreground disabled:opacity-50"
               >
                 {busy
-                  ? "Reprocessing…"
+                  ? tx("documents:features.aiEditForm.reprocessing")
                   : pending.reRunOcr
-                    ? "Re-OCR & extract"
-                    : "Re-extract"}
+                    ? tx("documents:features.aiEditForm.reOcrExtract")
+                    : tx("documents:features.aiEditForm.reExtract")}
               </button>
             </div>
           </div>
         )}
 
         <p className="text-[10px] text-muted-foreground">
-          Edit metadata, or re-extract specific pages by mentioning them (e.g.
-          "page 41", "pages 12-15"). Page-scoped reprocess wipes existing labs /
-          encounters / medications and re-extracts from the chosen pages only —
-          it asks first whether to re-run OCR (and which engine) or to use the
-          cached OCR text, plus which LLM should re-extract.
+          {tx(
+            "documents:features.aiEditForm.editMetadataOrReExtractSpecificPagesBy",
+          )}
         </p>
       </div>
     </Section>

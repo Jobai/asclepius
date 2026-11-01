@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { useMemo, useRef, useState } from "react";
 import {
@@ -93,6 +94,16 @@ export default function DocumentFilters({
   onVisibleColsChange,
   onUploadClick,
 }: DocumentFiltersProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { t: ui } = useTranslation("common");
   const { data: specialtiesData } = useSpecialties();
   const { data: doctorsData } = useDoctors();
@@ -141,21 +152,21 @@ export default function DocumentFilters({
     };
     group(
       "type",
-      "Type",
+      ui("columns.type"),
       typeFilter,
       (v) => (v === "__blank__" ? ui("status.blank") : formatDocType(v)),
       () => onChange({ typeFilter: [] }),
     );
     group(
       "status",
-      "Status",
+      ui("columns.status"),
       statusFilter,
       (v) => (v === "__blank__" ? ui("status.blank") : statusLabel(v)),
       () => onChange({ statusFilter: [] }),
     );
     group(
       "specialty",
-      "Specialty",
+      ui("columns.specialty"),
       specialtyFilter,
       (v) => {
         if (v === "__blank__") return ui("status.blank");
@@ -168,7 +179,7 @@ export default function DocumentFilters({
     );
     group(
       "doctor",
-      "Doctor",
+      ui("columns.doctor"),
       doctorFilter,
       (v) => {
         if (v === "__blank__") return ui("status.blank");
@@ -179,7 +190,7 @@ export default function DocumentFilters({
     );
     group(
       "facility",
-      "Facility",
+      ui("columns.facility"),
       facilityFilter,
       (v) => {
         if (v === "__blank__") return ui("status.blank");
@@ -191,14 +202,16 @@ export default function DocumentFilters({
     if (dateFrom) {
       out.push({
         key: "date_from",
-        label: `From ${dateFrom}`,
+        label: tx("documents:features.documentFilters.from", {
+          value0: dateFrom,
+        }),
         onRemove: () => onChange({ dateFrom: "" }),
       });
     }
     if (dateTo) {
       out.push({
         key: "date_to",
-        label: `To ${dateTo}`,
+        label: tx("documents:features.documentFilters.to", { value0: dateTo }),
         onRemove: () => onChange({ dateTo: "" }),
       });
     }
@@ -216,6 +229,7 @@ export default function DocumentFilters({
     facilities,
     onChange,
     ui,
+    tx,
   ]);
 
   // The five multi-selects, shared between the desktop toolbar and the
@@ -223,7 +237,7 @@ export default function DocumentFilters({
   const renderFilterSelects = () => (
     <>
       <MultiSelect
-        label="Type"
+        label={tx("common:columns.type")}
         options={[
           { value: "__blank__", label: ui("status.blank") },
           ...DOC_TYPES.map((t) => ({
@@ -236,7 +250,7 @@ export default function DocumentFilters({
       />
 
       <MultiSelect
-        label="Status"
+        label={tx("common:columns.status")}
         options={STATUS_OPTIONS.map((value) => ({
           value,
           label:
@@ -248,7 +262,7 @@ export default function DocumentFilters({
       />
 
       <MultiSelect
-        label="Specialty"
+        label={tx("common:columns.specialty")}
         options={[
           { value: "__blank__", label: ui("status.blank") },
           ...specialties.map((s: any) => ({
@@ -261,7 +275,7 @@ export default function DocumentFilters({
       />
 
       <MultiSelect
-        label="Doctor"
+        label={tx("common:columns.doctor")}
         options={[
           { value: "__blank__", label: ui("status.blank") },
           ...doctors.map((d: any) => ({
@@ -274,7 +288,7 @@ export default function DocumentFilters({
       />
 
       <MultiSelect
-        label="Facility"
+        label={tx("common:columns.facility")}
         options={[
           { value: "__blank__", label: ui("status.blank") },
           ...facilities.map((f: any) => ({
@@ -293,7 +307,7 @@ export default function DocumentFilters({
       <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         type="text"
-        placeholder="Search documents..."
+        placeholder={tx("documents:features.linksSection.searchDocuments")}
         value={search}
         onChange={(e) => onChange({ search: e.target.value })}
         className="pl-9"
@@ -314,7 +328,7 @@ export default function DocumentFilters({
             className="shrink-0 gap-1.5"
           >
             <SlidersHorizontal className="h-4 w-4" aria-hidden />
-            Filters
+            {tx("documents:features.documentFilters.filters")}{" "}
             {chips.length > 0 && (
               <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
                 {chips.length}
@@ -334,20 +348,24 @@ export default function DocumentFilters({
       <Sheet
         open={filtersOpen}
         onOpenChange={setFiltersOpen}
-        title="Filters"
+        title={tx("documents:features.documentFilters.filters")}
         footer={
           <>
             <Button variant="secondary" onClick={onClearAll}>
-              Clear all
+              {tx("common:actions.clearAll")}
             </Button>
-            <Button onClick={() => setFiltersOpen(false)}>Done</Button>
+            <Button onClick={() => setFiltersOpen(false)}>
+              {tx("common:status.done")}
+            </Button>
           </>
         }
       >
         <div className="flex flex-col items-start gap-3">
           {renderFilterSelects()}
           <label className="flex w-full flex-col gap-1 text-sm">
-            <span className="text-muted-foreground">Date from</span>
+            <span className="text-muted-foreground">
+              {tx("documents:features.documentFilters.dateFrom")}
+            </span>
             <Input
               type="date"
               value={dateFrom}
@@ -355,7 +373,9 @@ export default function DocumentFilters({
             />
           </label>
           <label className="flex w-full flex-col gap-1 text-sm">
-            <span className="text-muted-foreground">Date to</span>
+            <span className="text-muted-foreground">
+              {tx("documents:features.documentFilters.dateTo")}
+            </span>
             <Input
               type="date"
               value={dateTo}
@@ -375,16 +395,16 @@ export default function DocumentFilters({
           <button
             onClick={() => setColsOpen((o) => !o)}
             className="flex items-center gap-1.5 rounded-md border bg-background px-3 py-2 text-sm hover:bg-accent"
-            title="Show/hide columns"
+            title={tx("documents:features.documentFilters.showHideColumns")}
           >
             <Columns3 className="h-4 w-4" />
-            Columns
+            {tx("documents:features.documentFilters.columns")}{" "}
             <ChevronDown className="h-3 w-3" />
           </button>
           {colsOpen && (
             <div className="absolute right-0 top-full mt-1 z-dropdown w-52 rounded-lg border bg-popover shadow-overlay p-2">
               <div className="px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                Visible columns
+                {tx("documents:features.documentFilters.visibleColumns")}
               </div>
               {COLUMNS.map((c) => (
                 <label
@@ -417,7 +437,7 @@ export default function DocumentFilters({
                   }
                   className="w-full rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
                 >
-                  Reset to defaults
+                  {tx("common:ui.resetDefaults")}
                 </button>
               </div>
             </div>
@@ -426,13 +446,15 @@ export default function DocumentFilters({
 
         <Button variant="primary" size="md" onClick={onUploadClick}>
           <Upload className="h-4 w-4" aria-hidden />
-          Upload
+          {tx("common:actions.upload")}{" "}
         </Button>
       </div>
 
       <div className="hidden md:flex flex-wrap gap-3 items-center">
         <label className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">Date from:</span>
+          <span className="text-muted-foreground">
+            {tx("documents:features.documentFilters.dateFrom2")}
+          </span>
           <Input
             type="date"
             value={dateFrom}
@@ -441,7 +463,9 @@ export default function DocumentFilters({
           />
         </label>
         <label className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">to:</span>
+          <span className="text-muted-foreground">
+            {tx("documents:features.documentFilters.to2")}
+          </span>
           <Input
             type="date"
             value={dateTo}
@@ -454,7 +478,8 @@ export default function DocumentFilters({
             onClick={onClearAll}
             className="flex items-center gap-1.5 rounded-md border px-3 py-2 text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
           >
-            <X className="h-3 w-3" /> Clear all filters
+            <X className="h-3 w-3" />{" "}
+            {tx("documents:features.documentFilters.clearAllFilters")}{" "}
           </button>
         )}
       </div>

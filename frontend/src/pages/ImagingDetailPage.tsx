@@ -1,3 +1,5 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -14,23 +16,8 @@ import { useToast } from "@/contexts/ToastContext";
 import { useConfirm } from "@/contexts/ConfirmContext";
 import type { Document, DocumentLink } from "@/types";
 
-const MODALITY_LABELS: Record<string, string> = {
-  CT: "CT scan",
-  MR: "MRI",
-  US: "Ultrasound",
-  XR: "X-ray",
-  CR: "X-ray (computed)",
-  DX: "X-ray (digital)",
-  MG: "Mammography",
-  PT: "PET",
-  NM: "Nuclear medicine",
-  RF: "Fluoroscopy",
-  OT: "Other",
-};
-function modalityLabel(code: string | null | undefined): string {
-  if (!code) return "Unknown";
-  return MODALITY_LABELS[code.toUpperCase()] || code;
-}
+const modalityLabel = (code: string | null | undefined) =>
+  enumLabel("modality", code?.toUpperCase() || "unknown");
 
 /** Title-case DICOM-source strings ("ABDOMEN" → "Abdomen") that arrive
  * in ALL CAPS from the source. Mixed-case strings the user already
@@ -60,6 +47,16 @@ function niceCase(s: string | null | undefined): string {
  * identical from either entry point.
  */
 export default function ImagingDetailPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { studyId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -126,8 +123,16 @@ export default function ImagingDetailPage() {
     }
   };
 
-  if (loading) return <div className="text-muted-foreground">Loading...</div>;
-  if (!study) return <div className="text-destructive">Study not found</div>;
+  if (loading)
+    return (
+      <div className="text-muted-foreground">{tx("common:ui.loading")}</div>
+    );
+  if (!study)
+    return (
+      <div className="text-destructive">
+        {tx("clinical:features.imagingDetail.studyNotFound")}
+      </div>
+    );
 
   const headlineStudy = doc?.imaging_studies?.[0] || study;
   const reportStatus: "placeholder" | "attached" =
@@ -142,7 +147,8 @@ export default function ImagingDetailPage() {
             onClick={() => navigate("/imaging")}
             className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-1"
           >
-            <ArrowLeft className="h-3 w-3" /> All imaging
+            <ArrowLeft className="h-3 w-3" />{" "}
+            {tx("clinical:features.imagingDetail.allImaging")}{" "}
           </button>
           <p className="text-base font-semibold truncate">
             {modalityLabel(headlineStudy?.modality)}
@@ -151,14 +157,18 @@ export default function ImagingDetailPage() {
               : ""}
           </p>
           <p className="text-xs text-muted-foreground">
-            {/* Date lives on the parent ``documents.event_date`` (single
-                source of truth). Falls back to the study row's
-                aliased ``study_date`` for older payloads. */}
-            {(doc?.event_date || study.study_date) ?? "Unknown date"}
-            {" | "}
-            {study.patient_name || "Unclassified"}
-            {" | "}
-            {study.num_series} series, {study.num_images} images
+            {tx("clinical:features.extra.studyMetadata", {
+              date:
+                (doc?.event_date || study.study_date) ??
+                tx("clinical:features.extra.unknownDate"),
+              patient: study.patient_name || tx("common:nav.unclassified"),
+              series: tx("clinical:features.extra.seriesCount", {
+                count: study.num_series,
+              }),
+              images: tx("clinical:features.extra.imageCount", {
+                count: study.num_images,
+              }),
+            })}
           </p>
         </div>
         <div className="flex gap-2 flex-shrink-0">
@@ -167,14 +177,15 @@ export default function ImagingDetailPage() {
               to={`/documents/${doc.id}`}
               className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
             >
-              <FileText className="h-4 w-4" /> Document view
+              <FileText className="h-4 w-4" />{" "}
+              {tx("clinical:features.imagingDetail.documentView")}{" "}
             </Link>
           )}
           <button
             onClick={handleDelete}
             className="flex items-center gap-1 rounded-md border border-destructive/40 px-3 py-1.5 text-sm text-destructive hover:bg-destructive/10 coarse:min-h-11"
           >
-            <Trash2 className="h-4 w-4" /> Delete
+            <Trash2 className="h-4 w-4" /> {tx("common:actions.delete")}{" "}
           </button>
         </div>
       </div>

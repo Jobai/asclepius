@@ -1,3 +1,7 @@
+import { useUiFormat } from "@/lib/formatting";
+import { message, useMessage, type UiMessage } from "@/i18n/messages";
+import { getErrorMessage } from "@/lib/errors";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -17,10 +21,21 @@ interface ChatSource {
 
 /** Source-document list, shared by the lg+ sidebar and the phone Sheet. */
 function SourcesList({ sources }: { sources: ChatSource[] }) {
+  const { formatDate, formatDocType } = useUiFormat();
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   if (sources.length === 0) {
     return (
       <p className="px-2 py-6 text-center text-xs text-muted-foreground">
-        Documents the assistant cites will show up here.
+        {tx("common:features.chat.documentsTheAssistantCitesWillShowUpHere")}
       </p>
     );
   }
@@ -31,17 +46,30 @@ function SourcesList({ sources }: { sources: ChatSource[] }) {
           <Link
             to={`/documents/${src.id}`}
             className="flex flex-col gap-0.5 rounded-md border bg-background px-2 py-1.5 text-xs hover:bg-accent coarse:py-2.5"
-            title={src.filename || `Document #${src.id}`}
+            title={
+              src.filename ||
+              tx("common:features.pipelineProgress.document", {
+                value0: src.id,
+              })
+            }
           >
             <span className="flex items-center gap-1.5 font-medium">
               <FileText className="h-3 w-3 flex-shrink-0 text-primary" />
               <span className="truncate">
-                {src.filename || `Document #${src.id}`}
+                {src.filename ||
+                  tx("common:features.pipelineProgress.document", {
+                    value0: src.id,
+                  })}
               </span>
             </span>
             {(src.doc_type || src.event_date) && (
               <span className="pl-4 text-[10px] text-muted-foreground">
-                {[src.doc_type, src.event_date].filter(Boolean).join(" • ")}
+                {[
+                  src.doc_type ? formatDocType(src.doc_type) : "",
+                  src.event_date ? formatDate(src.event_date) : "",
+                ]
+                  .filter(Boolean)
+                  .join(" • ")}
               </span>
             )}
           </Link>
@@ -54,12 +82,25 @@ function SourcesList({ sources }: { sources: ChatSource[] }) {
 interface Message {
   role: "user" | "assistant";
   content: string;
+  uiError?: UiMessage;
   created_at?: string;
   sources?: ChatSource[];
 }
 
 export default function ChatPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { selectedPatient } = usePatient();
+  const { formatDate, formatDocType } = useUiFormat();
+  const renderMessage = useMessage();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -125,12 +166,13 @@ export default function ChatPage() {
           sources: Array.isArray(res.data.sources) ? res.data.sources : [],
         },
       ]);
-    } catch {
+    } catch (error) {
       setMessages((m) => [
         ...m,
         {
           role: "assistant",
-          content: "Sorry, I encountered an error. Please try again.",
+          content: "",
+          uiError: getErrorMessage(error, message("errors:unexpected")),
         },
       ]);
     } finally {
@@ -142,7 +184,7 @@ export default function ChatPage() {
     return (
       <div className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
         <MessageCircle className="h-8 w-8" />
-        <p>Select a patient to start a conversation</p>
+        <p>{tx("common:features.chat.selectAPatientToStartAConversation")}</p>
       </div>
     );
   }
@@ -174,7 +216,8 @@ export default function ChatPage() {
               className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm hover:bg-muted lg:hidden coarse:min-h-11"
             >
               <FileText className="h-4 w-4 text-primary" />
-              Sources ({allSources.length})
+              {tx("common:features.chat.sources")}
+              {allSources.length})
             </button>
           )}
           <button
@@ -183,7 +226,7 @@ export default function ChatPage() {
             className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-50 coarse:min-h-11"
           >
             <Plus className="h-4 w-4" />
-            Start new chat
+            {tx("common:features.chat.startNewChat")}{" "}
           </button>
         </div>
 
@@ -191,8 +234,9 @@ export default function ChatPage() {
         <div className="min-h-0 flex-1 overflow-y-auto rounded-lg border p-4">
           {messages.length === 0 && (
             <p className="py-8 text-center text-muted-foreground">
-              Ask a question about {selectedPatient.display_name}'s medical
-              history
+              {tx("common:features.chat.askAQuestionAboutSMedicalHistory", {
+                value0: selectedPatient.display_name,
+              })}
             </p>
           )}
           {messages.map((msg, i) => {
@@ -226,7 +270,9 @@ export default function ChatPage() {
                       : "bg-muted text-left"
                   }`}
                 >
-                  {msg.role === "assistant" ? (
+                  {msg.uiError ? (
+                    <p role="alert">{renderMessage(msg.uiError)}</p>
+                  ) : msg.role === "assistant" ? (
                     <div className="markdown-body">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
@@ -350,7 +396,7 @@ export default function ChatPage() {
                   msg.sources.length > 0 && (
                     <div className="mt-1.5 flex flex-wrap gap-1.5">
                       <span className="text-[10px] uppercase tracking-wide text-muted-foreground mt-1">
-                        Sources
+                        {tx("common:features.chat.sources2")}
                       </span>
                       {msg.sources.map((src) => (
                         <Link
@@ -358,14 +404,21 @@ export default function ChatPage() {
                           to={`/documents/${src.id}`}
                           className="inline-flex items-center gap-1 rounded-full border bg-background px-2 py-0.5 text-xs hover:bg-accent"
                           title={
-                            [src.doc_type, src.event_date]
+                            [
+                              src.doc_type ? formatDocType(src.doc_type) : "",
+                              src.event_date ? formatDate(src.event_date) : "",
+                            ]
                               .filter(Boolean)
-                              .join(" • ") || "Open document"
+                              .join(" • ") ||
+                            tx("common:features.chat.openDocument")
                           }
                         >
                           <FileText className="h-3 w-3 text-primary" />
                           <span className="truncate max-w-[240px]">
-                            {src.filename || `Document #${src.id}`}
+                            {src.filename ||
+                              tx("common:features.pipelineProgress.document", {
+                                value0: src.id,
+                              })}
                           </span>
                         </Link>
                       ))}
@@ -377,7 +430,7 @@ export default function ChatPage() {
           {loading && (
             <div className="mb-4">
               <div className="inline-block rounded-lg bg-muted px-4 py-2 text-sm text-muted-foreground">
-                Thinking...
+                {tx("common:features.chat.thinking")}
               </div>
             </div>
           )}
@@ -403,15 +456,15 @@ export default function ChatPage() {
                 send();
               }
             }}
-            placeholder="Ask about medical history..."
+            placeholder={tx("common:features.chat.askAboutMedicalHistory")}
             className="flex-1 resize-none rounded-md border bg-background px-4 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             disabled={loading}
           />
           <button
             onClick={send}
             disabled={loading || !input.trim()}
-            aria-label="Send"
-            title="Send"
+            aria-label={tx("common:features.chat.send")}
+            title={tx("common:features.chat.send")}
             className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 coarse:h-11 coarse:w-11"
           >
             <Send className="h-4 w-4" />
@@ -423,7 +476,9 @@ export default function ChatPage() {
       <aside className="hidden lg:flex w-72 flex-col rounded-lg border bg-card">
         <div className="flex items-center gap-2 border-b px-3 py-2">
           <FileText className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium">Source documents</span>
+          <span className="text-sm font-medium">
+            {tx("common:features.chat.sourceDocuments")}
+          </span>
           {allSources.length > 0 && (
             <span className="ml-auto text-xs text-muted-foreground">
               {allSources.length}
@@ -439,7 +494,9 @@ export default function ChatPage() {
       <Sheet
         open={sourcesOpen}
         onOpenChange={setSourcesOpen}
-        title={`Source documents (${allSources.length})`}
+        title={tx("common:features.chat.sourceDocuments2", {
+          value0: allSources.length,
+        })}
       >
         <SourcesList sources={allSources} />
       </Sheet>

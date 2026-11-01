@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
@@ -18,6 +19,16 @@ import { getBestDate, getStatusClasses, statusLabel } from "@/lib/utils";
 import PipelineProgress from "@/components/pipeline/PipelineProgress";
 
 export default function DashboardPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { formatDocType, formatDate } = useUiFormat();
   useTranslation("common");
   const { selectedPatient } = usePatient();
@@ -80,45 +91,45 @@ export default function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard
           icon={FileText}
-          label="Total Documents"
+          label={tx("common:features.dashboard.totalDocuments")}
           value={stats.total}
           href="/documents"
         />
         <StatCard
           icon={Clock}
-          label="Pending"
+          label={tx("common:status.pending")}
           value={stats.pending}
           href="/documents?status=pending,processing"
         />
         <StatCard
           icon={AlertTriangle}
-          label="Needs Review"
+          label={tx("common:status.needs_review")}
           value={stats.needs_review}
           href="/documents?status=needs_review"
           color={stats.needs_review > 0 ? "amber" : undefined}
         />
         <StatCard
           icon={XCircle}
-          label="Failed"
+          label={tx("common:status.failed")}
           value={stats.failed}
           href="/documents?status=failed"
           color={stats.failed > 0 ? "red" : undefined}
         />
         <StatCard
           icon={AlertCircle}
-          label="Unclassified"
+          label={tx("common:nav.unclassified")}
           value={stats.unclassified}
           href="/unclassified"
         />
         <StatCard
           icon={Activity}
-          label="Pipeline"
+          label={tx("common:features.pipelineProgress.pipeline")}
           value={
             pipeline?.watcher_active
               ? pipeline?.processing
-                ? "Active"
-                : "Idle"
-              : "Stopped"
+                ? tx("common:features.extra.active")
+                : tx("common:features.extra.idle")
+              : tx("common:features.extra.stopped")
           }
           href="/settings"
           color={pipeline?.watcher_active ? undefined : "red"}
@@ -130,7 +141,7 @@ export default function DashboardPage() {
       {pipeline && pipeline.recent_errors?.length > 0 && (
         <div className="rounded-lg border p-4">
           <p className="text-xs font-medium text-muted-foreground mb-1">
-            Recent errors
+            {tx("common:features.dashboard.recentErrors")}
           </p>
           <div className="space-y-1">
             {pipeline.recent_errors.slice(-3).map((err: any, i: number) => (
@@ -145,18 +156,22 @@ export default function DashboardPage() {
       {/* Recent documents */}
       <div className="rounded-lg border">
         <div className="flex items-center justify-between border-b p-4">
-          <h2 className="font-medium">Recent Documents</h2>
+          <h2 className="font-medium">
+            {tx("common:features.dashboard.recentDocuments")}
+          </h2>
           <Link
             to="/documents"
             className="text-sm text-primary hover:underline"
           >
-            View all
+            {tx("common:features.dashboard.viewAll")}
           </Link>
         </div>
         <div className="divide-y">
           {documents.length === 0 ? (
             <p className="p-4 text-sm text-muted-foreground">
-              No documents yet. Drop files into the inbox to get started.
+              {tx(
+                "common:features.dashboard.noDocumentsYetDropFilesIntoTheInbox",
+              )}
             </p>
           ) : (
             documents.map((doc) => (
@@ -172,14 +187,14 @@ export default function DashboardPage() {
                   <p className="hidden truncate text-xs text-muted-foreground sm:block">
                     {formatDocType(doc.doc_type)} |{" "}
                     {formatDate(getBestDate(doc))} |{" "}
-                    {doc.patient_name || "Unclassified"}
+                    {doc.patient_name || tx("common:nav.unclassified")}
                   </p>
                 </div>
                 <div className="flex min-w-0 items-center justify-between gap-2 sm:shrink-0 sm:justify-end">
                   <p className="min-w-0 truncate text-xs text-muted-foreground sm:hidden">
                     {formatDocType(doc.doc_type)} |{" "}
                     {formatDate(getBestDate(doc))} |{" "}
-                    {doc.patient_name || "Unclassified"}
+                    {doc.patient_name || tx("common:nav.unclassified")}
                   </p>
                   <span
                     className={`shrink-0 rounded-full px-2 py-0.5 text-xs ${getStatusClasses(doc.status)}`}

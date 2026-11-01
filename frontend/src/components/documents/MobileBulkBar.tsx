@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { Share2, Wand2 } from "lucide-react";
 import Button from "@/components/ui/Button";
@@ -41,6 +42,16 @@ export default function MobileBulkBar({
   onShare,
   shareTooltip,
 }: MobileBulkBarProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [moreOpen, setMoreOpen] = useState(false);
 
   // Close the sheet whenever the selection count changes (bulk action
@@ -55,7 +66,9 @@ export default function MobileBulkBar({
     <>
       <div className="fixed bottom-0 inset-x-0 z-bar border-t bg-card p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden flex items-center gap-2">
         <span className="min-w-0 flex-1 truncate px-1 text-sm text-muted-foreground">
-          {selectedCount} selected
+          {tx("documents:features.bulkActionsBar.selected", {
+            value0: selectedCount,
+          })}
         </span>
         <Button
           variant="danger"
@@ -63,21 +76,23 @@ export default function MobileBulkBar({
           disabled={!!bulkBusy}
           loading={bulkBusy === "Delete"}
         >
-          Delete
+          {tx("common:actions.delete")}
         </Button>
         <Button
           variant="secondary"
           onClick={() => setMoreOpen(true)}
           disabled={!!bulkBusy}
         >
-          More
+          {tx("documents:features.mobileBulkBar.more")}
         </Button>
       </div>
 
       <Sheet
         open={moreOpen}
         onOpenChange={setMoreOpen}
-        title={`Actions (${selectedCount} selected)`}
+        title={tx("documents:features.mobileBulkBar.actionsSelected", {
+          value0: selectedCount,
+        })}
       >
         <div className="space-y-4">
           <ReprocessOptionsForm
@@ -102,7 +117,7 @@ export default function MobileBulkBar({
               }}
             >
               <Wand2 className="h-4 w-4" aria-hidden />
-              Regenerate filename
+              {tx("documents:features.bulkActionsBar.regenerateFilename")}{" "}
             </Button>
             {onShare && (
               <Button
@@ -116,7 +131,7 @@ export default function MobileBulkBar({
                 }}
               >
                 <Share2 className="h-4 w-4" aria-hidden />
-                Share with doctor
+                {tx("documents:features.bulkActionsBar.shareWithDoctor")}{" "}
               </Button>
             )}
             {shareTooltip && (

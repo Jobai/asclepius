@@ -155,6 +155,22 @@ const page = (label: string, el: React.ReactNode) => (
   <ErrorBoundary label={label}>{el}</ErrorBoundary>
 );
 
+/** Keep the language selector available even after the session guard replaces its content. */
+function ShareRouteLayout() {
+  return (
+    <>
+      <header className="flex justify-end px-4 pt-3">
+        <LanguageSwitcher compact />
+      </header>
+      <ShareSessionProvider>
+        <Suspense fallback={<ShareModeIdle />}>
+          <Outlet />
+        </Suspense>
+      </ShareSessionProvider>
+    </>
+  );
+}
+
 export default function App() {
   const mode = useAppMode();
 
@@ -166,19 +182,7 @@ export default function App() {
   if (mode === "share") {
     return (
       <Routes>
-        <Route
-          path="/share"
-          element={
-            <ShareSessionProvider>
-              <header className="flex justify-end px-4 pt-3">
-                <LanguageSwitcher compact />
-              </header>
-              <Suspense fallback={<ShareModeIdle />}>
-                <Outlet />
-              </Suspense>
-            </ShareSessionProvider>
-          }
-        >
+        <Route path="/share" element={<ShareRouteLayout />}>
           <Route index element={<ShareLandingPage />} />
           <Route
             path="dashboard"
@@ -207,19 +211,7 @@ export default function App() {
           is called from a share page. We use the Outlet pattern (not a
           nested <Routes>) so useParams() correctly picks up ``:token``
           in the leaf components. */}
-      <Route
-        path="/share"
-        element={
-          <ShareSessionProvider>
-            <header className="flex justify-end px-4 pt-3">
-              <LanguageSwitcher compact />
-            </header>
-            <Suspense fallback={<ShareModeIdle />}>
-              <Outlet />
-            </Suspense>
-          </ShareSessionProvider>
-        }
-      >
+      <Route path="/share" element={<ShareRouteLayout />}>
         <Route index element={<ShareLandingPage />} />
         <Route
           path="dashboard"

@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
 import { useState } from "react";
@@ -26,6 +27,16 @@ export default function CredentialDialog({
   onSave,
   onClose,
 }: CredentialDialogProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const [name, setName] = useState(initial.name || "");
   const [type, setType] = useState(initial.type || "ollama");
@@ -52,18 +63,16 @@ export default function CredentialDialog({
   const handleSave = async () => {
     setErr(null);
     if (!name.trim()) {
-      setErr("Name is required");
+      setErr(message("settings:features.extra.providerNameRequired"));
       return;
     }
     if (typeInfo?.needs_url && !baseUrl.trim()) {
-      setErr("Base URL is required for this type");
+      setErr(message("settings:features.extra.providerUrlRequired"));
       return;
     }
     const backoff = parseBackoff(retryBackoff);
     if (backoff.length === 0) {
-      setErr(
-        "Retry backoff must be a comma-separated list of non-negative integers",
-      );
+      setErr(message("settings:features.extra.retryBackoffInvalid"));
       return;
     }
     setSaving(true);
@@ -92,23 +101,31 @@ export default function CredentialDialog({
       onOpenChange={(o) => {
         if (!o) onClose();
       }}
-      title={initial.id ? "Edit provider" : "New provider"}
+      title={
+        initial.id
+          ? tx("settings:features.credentialCard.editProvider")
+          : tx("settings:features.credentialDialog.newProvider")
+      }
       contentClassName="sm:max-w-md"
     >
       <div className="space-y-3">
         <label className="space-y-1 block">
-          <span className="text-sm font-medium">Name</span>
+          <span className="text-sm font-medium">
+            {tx("settings:features.backupTab.name")}
+          </span>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Home Ollama"
+            placeholder={tx("settings:features.credentialDialog.eGHomeOllama")}
             className="w-full rounded-md border bg-background px-3 py-2 text-sm"
           />
         </label>
 
         <label className="space-y-1 block">
-          <span className="text-sm font-medium">Type</span>
+          <span className="text-sm font-medium">
+            {tx("common:columns.type")}
+          </span>
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
@@ -116,20 +133,22 @@ export default function CredentialDialog({
           >
             {CREDENTIAL_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
-                {t.label}
+                {"labelKey" in t ? tx(t.labelKey) : t.label}
               </option>
             ))}
           </select>
           {typeInfo && (
             <span className="block text-xs text-muted-foreground">
-              {typeInfo.description}
+              {tx(typeInfo.descriptionKey)}
             </span>
           )}
         </label>
 
         {typeInfo?.needs_url && (
           <label className="space-y-1 block">
-            <span className="text-sm font-medium">Base URL</span>
+            <span className="text-sm font-medium">
+              {tx("settings:features.credentialDialog.baseUrl")}
+            </span>
             <input
               type="text"
               value={baseUrl}
@@ -150,15 +169,19 @@ export default function CredentialDialog({
 
         {(typeInfo?.needs_key || type === "openai") && (
           <label className="space-y-1 block">
-            <span className="text-sm font-medium">API Key</span>
+            <span className="text-sm font-medium">
+              {tx("settings:features.credentialDialog.apiKey")}
+            </span>
             <input
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder={
                 hasSavedKey
-                  ? "configured (leave blank to keep)"
-                  : "Enter API key"
+                  ? tx(
+                      "settings:features.credentialDialog.configuredLeaveBlankToKeep",
+                    )
+                  : tx("settings:features.credentialDialog.enterApiKey")
               }
               className="w-full rounded-md border bg-background px-3 py-2 text-sm"
             />
@@ -166,7 +189,9 @@ export default function CredentialDialog({
         )}
 
         <label className="space-y-1 block">
-          <span className="text-sm font-medium">Max concurrent requests</span>
+          <span className="text-sm font-medium">
+            {tx("settings:features.credentialDialog.maxConcurrentRequests")}
+          </span>
           <input
             type="number"
             min={1}
@@ -179,13 +204,17 @@ export default function CredentialDialog({
             className="w-full rounded-md border bg-background px-3 py-2 text-sm"
           />
           <span className="block text-xs text-muted-foreground">
-            Shared across every model that uses this provider.
+            {tx(
+              "settings:features.credentialDialog.sharedAcrossEveryModelThatUsesThisProvider",
+            )}
           </span>
         </label>
 
         <div className="grid grid-cols-2 gap-3">
           <label className="space-y-1 block">
-            <span className="text-sm font-medium">Max retries</span>
+            <span className="text-sm font-medium">
+              {tx("settings:features.credentialDialog.maxRetries")}
+            </span>
             <input
               type="number"
               min={0}
@@ -199,7 +228,9 @@ export default function CredentialDialog({
             />
           </label>
           <label className="space-y-1 block">
-            <span className="text-sm font-medium">Retry backoff (s)</span>
+            <span className="text-sm font-medium">
+              {tx("settings:features.credentialDialog.retryBackoffS")}
+            </span>
             <input
               type="text"
               value={retryBackoff}
@@ -210,8 +241,9 @@ export default function CredentialDialog({
           </label>
         </div>
         <span className="block text-xs text-muted-foreground -mt-1">
-          Transient-failure policy for this connection. Claude / OpenAI rate
-          limits and Ollama timeouts can differ; tune per provider.
+          {tx(
+            "settings:features.credentialDialog.transientFailurePolicyForThisConnectionClaudeOpenai",
+          )}
         </span>
 
         {err && (
@@ -222,7 +254,7 @@ export default function CredentialDialog({
 
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="secondary" onClick={onClose}>
-            Cancel
+            {tx("common:feedback.cancel")}
           </Button>
           <Button
             onClick={handleSave}
@@ -230,7 +262,7 @@ export default function CredentialDialog({
             className="px-4 py-1.5"
           >
             <Save className="h-3.5 w-3.5" />
-            {saving ? "Saving..." : "Save"}
+            {saving ? tx("common:ui.saving") : tx("common:actions.save")}
           </Button>
         </div>
       </div>

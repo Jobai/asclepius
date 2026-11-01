@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { getErrorMessage } from "@/lib/errors";
 import { message } from "@/i18n/messages";
@@ -11,6 +12,16 @@ import Input from "@/components/ui/Input";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function LoginPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -70,7 +81,7 @@ export default function LoginPage() {
           />
           <h1 className="text-2xl font-semibold">Asclepius</h1>
           <p className="text-sm text-muted-foreground">
-            Sign in to your medical records
+            {tx("auth:features.login.signInToYourMedicalRecords")}
           </p>
         </div>
 
@@ -83,7 +94,7 @@ export default function LoginPage() {
               onClick={handleOidcLogin}
             >
               <Shield className="h-4 w-4" />
-              Sign in with SSO
+              {tx("auth:features.login.signInWithSso")}{" "}
             </Button>
             {!hidePasswordLogin && (
               <div className="relative mb-4">
@@ -92,7 +103,7 @@ export default function LoginPage() {
                 </div>
                 <div className="relative flex justify-center">
                   <span className="bg-card px-2 text-xs text-muted-foreground">
-                    or
+                    {tx("auth:features.login.or")}
                   </span>
                 </div>
               </div>
@@ -110,7 +121,7 @@ export default function LoginPage() {
 
             <div>
               <label className="mb-1.5 block text-sm font-medium">
-                Username
+                {tx("errors:fields.username")}
               </label>
               <Input
                 type="text"
@@ -124,7 +135,7 @@ export default function LoginPage() {
 
             <div>
               <label className="mb-1.5 block text-sm font-medium">
-                Password
+                {tx("errors:fields.password")}
               </label>
               <Input
                 type="password"
@@ -141,7 +152,9 @@ export default function LoginPage() {
               className="w-full"
               loading={loading}
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading
+                ? tx("auth:features.login.signingIn")
+                : tx("auth:signIn")}
             </Button>
           </form>
         )}

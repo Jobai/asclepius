@@ -1,3 +1,6 @@
+import { enumLabel } from "@/lib/labels";
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message, type UiMessage } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import api from "@/api/client";
@@ -26,6 +29,16 @@ interface Grant {
 }
 
 export default function UsersTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const confirm = useConfirm();
   const { toast } = useToast();
   const [users, setUsers] = useState<any[]>([]);
@@ -85,11 +98,12 @@ export default function UsersTab() {
     return (
       <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">
         <p className="font-medium text-foreground mb-1">
-          Admin access required
+          {tx("settings:features.usersTab.adminAccessRequired")}
         </p>
         <p>
-          Only administrators can list and manage users. Sign in as an admin (or
-          ask one to grant you the admin role) to use this page.
+          {tx(
+            "settings:features.usersTab.onlyAdministratorsCanListAndManageUsersSign",
+          )}
         </p>
       </div>
     );
@@ -156,7 +170,9 @@ export default function UsersTab() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="font-medium">User Management</h3>
+        <h3 className="font-medium">
+          {tx("settings:features.usersTab.userManagement")}
+        </h3>
         <div className="flex flex-wrap gap-2">
           <Button
             variant="secondary"
@@ -166,10 +182,13 @@ export default function UsersTab() {
             }}
           >
             <ScrollText className="h-4 w-4" />
-            {showAudit ? "Hide Audit Log" : "Audit Log"}
+            {showAudit
+              ? tx("settings:features.usersTab.hideAuditLog")
+              : tx("settings:features.usersTab.auditLog")}
           </Button>
           <Button onClick={() => setShowCreate(!showCreate)}>
-            <Plus className="h-4 w-4" /> Add User
+            <Plus className="h-4 w-4" />{" "}
+            {tx("settings:features.usersTab.addUser")}{" "}
           </Button>
         </div>
       </div>
@@ -178,7 +197,7 @@ export default function UsersTab() {
         <div className="rounded-lg border p-4 space-y-3 max-w-md">
           <Input
             type="text"
-            placeholder="Username"
+            placeholder={tx("errors:fields.username")}
             value={newUser.username}
             onChange={(e) =>
               setNewUser({ ...newUser, username: e.target.value })
@@ -186,7 +205,7 @@ export default function UsersTab() {
           />
           <Input
             type="password"
-            placeholder="Password"
+            placeholder={tx("errors:fields.password")}
             value={newUser.password}
             onChange={(e) =>
               setNewUser({ ...newUser, password: e.target.value })
@@ -194,7 +213,7 @@ export default function UsersTab() {
           />
           <Input
             type="text"
-            placeholder="Display Name"
+            placeholder={tx("settings:features.normalizationRow.displayName")}
             value={newUser.display_name}
             onChange={(e) =>
               setNewUser({ ...newUser, display_name: e.target.value })
@@ -204,25 +223,46 @@ export default function UsersTab() {
             value={newUser.role}
             onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
           >
-            <option value="admin">Admin</option>
-            <option value="editor">Editor</option>
-            <option value="viewer">Viewer</option>
+            <option value="admin">
+              {tx("settings:features.usersTab.admin")}
+            </option>
+            <option value="editor">
+              {tx("settings:features.usersTab.editor")}
+            </option>
+            <option value="viewer">
+              {tx("settings:features.usersTab.viewer")}
+            </option>
           </Select>
-          <Button onClick={createUser}>Create</Button>
+          <Button onClick={createUser}>
+            {tx("settings:features.usersTab.create")}
+          </Button>
         </div>
       )}
 
       <div className="text-xs text-muted-foreground space-y-1">
         <p>
-          <strong>Admin:</strong> Full access — settings, user management, all
-          patients.
+          <FeatureTrans
+            ns="settings"
+            i18nKey="features.usersTab.part0AdminPart0FullAccessSettingsUserManagement"
+            components={{ part0: <strong /> }}
+            values={{}}
+          />
         </p>
         <p>
-          <strong>Editor:</strong> Can view/edit documents and patients they
-          have access to.
+          <FeatureTrans
+            ns="settings"
+            i18nKey="features.usersTab.part0EditorPart0CanViewEditDocumentsAnd"
+            components={{ part0: <strong /> }}
+            values={{}}
+          />
         </p>
         <p>
-          <strong>Viewer:</strong> Read-only access to assigned patients.
+          <FeatureTrans
+            ns="settings"
+            i18nKey="features.usersTab.part0ViewerPart0ReadOnlyAccessToAssigned"
+            components={{ part0: <strong /> }}
+            values={{}}
+          />
         </p>
       </div>
 
@@ -231,12 +271,20 @@ export default function UsersTab() {
         <table className="w-full text-sm">
           <thead className="border-b bg-muted/50">
             <tr>
-              <th className="px-4 py-2 text-left font-medium">Username</th>
-              <th className="px-4 py-2 text-left font-medium">Display Name</th>
-              <th className="px-4 py-2 text-left font-medium">Role</th>
-              <th className="px-4 py-2 text-left font-medium">Created</th>
               <th className="px-4 py-2 text-left font-medium">
-                Patient Access
+                {tx("errors:fields.username")}
+              </th>
+              <th className="px-4 py-2 text-left font-medium">
+                {tx("settings:features.normalizationRow.displayName")}
+              </th>
+              <th className="px-4 py-2 text-left font-medium">
+                {tx("settings:features.usersTab.role")}
+              </th>
+              <th className="px-4 py-2 text-left font-medium">
+                {tx("settings:features.backupTab.created")}
+              </th>
+              <th className="px-4 py-2 text-left font-medium">
+                {tx("settings:features.usersTab.patientAccess")}
               </th>
               <th className="px-4 py-2 text-left font-medium"></th>
             </tr>
@@ -251,17 +299,23 @@ export default function UsersTab() {
                   <td className="px-4 py-2">
                     <div className="flex items-center gap-2">
                       <Badge variant={roleBadgeVariant(u.role || "editor")}>
-                        {u.role || "editor"}
+                        {u.role || tx("settings:features.usersTab.editor2")}
                       </Badge>
                       <select
                         value={u.role || "editor"}
                         onChange={(e) => updateRole(u.id, e.target.value)}
                         className="rounded-md border bg-background px-2 py-1 text-xs text-foreground"
-                        title="Change role"
+                        title={tx("settings:features.usersTab.changeRole")}
                       >
-                        <option value="admin">Admin</option>
-                        <option value="editor">Editor</option>
-                        <option value="viewer">Viewer</option>
+                        <option value="admin">
+                          {tx("settings:features.usersTab.admin")}
+                        </option>
+                        <option value="editor">
+                          {tx("settings:features.usersTab.editor")}
+                        </option>
+                        <option value="viewer">
+                          {tx("settings:features.usersTab.viewer")}
+                        </option>
                       </select>
                     </div>
                   </td>
@@ -275,13 +329,14 @@ export default function UsersTab() {
                         onClick={() => setAccessForUser(u.id)}
                         className="flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs hover:bg-accent"
                       >
-                        <UserCog className="h-3 w-3" /> Manage
+                        <UserCog className="h-3 w-3" />{" "}
+                        {tx("settings:features.usersTab.manage")}{" "}
                       </button>
                     </div>
                   </td>
                   <td className="px-4 py-2">
                     <IconButton
-                      label="Delete user"
+                      label={tx("settings:features.usersTab.deleteUser")}
                       variant="danger"
                       size="sm"
                       onClick={() => deleteUser(u.id)}
@@ -310,7 +365,9 @@ export default function UsersTab() {
                   <p className="truncate text-xs text-muted-foreground">
                     @{u.username}
                     {u.created_at
-                      ? ` · created ${u.created_at.split("T")[0]}`
+                      ? tx("settings:features.usersTab.created", {
+                          value0: u.created_at.split("T")[0],
+                        })
                       : ""}
                   </p>
                 </div>
@@ -318,7 +375,7 @@ export default function UsersTab() {
                   variant={roleBadgeVariant(u.role || "editor")}
                   className="shrink-0"
                 >
-                  {u.role || "editor"}
+                  {u.role || tx("settings:features.usersTab.editor2")}
                 </Badge>
               </div>
               <div className="flex flex-wrap items-center gap-1.5">
@@ -328,21 +385,28 @@ export default function UsersTab() {
                 <Select
                   value={u.role || "editor"}
                   onChange={(e) => updateRole(u.id, e.target.value)}
-                  title="Change role"
+                  title={tx("settings:features.usersTab.changeRole")}
                   className="h-9 w-auto min-w-[6.5rem] flex-none"
                 >
-                  <option value="admin">Admin</option>
-                  <option value="editor">Editor</option>
-                  <option value="viewer">Viewer</option>
+                  <option value="admin">
+                    {tx("settings:features.usersTab.admin")}
+                  </option>
+                  <option value="editor">
+                    {tx("settings:features.usersTab.editor")}
+                  </option>
+                  <option value="viewer">
+                    {tx("settings:features.usersTab.viewer")}
+                  </option>
                 </Select>
                 <Button
                   variant="secondary"
                   onClick={() => setAccessForUser(u.id)}
                 >
-                  <UserCog className="h-4 w-4" /> Manage access
+                  <UserCog className="h-4 w-4" />{" "}
+                  {tx("settings:features.usersTab.manageAccess")}{" "}
                 </Button>
                 <IconButton
-                  label="Delete user"
+                  label={tx("settings:features.usersTab.deleteUser")}
                   variant="danger"
                   className="ml-auto"
                   onClick={() => deleteUser(u.id)}
@@ -374,9 +438,13 @@ export default function UsersTab() {
       {showAudit && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="font-medium">Audit Log</h3>
+            <h3 className="font-medium">
+              {tx("settings:features.usersTab.auditLog")}
+            </h3>
             <span className="text-xs text-muted-foreground">
-              {auditTotal} total entries
+              {tx("settings:features.usersTab.totalEntries", {
+                value0: auditTotal,
+              })}
             </span>
           </div>
           <div className="rounded-lg border max-h-[400px] overflow-y-auto">
@@ -384,12 +452,24 @@ export default function UsersTab() {
             <table className="hidden w-full text-xs md:table">
               <thead className="border-b bg-muted/50 sticky top-0">
                 <tr>
-                  <th className="px-3 py-2 text-left font-medium">Time</th>
-                  <th className="px-3 py-2 text-left font-medium">User</th>
-                  <th className="px-3 py-2 text-left font-medium">Action</th>
-                  <th className="px-3 py-2 text-left font-medium">Resource</th>
-                  <th className="px-3 py-2 text-left font-medium">Details</th>
-                  <th className="px-3 py-2 text-left font-medium">IP</th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("settings:features.usersTab.time")}
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("settings:features.sessionsTab.user")}
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("settings:features.usersTab.action")}
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("settings:features.usersTab.resource")}
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("settings:features.usersTab.details")}
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium">
+                    {tx("settings:features.sessionsTab.ip")}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -399,7 +479,7 @@ export default function UsersTab() {
                       colSpan={6}
                       className="p-4 text-center text-muted-foreground"
                     >
-                      No audit log entries
+                      {tx("settings:features.usersTab.noAuditLogEntries")}
                     </td>
                   </tr>
                 ) : (
@@ -436,7 +516,7 @@ export default function UsersTab() {
             <ul className="divide-y md:hidden">
               {auditLog.length === 0 ? (
                 <li className="p-4 text-center text-sm text-muted-foreground">
-                  No audit log entries
+                  {tx("settings:features.usersTab.noAuditLogEntries")}
                 </li>
               ) : (
                 auditLog.map((entry) => (
@@ -484,16 +564,28 @@ function GrantChips({
   role?: string;
   userGrants: Grant[];
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   if (role === "admin") {
     return (
       <span className="text-xs italic text-muted-foreground">
-        all patients (admin)
+        {tx("settings:features.usersTab.allPatientsAdmin")}
       </span>
     );
   }
   if (userGrants.length === 0) {
     return (
-      <span className="text-xs italic text-muted-foreground">no access</span>
+      <span className="text-xs italic text-muted-foreground">
+        {tx("settings:features.usersTab.noAccess")}
+      </span>
     );
   }
   return (
@@ -504,12 +596,16 @@ function GrantChips({
           className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-xs"
         >
           {g.display_name}
-          <span className="text-[10px] text-muted-foreground">({g.role})</span>
+          <span className="text-[10px] text-muted-foreground">
+            ({enumLabel("role", g.role)})
+          </span>
         </span>
       ))}
       {userGrants.length > 3 && (
         <span className="text-xs text-muted-foreground">
-          +{userGrants.length - 3} more
+          {tx("settings:features.usersTab.more", {
+            value0: userGrants.length - 3,
+          })}
         </span>
       )}
     </>
@@ -539,6 +635,16 @@ function AccessModal({
   onSaved,
   toast,
 }: AccessModalProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   // patient_id → role (undefined means no access)
   const initialMap = useMemo(
     () =>
@@ -666,10 +772,10 @@ function AccessModal({
       onOpenChange={(o) => {
         if (!o) onClose();
       }}
-      title="Patient access"
+      title={tx("settings:features.usersTab.patientAccess2")}
       description={
         <>
-          for{" "}
+          {tx("settings:features.usersTab.for")}{" "}
           <span className="font-medium">
             {user.display_name || user.username}
           </span>{" "}
@@ -679,7 +785,7 @@ function AccessModal({
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
-            Cancel
+            {tx("common:feedback.cancel")}
           </Button>
           <Button
             onClick={save}
@@ -687,10 +793,12 @@ function AccessModal({
             className="px-4 py-1.5 disabled:opacity-50"
           >
             {saving
-              ? "Saving..."
+              ? tx("common:ui.saving")
               : changeCount === 0
-                ? "No changes"
-                : `Apply ${changeCount} change${changeCount === 1 ? "" : "s"}`}
+                ? tx("settings:features.usersTab.noChanges")
+                : tx("settings:features.usersTab.applyChange", {
+                    count: changeCount,
+                  })}
           </Button>
         </>
       }
@@ -698,7 +806,7 @@ function AccessModal({
       <div className="border-b pb-3 space-y-2">
         <Input
           type="text"
-          placeholder="Filter patients..."
+          placeholder={tx("settings:features.usersTab.filterPatients")}
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
@@ -707,13 +815,18 @@ function AccessModal({
             onClick={toggleAllVisible}
             className="inline-flex items-center hover:text-foreground coarse:min-h-11"
           >
-            {allVisibleSelected ? "Clear visible" : "Select all visible"}
+            {allVisibleSelected
+              ? tx("settings:features.usersTab.clearVisible")
+              : tx("settings:features.usersTab.selectAllVisible")}
           </button>
           <span>
-            {Object.keys(selection).length} selected
+            {Object.keys(selection).length}{" "}
+            {tx("settings:features.usersTab.selected")}{" "}
             {changeCount > 0 && (
               <span className="ml-2 text-primary">
-                • {changeCount} change{changeCount === 1 ? "" : "s"}
+                {tx("settings:features.usersTab.change", {
+                  count: changeCount,
+                })}
               </span>
             )}
           </span>
@@ -723,11 +836,13 @@ function AccessModal({
       <div>
         {patients.length === 0 ? (
           <div className="p-6 text-center text-sm text-muted-foreground">
-            No patients exist yet.
+            {tx("settings:features.usersTab.noPatientsExistYet")}
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-6 text-center text-sm text-muted-foreground">
-            No patients match "{filter}".
+            {tx("settings:features.usersTab.noPatientsMatch", {
+              value0: filter,
+            })}
           </div>
         ) : (
           <ul className="divide-y">
@@ -748,7 +863,8 @@ function AccessModal({
                     <span className="text-sm">{p.display_name}</span>
                     {initialMap[p.id] && (
                       <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-                        <Check className="h-3 w-3 text-primary" /> current
+                        <Check className="h-3 w-3 text-primary" />{" "}
+                        {tx("settings:features.sessionsTab.current")}{" "}
                       </span>
                     )}
                   </label>
@@ -758,8 +874,12 @@ function AccessModal({
                       onChange={(e) => setRole(p.id, e.target.value)}
                       className="rounded-md border bg-background px-2 py-0.5 text-xs coarse:min-h-11"
                     >
-                      <option value="viewer">viewer</option>
-                      <option value="owner">owner</option>
+                      <option value="viewer">
+                        {tx("settings:features.oidcTab.viewer")}
+                      </option>
+                      <option value="owner">
+                        {tx("settings:features.usersTab.owner")}
+                      </option>
                     </select>
                   )}
                 </li>

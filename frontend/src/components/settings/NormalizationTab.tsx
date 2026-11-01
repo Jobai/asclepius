@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import NormalizationToolbar from "./normalization/NormalizationToolbar";
 import AutoMergePanel from "./normalization/AutoMergePanel";
 import LinkedDocumentsModal from "./normalization/LinkedDocumentsModal";
@@ -6,15 +7,24 @@ import NormalizationTable from "./normalization/NormalizationTable";
 import { useNormalization } from "./normalization/useNormalization";
 
 export default function NormalizationTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const n = useNormalization();
 
   return (
     <div className="space-y-4">
       <div className="text-sm text-muted-foreground">
-        Normalization maps different names for the same medical concept (e.g.
-        "CBC", "Complete Blood Count", "Emocromo") to a single canonical entry.
-        Click a row to view and manage its aliases, edit the canonical name, or
-        merge duplicates.
+        {tx(
+          "settings:features.normalizationTab.normalizationMapsDifferentNamesForTheSameMedical",
+        )}
       </div>
 
       <NormalizationToolbar

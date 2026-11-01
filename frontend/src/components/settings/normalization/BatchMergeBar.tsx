@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { GitMerge, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Combobox from "@/components/ui/Combobox";
@@ -32,15 +33,30 @@ export default function BatchMergeBar({
   onMerge,
   onClear,
 }: BatchMergeBarProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   if (selectedCount === 0) return null;
 
   const targetPicker = (
     <Combobox
       value={batchTargetId === null ? null : String(batchTargetId)}
       onChange={(v) => onBatchTargetChange(v === null ? null : Number(v))}
-      placeholder="Merge into..."
-      title="Merge into..."
-      pinnedOptions={[{ value: "-1", label: "+ Create new entry..." }]}
+      placeholder={tx("settings:features.batchMergeBar.mergeInto")}
+      title={tx("settings:features.batchMergeBar.mergeInto")}
+      pinnedOptions={[
+        {
+          value: "-1",
+          label: tx("settings:features.batchMergeBar.createNewEntry"),
+        },
+      ]}
       options={normItems
         .filter((n) => !selectedIds.has(n.id))
         .map((n) => ({
@@ -59,36 +75,46 @@ export default function BatchMergeBar({
       {/* Inline bar, md and up */}
       <div className="hidden flex-col gap-2 rounded-md border border-warning/25 bg-warning-soft px-3 py-2 text-sm md:flex">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="font-medium">{selectedCount} selected</span>
-          <span className="text-muted-foreground">Merge into:</span>
+          <span className="font-medium">
+            {tx("settings:features.batchMergeBar.selected", {
+              value0: selectedCount,
+            })}
+          </span>
+          <span className="text-muted-foreground">
+            {tx("settings:features.batchMergeBar.mergeInto2")}
+          </span>
           <div className="min-w-[240px] max-w-xs">{targetPicker}</div>
           <Button size="sm" onClick={onMerge} disabled={mergeDisabled}>
-            <GitMerge className="h-3 w-3" /> Merge
+            <GitMerge className="h-3 w-3" /> {tx("common:feedback.merge")}{" "}
           </Button>
           <Button size="sm" variant="secondary" onClick={onClear}>
-            Clear
+            {tx("common:actions.clear")}
           </Button>
         </div>
         {batchTargetId === -1 && (
           <div className="flex flex-wrap items-center gap-2 pl-1">
             <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              Name
+              {tx("settings:features.backupTab.name")}{" "}
               <Input
                 value={batchNewDisplay}
                 onChange={(e) => onBatchNewDisplayChange(e.target.value)}
-                placeholder="e.g. Humanitas Medical Care"
+                placeholder={tx(
+                  "settings:features.batchMergeBar.eGHumanitasMedicalCare",
+                )}
                 className="w-64"
               />
             </label>
             <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              Code{" "}
+              {tx("settings:features.batchMergeBar.code")}{" "}
               <span className="text-[10px]">
-                (optional - defaults to slug of name)
+                {tx(
+                  "settings:features.batchMergeBar.optionalDefaultsToSlugOfName",
+                )}
               </span>
               <Input
                 value={batchNewCode}
                 onChange={(e) => onBatchNewCodeChange(e.target.value)}
-                placeholder="auto"
+                placeholder={tx("settings:features.batchMergeBar.auto")}
                 className="w-40 font-mono"
               />
             </label>
@@ -100,13 +126,19 @@ export default function BatchMergeBar({
       <div className="fixed bottom-0 inset-x-0 z-bar border-t bg-card p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden">
         <div className="flex items-center gap-2">
           <span className="shrink-0 text-sm font-medium">
-            {selectedCount} selected
+            {tx("settings:features.batchMergeBar.selected", {
+              value0: selectedCount,
+            })}
           </span>
           <div className="min-w-0 flex-1">{targetPicker}</div>
           <Button size="sm" onClick={onMerge} disabled={mergeDisabled}>
-            <GitMerge className="h-3 w-3" /> Merge
+            <GitMerge className="h-3 w-3" /> {tx("common:feedback.merge")}{" "}
           </Button>
-          <IconButton size="sm" label="Clear selection" onClick={onClear}>
+          <IconButton
+            size="sm"
+            label={tx("common:ui.clearSelection")}
+            onClick={onClear}
+          >
             <X className="h-4 w-4" />
           </IconButton>
         </div>
@@ -115,14 +147,20 @@ export default function BatchMergeBar({
             <Input
               value={batchNewDisplay}
               onChange={(e) => onBatchNewDisplayChange(e.target.value)}
-              placeholder="Display name for the new entry"
-              aria-label="Display name for the new entry"
+              placeholder={tx(
+                "settings:features.batchMergeBar.displayNameForTheNewEntry",
+              )}
+              aria-label={tx(
+                "settings:features.batchMergeBar.displayNameForTheNewEntry",
+              )}
             />
             <Input
               value={batchNewCode}
               onChange={(e) => onBatchNewCodeChange(e.target.value)}
-              placeholder="Code (optional, defaults to slug of name)"
-              aria-label="Code (optional)"
+              placeholder={tx(
+                "settings:features.batchMergeBar.codeOptionalDefaultsToSlugOfName",
+              )}
+              aria-label={tx("settings:features.batchMergeBar.codeOptional")}
               className="font-mono"
             />
           </div>

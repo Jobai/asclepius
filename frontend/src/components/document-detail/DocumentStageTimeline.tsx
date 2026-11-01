@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { statusLabel } from "@/lib/utils";
 import { useUiFormat } from "@/lib/formatting";
 import { useTranslation } from "react-i18next";
@@ -284,6 +285,16 @@ export default function DocumentStageTimeline({
   documentId,
   className,
 }: Props) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [data, setData] = useState<DocumentStagesResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const { status: pipeline } = usePipelineStatus();
@@ -352,11 +363,19 @@ export default function DocumentStageTimeline({
         className="flex w-full items-center justify-between gap-3 px-5 py-3 hover:bg-accent/30 rounded-xl"
       >
         <div className="flex items-center gap-3">
-          <h2 className="text-base font-semibold">Pipeline stages</h2>
+          <h2 className="text-base font-semibold">
+            {tx("clinical:features.documentStageTimeline.pipelineStages")}
+          </h2>
           <p className="text-xs text-muted-foreground">
-            {groups.length} run{groups.length === 1 ? "" : "s"}
-            {data.events.length > 0 &&
-              ` · ${data.events.length} event${data.events.length === 1 ? "" : "s"}`}
+            {tx("clinical:features.documentStageTimeline.run", {
+              value2:
+                data.events.length > 0
+                  ? tx("clinical:features.extra.eventCount", {
+                      count: data.events.length,
+                    })
+                  : "",
+              count: groups.length,
+            })}
           </p>
           {isLive && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-info-soft px-2.5 py-1 text-xs font-medium text-info">
@@ -364,7 +383,7 @@ export default function DocumentStageTimeline({
                 <span className="absolute inline-flex h-full w-full rounded-full bg-current opacity-50 animate-ping" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-current" />
               </span>
-              Live
+              {tx("clinical:features.documentStageTimeline.live")}{" "}
             </span>
           )}
         </div>
@@ -386,6 +405,16 @@ export default function DocumentStageTimeline({
 }
 
 function RunCard({ group }: { group: RunGroup }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { locale } = useUiFormat();
   const isReprocess = group.job_kind === "reprocess";
   const isTranslate =
@@ -400,14 +429,14 @@ function RunCard({ group }: { group: RunGroup }) {
         ? RefreshCw
         : UploadIcon;
   const runLabel = isAiEdit
-    ? "AI edit"
+    ? tx("documents:features.extra.runAi")
     : isRegionTranslate
-      ? "Region translate"
+      ? tx("documents:features.extra.runRegion")
       : isTranslate
-        ? "Translate"
+        ? tx("documents:features.extra.runTranslate")
         : isReprocess
-          ? "Reprocess"
-          : "Upload";
+          ? tx("documents:features.extra.runReprocess")
+          : tx("documents:features.extra.runUpload");
   const startTs = group.events[0]?.started_at || group.events[0]?.finished_at;
   const totalMs = runDuration(group.events);
   const outcome = runOutcome(group.events);
@@ -442,7 +471,11 @@ function RunCard({ group }: { group: RunGroup }) {
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold">{runLabel} run</span>
+            <span className="text-sm font-semibold">
+              {tx("clinical:features.documentStageTimeline.run2", {
+                value0: runLabel,
+              })}
+            </span>
             {/* Live-in-progress badge shown when any stage in this run is
                 still ``started`` — that's the authoritative signal, and
                 avoids the previous bug where the topmost (``isFirst``)
@@ -451,7 +484,7 @@ function RunCard({ group }: { group: RunGroup }) {
             {outcome === "started" ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-info text-white px-1.5 py-0.5 text-[10px] font-semibold">
                 <Loader2 className="h-2.5 w-2.5 animate-spin" />
-                In progress
+                {tx("clinical:features.documentStageTimeline.inProgress")}{" "}
               </span>
             ) : (
               <span
@@ -463,7 +496,9 @@ function RunCard({ group }: { group: RunGroup }) {
             {flow && (
               <span
                 className={`inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${flow.pill}`}
-                title={`Flow: ${flow.label}`}
+                title={tx("clinical:features.documentStageTimeline.flow", {
+                  value0: flow.label,
+                })}
               >
                 {flow.label}
               </span>
@@ -481,7 +516,9 @@ function RunCard({ group }: { group: RunGroup }) {
               </span>
             )}
             <span>
-              {group.events.length} stage{group.events.length === 1 ? "" : "s"}
+              {tx("clinical:features.documentStageTimeline.stage", {
+                count: group.events.length,
+              })}
             </span>
           </div>
         </div>
@@ -511,6 +548,16 @@ function StageRow({
   event: DocumentStageEvent;
   isLast: boolean;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { locale } = useUiFormat();
   useTranslation("common");
   const v = statusVisuals(event.status);
@@ -550,7 +597,10 @@ function StageRow({
           )}
           {event.page_total && event.page_current && (
             <span className="text-[11px] text-muted-foreground">
-              · pages 1–{event.page_current}/{event.page_total}
+              {tx("clinical:features.documentStageTimeline.pages1", {
+                value0: event.page_current,
+                value1: event.page_total,
+              })}
             </span>
           )}
         </div>

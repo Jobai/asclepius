@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import {
   CartesianGrid,
   Line,
@@ -29,6 +30,16 @@ interface LabRow {
  * Drawn as dashed reference lines for orientation.
  */
 export default function OgttCurveChart({ rows }: { rows: LabRow[] }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const points = rows
     .map((r) => {
       const minutes = parseOgttMinutes(r.test_name_original);
@@ -56,7 +67,9 @@ export default function OgttCurveChart({ rows }: { rows: LabRow[] }) {
   if (data.length < 2) {
     return (
       <div className="rounded-md border bg-muted/20 p-4 text-sm text-muted-foreground">
-        Not enough parseable glucose readings to plot a curve.
+        {tx(
+          "clinical:features.ogttCurveChart.notEnoughParseableGlucoseReadingsToPlotA",
+        )}
       </div>
     );
   }
@@ -66,7 +79,10 @@ export default function OgttCurveChart({ rows }: { rows: LabRow[] }) {
   return (
     <div className="rounded-md border bg-background p-2 sm:p-3">
       <div className="mb-2 text-xs font-medium text-muted-foreground">
-        Glucose curve (OGTT) — {data.length} points · unit {unit}
+        {tx("clinical:features.ogttCurveChart.glucoseCurveOgttPointsUnit", {
+          value0: data.length,
+          value1: unit,
+        })}
       </div>
       <div style={{ width: "100%", height: 260 }}>
         <ResponsiveContainer>
@@ -99,7 +115,10 @@ export default function OgttCurveChart({ rows }: { rows: LabRow[] }) {
                 borderRadius: 6,
                 fontSize: 12,
               }}
-              formatter={(v: any) => [`${v} ${unit}`, "Glucose"]}
+              formatter={(v: any) => [
+                `${v} ${unit}`,
+                tx("clinical:features.extra.glucose"),
+              ]}
               labelFormatter={(m: any) => `T+${m} min`}
             />
             {/* WHO / ADA 2-hour thresholds (only meaningful when unit is mg/dL). */}

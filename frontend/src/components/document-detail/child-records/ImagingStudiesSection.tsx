@@ -1,3 +1,5 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/api/client";
@@ -12,22 +14,22 @@ import {
 
 // Same DICOM modality → readable label map used in ImagingPage. Keeping
 // it co-located with the section avoids a dependency on the imaging page.
-const MODALITY_LABELS: Record<string, string> = {
-  CT: "CT scan",
-  MR: "MRI",
-  US: "Ultrasound",
-  XR: "X-ray",
-  CR: "X-ray (computed)",
-  DX: "X-ray (digital)",
-  MG: "Mammography",
-  PT: "PET",
-  NM: "Nuclear medicine",
-  RF: "Fluoroscopy",
-  OT: "Other",
-};
 const modalityLabel = (code: string | null | undefined) =>
-  !code ? "Unknown" : MODALITY_LABELS[code.toUpperCase()] || code;
-const MODALITY_CODES = Object.keys(MODALITY_LABELS);
+  enumLabel("modality", code?.toUpperCase() || "unknown");
+
+const MODALITY_CODES = [
+  "CT",
+  "MR",
+  "US",
+  "XR",
+  "CR",
+  "DX",
+  "MG",
+  "PT",
+  "NM",
+  "RF",
+  "OT",
+];
 
 /** DICOM tags routinely arrive in ALL-CAPS (e.g. body_part="ABDOMEN",
  * series_description="T2 AXIAL FLAIR"). Title-case them for display
@@ -81,6 +83,16 @@ function ImagingStudyBlock({
   study: any;
   onUpdated?: () => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const navigate = useNavigate();
   const series = study.series || [];
   const [activeSeriesId, setActiveSeriesId] = useState<number | null>(
@@ -118,13 +130,17 @@ function ImagingStudyBlock({
   };
 
   return (
-    <Section title="Imaging" icon={ImageIcon} sectionId="imaging-study">
+    <Section
+      title={tx("clinical:imaging")}
+      icon={ImageIcon}
+      sectionId="imaging-study"
+    >
       {/* Doctor + Facility + Event Date are NOT shown here — they live
           on the parent documents row (rendered by MetadataEditor) which
           is the single source of truth. The imaging-specific block only
           carries fields that are unique to imaging studies. */}
       <EditableSelect
-        label="Type"
+        label={tx("common:columns.type")}
         value={study.modality || ""}
         field="modality"
         docId={study.id}
@@ -134,7 +150,7 @@ function ImagingStudyBlock({
         formatLabel={(code) => `${modalityLabel(code)} (${code})`}
       />
       <EditableField
-        label="Body Part"
+        label={tx("clinical:features.imagingStudiesSection.bodyPart")}
         value={study.body_part || ""}
         field="body_part"
         docId={study.id}
@@ -143,7 +159,7 @@ function ImagingStudyBlock({
         formatDisplay={niceCase}
       />
       <EditableField
-        label="Description"
+        label={tx("clinical:features.imagingStudiesSection.description")}
         value={study.study_description || ""}
         field="study_description"
         docId={study.id}
@@ -152,7 +168,7 @@ function ImagingStudyBlock({
         formatDisplay={niceCase}
       />
       <EditableField
-        label="Accession"
+        label={tx("clinical:features.imagingStudiesSection.accession")}
         value={study.accession_number || ""}
         field="accession_number"
         docId={study.id}
@@ -160,11 +176,14 @@ function ImagingStudyBlock({
         onSave={handleSaved}
       />
       <InfoRow
-        label="Study UID"
-        value={study.study_instance_uid || "Unknown"}
+        label={tx("clinical:features.imagingStudiesSection.studyUid")}
+        value={
+          study.study_instance_uid ||
+          tx("common:features.extra.enums.modality.unknown")
+        }
       />
       <InfoRow
-        label="Series"
+        label={tx("clinical:features.imagingStudiesSection.series")}
         value={`${study.num_series ?? series.length} | ${study.num_images} images`}
       />
 
@@ -179,11 +198,18 @@ function ImagingStudyBlock({
               }`}
             >
               <span className="truncate">
-                Series {s.series_number ?? idx + 1}:{" "}
-                {niceCase(s.series_description) || s.modality || "Untitled"}
+                {tx("clinical:features.imagingStudiesSection.series2", {
+                  value0: s.series_number ?? idx + 1,
+                  value1:
+                    niceCase(s.series_description) ||
+                    s.modality ||
+                    tx("settings:features.priorityTab.untitled"),
+                })}
               </span>
               <span className="text-xs text-muted-foreground tabular-nums">
-                {s.num_images} images
+                {tx("clinical:features.imagingStudiesSection.images", {
+                  count: s.num_images,
+                })}
               </span>
             </button>
           ))}
@@ -206,7 +232,7 @@ function ImagingStudyBlock({
       {linkedDocs.length > 0 && (
         <div>
           <p className="text-xs font-medium text-muted-foreground mt-3 mb-1">
-            Linked documents
+            {tx("clinical:features.imagingStudiesSection.linkedDocuments")}
           </p>
           <ul className="space-y-1">
             {linkedDocs.map((d) => (
@@ -228,7 +254,7 @@ function ImagingStudyBlock({
                 </button>
                 {d.link_type === "report" ? (
                   <span className="text-[10px] uppercase tracking-wide rounded-full bg-primary/10 text-primary px-2 py-0.5 flex-shrink-0">
-                    Report
+                    {tx("common:columns.report")}
                   </span>
                 ) : (
                   <span className="text-xs text-muted-foreground ml-2 flex-shrink-0">
@@ -248,7 +274,8 @@ function ImagingStudyBlock({
         <details className="mt-3">
           <summary className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 cursor-pointer hover:text-foreground select-none">
             <FileImage className="h-3.5 w-3.5" />
-            Bundle files ({bundleFiles.length})
+            {tx("clinical:features.imagingStudiesSection.bundleFiles")}
+            {bundleFiles.length})
           </summary>
           <ul className="max-h-40 overflow-y-auto space-y-0.5 text-xs mt-2">
             {bundleFiles.map((f) => (
@@ -262,7 +289,9 @@ function ImagingStudyBlock({
                   {f.name}
                 </a>
                 <span className="text-muted-foreground tabular-nums ml-2">
-                  {(f.size / 1024).toFixed(0)} KB
+                  {tx("clinical:features.imagingStudiesSection.kb", {
+                    value0: (f.size / 1024).toFixed(0),
+                  })}
                 </span>
               </li>
             ))}

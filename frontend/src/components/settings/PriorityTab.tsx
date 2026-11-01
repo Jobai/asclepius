@@ -1,3 +1,5 @@
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -64,6 +66,16 @@ function PrioritySection<T extends AnyEntry>({
   onToggle,
   emptyMessage,
 }: SectionProps<T>) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const move = async (idx: number, dir: "up" | "down") => {
     const copy = [...items];
     const swap = dir === "up" ? idx - 1 : idx + 1;
@@ -79,7 +91,10 @@ function PrioritySection<T extends AnyEntry>({
         <Icon className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm font-medium">{title}</span>
         <span className="text-xs text-muted-foreground">
-          ({items.filter((i) => i.enabled).length}/{items.length} enabled)
+          {tx("settings:features.priorityTab.enabled", {
+            value0: items.filter((i) => i.enabled).length,
+            value1: items.length,
+          })}
         </span>
       </div>
       <div className="p-2 space-y-1">
@@ -99,8 +114,8 @@ function PrioritySection<T extends AnyEntry>({
                 <button
                   onClick={() => move(idx, "up")}
                   disabled={idx === 0}
-                  aria-label="Move up"
-                  title="Move up"
+                  aria-label={tx("common:ui.moveUp")}
+                  title={tx("common:ui.moveUp")}
                   className="flex items-center justify-center rounded-md p-0.5 text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-20 coarse:min-h-11 coarse:min-w-11"
                 >
                   <ChevronUp className="h-3.5 w-3.5" />
@@ -108,8 +123,8 @@ function PrioritySection<T extends AnyEntry>({
                 <button
                   onClick={() => move(idx, "down")}
                   disabled={idx === items.length - 1}
-                  aria-label="Move down"
-                  title="Move down"
+                  aria-label={tx("common:ui.moveDown")}
+                  title={tx("common:ui.moveDown")}
                   className="flex items-center justify-center rounded-md p-0.5 text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-20 coarse:min-h-11 coarse:min-w-11"
                 >
                   <ChevronDown className="h-3.5 w-3.5" />
@@ -121,11 +136,15 @@ function PrioritySection<T extends AnyEntry>({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 text-sm">
                   <span className="truncate font-medium">
-                    {p.name || p.model || "Untitled"}
+                    {p.name ||
+                      p.model ||
+                      tx("settings:features.priorityTab.untitled")}
                   </span>
                   {cred && (
                     <span className="text-xs text-muted-foreground truncate">
-                      via {cred.name}
+                      {tx("settings:features.priorityTab.via", {
+                        value0: cred.name,
+                      })}
                     </span>
                   )}
                 </div>
@@ -137,8 +156,8 @@ function PrioritySection<T extends AnyEntry>({
                 onClick={() => onToggle(p.id)}
                 title={
                   p.enabled
-                    ? "Enabled — click to disable"
-                    : "Disabled — click to enable"
+                    ? tx("settings:features.priorityTab.enabledClickToDisable")
+                    : tx("settings:features.priorityTab.disabledClickToEnable")
                 }
                 className={`flex items-center justify-center rounded-md p-1.5 transition-colors coarse:min-h-11 coarse:min-w-11 ${p.enabled ? "text-success hover:bg-success-soft" : "text-muted-foreground hover:bg-accent"}`}
               >
@@ -163,6 +182,16 @@ function GeneralLlmCard({
   credentials: Credential[];
   llm: LlmProvider[];
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const [settings, setSettings] = useState<GeneralLlmSettings>({
     credential_id: "",
@@ -214,10 +243,13 @@ function GeneralLlmCard({
     <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-3">
       <div className="flex items-center gap-2">
         <Sparkles className="h-4 w-4 text-primary" />
-        <span className="text-sm font-medium">General LLM</span>
+        <span className="text-sm font-medium">
+          {tx("settings:features.priorityTab.generalLlm")}
+        </span>
         <span className="text-xs text-muted-foreground">
-          — used for chat, auto-merge, auto-rename, link suggestions, event
-          extraction, document-edit AI
+          {tx(
+            "settings:features.priorityTab.usedForChatAutoMergeAutoRenameLink",
+          )}
         </span>
       </div>
 
@@ -225,15 +257,18 @@ function GeneralLlmCard({
         <div className="flex items-start gap-2 rounded-md border border-warning/25 bg-warning-soft p-2 text-xs text-warning">
           <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
           <span>
-            Not configured — those features will return 503 until you pick a
-            provider and model.
+            {tx(
+              "settings:features.priorityTab.notConfiguredThoseFeaturesWillReturn503Until",
+            )}
           </span>
         </div>
       )}
 
       <div className="grid gap-2 md:grid-cols-[1fr_1fr_auto] items-end">
         <label className="space-y-1 block">
-          <span className="text-xs font-medium">Provider</span>
+          <span className="text-xs font-medium">
+            {tx("settings:features.priorityTab.provider")}
+          </span>
           <select
             value={settings.credential_id}
             onChange={(e) => {
@@ -246,7 +281,9 @@ function GeneralLlmCard({
             }}
             className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
           >
-            <option value="">— pick a provider —</option>
+            <option value="">
+              {tx("settings:features.priorityTab.pickAProvider")}
+            </option>
             {filteredCreds.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name} ({c.type})
@@ -255,7 +292,9 @@ function GeneralLlmCard({
           </select>
         </label>
         <label className="space-y-1 block">
-          <span className="text-xs font-medium">Model</span>
+          <span className="text-xs font-medium">
+            {tx("settings:features.priorityTab.model")}
+          </span>
           <select
             value={settings.model}
             onChange={(e) =>
@@ -266,10 +305,12 @@ function GeneralLlmCard({
           >
             <option value="">
               {!settings.credential_id
-                ? "— pick a provider first —"
+                ? tx("settings:features.priorityTab.pickAProviderFirst")
                 : modelsForChosen.length === 0
-                  ? "— no LLM models on this provider —"
-                  : "— pick a model —"}
+                  ? tx(
+                      "settings:features.priorityTab.noLlmModelsOnThisProvider",
+                    )
+                  : tx("settings:features.priorityTab.pickAModel")}
             </option>
             {modelsForChosen.map((p) => (
               <option key={p.id} value={p.model}>
@@ -281,11 +322,19 @@ function GeneralLlmCard({
           </select>
           {settings.credential_id && modelsForChosen.length === 0 && (
             <span className="block text-[11px] text-warning">
-              Add an LLM model to this provider under{" "}
-              <Link to="/settings/analysis/providers" className="underline">
-                Providers
-              </Link>
-              .
+              <FeatureTrans
+                ns="settings"
+                i18nKey="features.priorityTab.addAnLlmModelToThisProviderUnder"
+                components={{
+                  part0: (
+                    <Link
+                      to="/settings/analysis/providers"
+                      className="underline"
+                    />
+                  ),
+                }}
+                values={{}}
+              />
             </span>
           )}
         </label>
@@ -299,18 +348,32 @@ function GeneralLlmCard({
           ) : (
             <Save className="h-3.5 w-3.5" />
           )}
-          {saved ? "Saved" : saving ? "Saving…" : "Save"}
+          {saved
+            ? tx("common:messages.saved")
+            : saving
+              ? tx("settings:features.priorityTab.saving")
+              : tx("common:actions.save")}
         </button>
       </div>
 
       {chosen && (
         <div className="text-xs text-muted-foreground">
-          Inherits <strong>{chosen.max_concurrent}</strong> concurrent requests
-          / <strong>{chosen.max_retries}</strong> retries from provider{" "}
-          <Link to="/settings/analysis/providers" className="underline">
-            {chosen.name}
-          </Link>
-          .
+          <FeatureTrans
+            ns="settings"
+            i18nKey="features.priorityTab.inheritsPart0Part0ConcurrentRequestsPart1Part1Retries"
+            components={{
+              part0: <strong />,
+              part1: <strong />,
+              part2: (
+                <Link to="/settings/analysis/providers" className="underline" />
+              ),
+            }}
+            values={{
+              value0: chosen.max_concurrent,
+              value1: chosen.max_retries,
+              value2: chosen.name,
+            }}
+          />
         </div>
       )}
     </div>
@@ -326,6 +389,16 @@ function TranslationDefaultsCard({
   llm: LlmProvider[];
   ocr: OcrProvider[];
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const [ocrId, setOcrId] = useState("");
   const [llmId, setLlmId] = useState("");
@@ -367,21 +440,29 @@ function TranslationDefaultsCard({
     <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-3">
       <div className="flex items-center gap-2">
         <Languages className="h-4 w-4 text-primary" />
-        <span className="text-sm font-medium">Translation defaults</span>
+        <span className="text-sm font-medium">
+          {tx("settings:features.priorityTab.translationDefaults")}
+        </span>
         <span className="text-xs text-muted-foreground">
-          — used when admins or doctors translate a document or region
+          {tx(
+            "settings:features.priorityTab.usedWhenAdminsOrDoctorsTranslateADocument",
+          )}
         </span>
       </div>
 
       <div className="grid gap-2 md:grid-cols-[1fr_1fr_auto] items-end">
         <label className="space-y-1 block">
-          <span className="text-xs font-medium">OCR provider</span>
+          <span className="text-xs font-medium">
+            {tx("settings:features.priorityTab.ocrProvider")}
+          </span>
           <select
             value={ocrId}
             onChange={(e) => setOcrId(e.target.value)}
             className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
           >
-            <option value="">— first enabled —</option>
+            <option value="">
+              {tx("settings:features.priorityTab.firstEnabled")}
+            </option>
             {ocr.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name || p.id}
@@ -390,13 +471,17 @@ function TranslationDefaultsCard({
           </select>
         </label>
         <label className="space-y-1 block">
-          <span className="text-xs font-medium">LLM provider</span>
+          <span className="text-xs font-medium">
+            {tx("settings:features.priorityTab.llmProvider")}
+          </span>
           <select
             value={llmId}
             onChange={(e) => setLlmId(e.target.value)}
             className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
           >
-            <option value="">— first enabled —</option>
+            <option value="">
+              {tx("settings:features.priorityTab.firstEnabled")}
+            </option>
             {llm.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name || p.id}
@@ -414,36 +499,53 @@ function TranslationDefaultsCard({
           ) : (
             <Save className="h-3.5 w-3.5" />
           )}
-          {saved ? "Saved" : saving ? "Saving…" : "Save"}
+          {saved
+            ? tx("common:messages.saved")
+            : saving
+              ? tx("settings:features.priorityTab.saving")
+              : tx("common:actions.save")}
         </button>
       </div>
       <details className="text-xs text-muted-foreground">
         <summary className="cursor-pointer select-none text-foreground/80 hover:text-foreground">
-          How these defaults are used
+          {tx("settings:features.priorityTab.howTheseDefaultsAreUsed")}
         </summary>
         <div className="mt-2 space-y-1">
           <p>
-            These providers are used for every translate action <em>unless</em>
-            something more specific is set. From most-specific to least:
+            <FeatureTrans
+              ns="settings"
+              i18nKey="features.priorityTab.theseProvidersAreUsedForEveryTranslateAction"
+              components={{ part0: <em /> }}
+              values={{}}
+            />
           </p>
           <ol className="list-decimal pl-5 space-y-0.5">
             <li>
-              A one-off pick from the admin Translate dropdown on a document.
+              {tx(
+                "settings:features.priorityTab.aOneOffPickFromTheAdminTranslate",
+              )}
             </li>
             <li>
-              The per-share preference saved when creating a doctor share.
+              {tx(
+                "settings:features.priorityTab.thePerSharePreferenceSavedWhenCreatingA",
+              )}
             </li>
             <li>
-              <strong>These settings</strong>, used whenever neither of the
-              above applies.
+              <FeatureTrans
+                ns="settings"
+                i18nKey="features.priorityTab.part0TheseSettingsPart0UsedWheneverNeitherOf"
+                components={{ part0: <strong /> }}
+                values={{}}
+              />
             </li>
             <li>
-              The first enabled entry in the priority list, as a final fallback.
+              {tx(
+                "settings:features.priorityTab.theFirstEnabledEntryInThePriorityList",
+              )}
             </li>
           </ol>
           <p>
-            Set these to pin a specific OCR / LLM for translation across the
-            board, without remembering to pick it every time.
+            {tx("settings:features.priorityTab.setTheseToPinASpecificOcrLlm")}
           </p>
         </div>
       </details>
@@ -454,6 +556,16 @@ function TranslationDefaultsCard({
 // ─── Main tab ─────────────────────────────────────────────────────
 
 export default function PriorityTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const {
     data: credData,
@@ -504,12 +616,17 @@ export default function PriorityTab() {
   return (
     <div className="space-y-4">
       <div className="text-sm text-muted-foreground">
-        <strong>Priority</strong> controls which model is tried first for each
-        task. Providers are defined under{" "}
-        <Link to="/settings/analysis/providers" className="underline">
-          Providers
-        </Link>
-        .
+        <FeatureTrans
+          ns="settings"
+          i18nKey="features.priorityTab.part0PriorityPart0ControlsWhichModelIsTried"
+          components={{
+            part0: <strong />,
+            part1: (
+              <Link to="/settings/analysis/providers" className="underline" />
+            ),
+          }}
+          values={{}}
+        />
       </div>
 
       <GeneralLlmCard credentials={credentials} llm={llm} />
@@ -517,7 +634,9 @@ export default function PriorityTab() {
       <TranslationDefaultsCard llm={llm} ocr={ocr} />
 
       <PrioritySection
-        title="LLM priority (document extraction, classification)"
+        title={tx(
+          "settings:features.priorityTab.llmPriorityDocumentExtractionClassification",
+        )}
         icon={Brain}
         items={llm}
         credentials={credentials}
@@ -528,11 +647,15 @@ export default function PriorityTab() {
             llm.map((p) => (p.id === id ? { ...p, enabled: !p.enabled } : p)),
           )
         }
-        emptyMessage="No LLM models — add one under Providers."
+        emptyMessage={tx(
+          "settings:features.priorityTab.noLlmModelsAddOneUnderProviders",
+        )}
       />
 
       <PrioritySection
-        title="Vision-LLM priority (single-pass page extraction)"
+        title={tx(
+          "settings:features.priorityTab.visionLlmPrioritySinglePassPageExtraction",
+        )}
         icon={Eye}
         items={vision}
         credentials={credentials}
@@ -545,11 +668,13 @@ export default function PriorityTab() {
             ),
           )
         }
-        emptyMessage="No Vision-LLM models configured."
+        emptyMessage={tx(
+          "settings:features.priorityTab.noVisionLlmModelsConfigured",
+        )}
       />
 
       <PrioritySection
-        title="OCR priority"
+        title={tx("settings:features.priorityTab.ocrPriority")}
         icon={ScanText}
         items={ocr}
         credentials={credentials}
@@ -562,7 +687,9 @@ export default function PriorityTab() {
             ocr.map((p) => (p.id === id ? { ...p, enabled: !p.enabled } : p)),
           )
         }
-        emptyMessage="No OCR engines configured."
+        emptyMessage={tx(
+          "settings:features.priorityTab.noOcrEnginesConfigured",
+        )}
       />
     </div>
   );

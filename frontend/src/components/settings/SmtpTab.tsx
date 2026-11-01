@@ -1,3 +1,5 @@
+import type { MessageKey } from "@/i18n/messages";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import { Send, Loader2 } from "lucide-react";
@@ -20,10 +22,13 @@ import { useSettings } from "@/hooks/data";
 // surfaces a clear error at test-send time.
 type TlsMode = "starttls" | "tls" | "none";
 
-const TLS_OPTIONS: { value: TlsMode; label: string }[] = [
-  { value: "starttls", label: "STARTTLS (port 587)" },
-  { value: "tls", label: "Implicit TLS (port 465)" },
-  { value: "none", label: "None (localhost only)" },
+const TLS_OPTIONS: { value: TlsMode; labelKey: MessageKey }[] = [
+  {
+    value: "starttls",
+    labelKey: "settings:features.extra.smtp.tlsModes.starttls",
+  },
+  { value: "tls", labelKey: "settings:features.extra.smtp.tlsModes.tls" },
+  { value: "none", labelKey: "settings:features.extra.smtp.tlsModes.none" },
 ];
 
 const PLACEHOLDERS = [
@@ -35,6 +40,16 @@ const PLACEHOLDERS = [
 ];
 
 export default function SmtpTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const { saving, saved, save } = useSettingsSave();
   const { data: settingsData, refetch } = useSettings();
@@ -74,7 +89,10 @@ export default function SmtpTab() {
     });
   }, [settingsData]);
 
-  if (!f || !s) return <div className="text-muted-foreground">Loading...</div>;
+  if (!f || !s)
+    return (
+      <div className="text-muted-foreground">{tx("common:ui.loading")}</div>
+    );
 
   const smtpInitial = s.smtp || {};
   const shareInitial = s.share || {};
@@ -180,66 +198,76 @@ export default function SmtpTab() {
   return (
     <div className="space-y-6">
       <SettingsForm
-        title="SMTP transport"
+        title={tx("settings:features.smtpTab.smtpTransport")}
         saving={saving}
         saved={saved}
         onSave={onSave}
       >
         <ToggleField
-          label="Enable SMTP"
+          label={tx("settings:features.smtpTab.enableSmtp")}
           value={f.smtp_enabled}
           onChange={(v) => setF({ ...f, smtp_enabled: v })}
-          description="When off, the email-OTP share delivery is unavailable and the share dialog disables that option."
+          description={tx(
+            "settings:features.smtpTab.whenOffTheEmailOtpShareDeliveryIs",
+          )}
         />
         <TextField
-          label="Host"
+          label={tx("settings:features.smtpTab.host")}
           value={f.smtp_host}
           onChange={(v) => setF({ ...f, smtp_host: v })}
-          placeholder="smtp.example.com"
+          placeholder={tx("settings:features.smtpTab.smtpExampleCom")}
         />
         <NumberField
-          label="Port"
+          label={tx("settings:features.smtpTab.port")}
           value={f.smtp_port}
           onChange={(v) =>
             setF({ ...f, smtp_port: Math.max(1, Math.floor(v)) })
           }
           min={1}
           max={65535}
-          description="587 for STARTTLS, 465 for implicit TLS."
+          description={tx(
+            "settings:features.smtpTab.587ForStarttls465ForImplicitTls",
+          )}
         />
         <SelectField
-          label="TLS mode"
+          label={tx("settings:features.smtpTab.tlsMode")}
           value={f.tls_mode}
           onChange={(v) => setF({ ...f, tls_mode: v as TlsMode })}
-          options={TLS_OPTIONS}
+          options={TLS_OPTIONS.map((o) => ({ ...o, label: tx(o.labelKey) }))}
         />
         <TextField
-          label="Username"
+          label={tx("errors:fields.username")}
           value={f.smtp_username}
           onChange={(v) => setF({ ...f, smtp_username: v })}
         />
         <TextField
-          label="Password"
+          label={tx("errors:fields.password")}
           value={f.smtp_password}
           onChange={(v) => setF({ ...f, smtp_password: v })}
           type="password"
-          placeholder={smtpInitial.has_password ? "configured" : "Not set"}
-          description="Leave blank to keep the current password."
+          placeholder={
+            smtpInitial.has_password
+              ? tx("settings:features.oidcTab.configured")
+              : tx("settings:features.oidcTab.notSet")
+          }
+          description={tx(
+            "settings:features.smtpTab.leaveBlankToKeepTheCurrentPassword",
+          )}
         />
         <TextField
-          label="From address"
+          label={tx("settings:features.smtpTab.fromAddress")}
           value={f.smtp_from_address}
           onChange={(v) => setF({ ...f, smtp_from_address: v })}
           placeholder="noreply@example.com"
         />
         <TextField
-          label="From name"
+          label={tx("settings:features.smtpTab.fromName")}
           value={f.smtp_from_name}
           onChange={(v) => setF({ ...f, smtp_from_name: v })}
           placeholder="Asclepius"
         />
         <NumberField
-          label="Send timeout (seconds)"
+          label={tx("settings:features.smtpTab.sendTimeoutSeconds")}
           value={f.smtp_timeout_seconds}
           onChange={(v) =>
             setF({ ...f, smtp_timeout_seconds: Math.max(1, Math.floor(v)) })
@@ -250,10 +278,13 @@ export default function SmtpTab() {
       </SettingsForm>
 
       <div className="rounded-lg border p-4 space-y-3">
-        <h3 className="font-medium">Send test email</h3>
+        <h3 className="font-medium">
+          {tx("settings:features.smtpTab.sendTestEmail")}
+        </h3>
         <p className="text-xs text-muted-foreground">
-          Sends a fixed diagnostic message via the current SMTP settings. Useful
-          right after entering a password or changing TLS mode.
+          {tx(
+            "settings:features.smtpTab.sendsAFixedDiagnosticMessageViaTheCurrent",
+          )}
         </p>
         <div className="flex flex-wrap gap-2">
           <input
@@ -273,24 +304,28 @@ export default function SmtpTab() {
             ) : (
               <Send className="h-4 w-4" />
             )}
-            {testing ? "Sending..." : "Send test"}
+            {testing
+              ? tx("settings:features.smtpTab.sending")
+              : tx("settings:features.smtpTab.sendTest")}
           </button>
         </div>
       </div>
 
       <SettingsForm
-        title="Email OTP template"
+        title={tx("settings:features.smtpTab.emailOtpTemplate")}
         saving={saving}
         saved={saved}
         onSave={onSave}
       >
         <TextField
-          label="Subject"
+          label={tx("settings:features.smtpTab.subject")}
           value={f.share_email_otp_subject}
           onChange={(v) => setF({ ...f, share_email_otp_subject: v })}
         />
         <label className="space-y-1">
-          <span className="text-sm font-medium">Body</span>
+          <span className="text-sm font-medium">
+            {tx("settings:features.smtpTab.body")}
+          </span>
           <textarea
             value={f.share_email_otp_body}
             onChange={(e) =>
@@ -301,7 +336,9 @@ export default function SmtpTab() {
           />
         </label>
         <div className="rounded-md border bg-muted/30 p-2 text-xs">
-          <span className="text-muted-foreground mr-2">Placeholders:</span>
+          <span className="text-muted-foreground mr-2">
+            {tx("settings:features.smtpTab.placeholders")}
+          </span>
           {PLACEHOLDERS.map((p) => (
             <code
               key={p}
@@ -313,14 +350,16 @@ export default function SmtpTab() {
         </div>
         <div className="rounded-md border bg-background p-3">
           <div className="text-xs text-muted-foreground mb-1">
-            Preview (example values)
+            {tx("settings:features.smtpTab.previewExampleValues")}
           </div>
           <pre className="text-xs whitespace-pre-wrap font-mono">
-            {previewBody || "(empty)"}
+            {previewBody || tx("settings:features.smtpTab.empty")}
           </pre>
         </div>
         <NumberField
-          label="Revoke share after N consecutive failed OTP attempts"
+          label={tx(
+            "settings:features.smtpTab.revokeShareAfterNConsecutiveFailedOtpAttempts",
+          )}
           value={f.share_lockout_after_failed}
           onChange={(v) =>
             setF({
@@ -330,10 +369,12 @@ export default function SmtpTab() {
           }
           min={1}
           max={20}
-          description="Applies to BOTH manual and email-OTP shares. Below the threshold the per-code attempt cap still rejects the wrong code; at the threshold the share itself is revoked and all sessions are killed."
+          description={tx(
+            "settings:features.smtpTab.appliesToBothManualAndEmailOtpShares",
+          )}
         />
         <NumberField
-          label="Email OTP daily cap per share"
+          label={tx("settings:features.smtpTab.emailOtpDailyCapPerShare")}
           value={f.share_email_otp_daily_cap}
           onChange={(v) =>
             setF({
@@ -343,10 +384,12 @@ export default function SmtpTab() {
           }
           min={1}
           max={500}
-          description="Hard ceiling on automated emails per share per 24 h. Belt-and-braces against inbox flooding via a leaked URL."
+          description={tx(
+            "settings:features.smtpTab.hardCeilingOnAutomatedEmailsPerSharePer",
+          )}
         />
         <NumberField
-          label="Email OTP resend cooldown (seconds)"
+          label={tx("settings:features.smtpTab.emailOtpResendCooldownSeconds")}
           value={f.share_email_otp_resend_cooldown_seconds}
           onChange={(v) =>
             setF({
@@ -359,7 +402,9 @@ export default function SmtpTab() {
           }
           min={0}
           max={600}
-          description="Minimum gap between two request-otp calls on the same share."
+          description={tx(
+            "settings:features.smtpTab.minimumGapBetweenTwoRequestOtpCallsOn",
+          )}
         />
       </SettingsForm>
     </div>

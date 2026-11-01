@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { GitMerge, Sparkles } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
@@ -27,6 +28,16 @@ export default function AutoMergePanel({
   onUpdateTarget,
   onToggleSource,
 }: AutoMergePanelProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const entryById: Record<number, any> = Object.fromEntries(
     entries.map((e: any) => [e.id, e]),
   );
@@ -36,15 +47,18 @@ export default function AutoMergePanel({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-medium">
           <Sparkles className="h-4 w-4 text-primary" />
-          AI merge proposals ({proposals.length})
+          {tx("settings:features.autoMergePanel.aiMergeProposals")}
+          {proposals.length})
         </div>
         <Button size="sm" variant="secondary" onClick={onClose}>
-          Close
+          {tx("common:actions.close")}
         </Button>
       </div>
       {proposals.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          No merge candidates found. All entries look distinct.
+          {tx(
+            "settings:features.autoMergePanel.noMergeCandidatesFoundAllEntriesLookDistinct",
+          )}
         </p>
       ) : (
         <div className="space-y-3">
@@ -56,13 +70,17 @@ export default function AutoMergePanel({
                 className="rounded-md border bg-background p-3 space-y-2"
               >
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">Target:</span>
+                  <span className="font-medium text-foreground">
+                    {tx("settings:features.autoMergePanel.target")}
+                  </span>
                   <Select
                     value={p.target_id}
                     onChange={(e) =>
                       onUpdateTarget(idx, Number(e.target.value))
                     }
-                    aria-label="Merge target"
+                    aria-label={tx(
+                      "settings:features.autoMergePanel.mergeTarget",
+                    )}
                     className="w-auto min-w-0 flex-1 md:flex-none"
                   >
                     {groupIds.map((id) => (
@@ -79,11 +97,13 @@ export default function AutoMergePanel({
                 )}
                 <div className="space-y-1">
                   <div className="text-xs font-medium text-muted-foreground">
-                    Merge these into target:
+                    {tx(
+                      "settings:features.autoMergePanel.mergeTheseIntoTarget",
+                    )}
                   </div>
                   {p.source_ids.length === 0 ? (
                     <p className="text-xs text-muted-foreground">
-                      No sources selected.
+                      {tx("settings:features.autoMergePanel.noSourcesSelected")}
                     </p>
                   ) : (
                     p.source_ids.map((sid: number) => (
@@ -114,10 +134,15 @@ export default function AutoMergePanel({
                     onClick={() => onApply(p)}
                     disabled={p.source_ids.length === 0}
                   >
-                    <GitMerge className="h-3 w-3" /> Apply merge
+                    <GitMerge className="h-3 w-3" />{" "}
+                    {tx("settings:features.autoMergePanel.applyMerge")}{" "}
                   </Button>
-                  <Button size="sm" variant="secondary" onClick={() => onSkip(idx)}>
-                    Skip
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => onSkip(idx)}
+                  >
+                    {tx("settings:features.autoMergePanel.skip")}
                   </Button>
                 </div>
               </div>

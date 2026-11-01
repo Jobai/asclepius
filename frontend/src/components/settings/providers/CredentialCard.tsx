@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import type { UiMessage } from "@/i18n/messages";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import type { Credential } from "@/types";
@@ -56,6 +57,16 @@ export default function CredentialCard({
   onRemoveModel,
   onTestModel,
 }: CredentialCardProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const Icon = iconForType(c.type);
   const refs = c.references || {
     llm: 0,
@@ -77,22 +88,29 @@ export default function CredentialCard({
               {c.type}
             </span>
             <span className="text-xs text-muted-foreground">
-              max {c.max_concurrent} concurrent · {c.max_retries} retries
+              {tx("settings:features.credentialCard.maxConcurrentRetries", {
+                value0: c.max_concurrent,
+                value1: c.max_retries,
+              })}
             </span>
           </div>
           <div className="mt-0.5 text-xs text-muted-foreground truncate">
             {c.base_url || (
-              <span className="italic opacity-60">no base URL</span>
+              <span className="italic opacity-60">
+                {tx("settings:features.credentialCard.noBaseUrl")}
+              </span>
             )}
             {" · "}
-            {c.has_api_key ? "API key ••••••••" : "no API key"}
+            {c.has_api_key
+              ? tx("settings:features.credentialCard.apiKey")
+              : tx("settings:features.credentialCard.noApiKey")}
           </div>
         </div>
         <button
           onClick={onEditCredential}
           className="flex items-center justify-center rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent coarse:min-h-11 coarse:min-w-11"
-          title="Edit provider"
-          aria-label="Edit provider"
+          title={tx("settings:features.credentialCard.editProvider")}
+          aria-label={tx("settings:features.credentialCard.editProvider")}
         >
           <Pencil className="h-4 w-4" />
         </button>
@@ -101,10 +119,13 @@ export default function CredentialCard({
           disabled={refs.total > 0 || busy}
           title={
             refs.total > 0
-              ? `${refs.total} model(s) attached - remove them first`
-              : "Delete provider"
+              ? tx(
+                  "settings:features.credentialCard.modelSAttachedRemoveThemFirst",
+                  { value0: refs.total },
+                )
+              : tx("settings:features.credentialCard.deleteProvider")
           }
-          aria-label="Delete provider"
+          aria-label={tx("settings:features.credentialCard.deleteProvider")}
           className="flex items-center justify-center rounded-md p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:hover:text-muted-foreground disabled:hover:bg-transparent coarse:min-h-11 coarse:min-w-11"
         >
           <Trash2 className="h-4 w-4" />
@@ -115,7 +136,7 @@ export default function CredentialCard({
       <div className="border-t bg-background p-3 space-y-2">
         {models.length === 0 && !isAddingModel && (
           <div className="text-xs text-muted-foreground italic py-1">
-            No models attached yet.
+            {tx("settings:features.credentialCard.noModelsAttachedYet")}
           </div>
         )}
         {models.map((m) => {
@@ -158,7 +179,8 @@ export default function CredentialCard({
             onClick={onStartAddModel}
             className="inline-flex items-center gap-1 rounded-md border border-dashed px-3 py-1 text-xs text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
           >
-            <Plus className="h-3.5 w-3.5" /> Add model
+            <Plus className="h-3.5 w-3.5" />{" "}
+            {tx("settings:features.credentialCard.addModel")}{" "}
           </button>
         )}
       </div>

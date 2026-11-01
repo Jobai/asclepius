@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { ChevronRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -18,10 +19,20 @@ export default function SettingsMenuList({
 }: {
   entries: readonly SettingsMenuEntry[];
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const navigate = useNavigate();
   return (
     <nav
-      aria-label="Settings sections"
+      aria-label={tx("settings:features.settingsMenuList.settingsSections")}
       className="overflow-hidden rounded-lg border bg-card"
     >
       <ul className="divide-y">

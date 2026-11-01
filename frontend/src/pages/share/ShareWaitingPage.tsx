@@ -1,3 +1,5 @@
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
@@ -28,6 +30,16 @@ const CLAIM_STOP_STATUSES = [401, 403, 404, 410];
  *   - the doctor clicks "Cancel" → DELETE the queue token and bounce.
  */
 export default function ShareWaitingPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const { formatTime } = useUiFormat();
   const navigate = useNavigate();
@@ -108,26 +120,36 @@ export default function ShareWaitingPage() {
         </div>
         <div className="flex items-center gap-2 text-primary">
           <Hourglass className="h-6 w-6" />
-          <h1 className="text-lg font-semibold">Share is currently in use</h1>
+          <h1 className="text-lg font-semibold">
+            {tx("share:features.shareWaiting.shareIsCurrentlyInUse")}
+          </h1>
         </div>
         <p className="text-sm text-muted-foreground">
-          {recipientLabel
-            ? `${recipientLabel}, this share is currently being viewed on another device.`
-            : "This share is currently being viewed on another device."}{" "}
-          You will be admitted automatically once that session ends.
+          {tx(
+            "share:features.shareWaiting.youWillBeAdmittedAutomaticallyOnceThatSession",
+            {
+              value0: recipientLabel
+                ? tx("share:features.extra.otherDeviceNamed", {
+                    name: recipientLabel,
+                  })
+                : tx("share:features.extra.otherDevice"),
+            },
+          )}
         </p>
         <div className="flex items-center gap-3 rounded-md border bg-muted/30 px-4 py-3 text-sm">
           <Loader2 className="h-4 w-4 animate-spin text-primary" />
           <span className="text-muted-foreground">
-            Waiting for the slot to free up...
+            {tx("share:features.shareWaiting.waitingForTheSlotToFreeUp")}
           </span>
         </div>
         {queueExpiresAt && (
           <p className="text-xs text-muted-foreground">
-            Your waiting position is valid until{" "}
-            <span className="font-mono">{formatTime(queueExpiresAt)}</span>. If
-            the other session does not end before then you will need to request
-            a fresh access code.
+            <FeatureTrans
+              ns="share"
+              i18nKey="features.shareWaiting.yourWaitingPositionIsValidUntilPart0Part0"
+              components={{ part0: <span className="font-mono" /> }}
+              values={{ value0: formatTime(queueExpiresAt) }}
+            />
           </p>
         )}
         <Button
@@ -138,7 +160,7 @@ export default function ShareWaitingPage() {
           onClick={onCancel}
         >
           <X className="h-4 w-4" />
-          Cancel and exit
+          {tx("share:features.shareWaiting.cancelAndExit")}{" "}
         </Button>
         {error && (
           <p className="text-sm text-destructive">
@@ -146,8 +168,7 @@ export default function ShareWaitingPage() {
           </p>
         )}
         <p className="text-xs text-muted-foreground border-t pt-4">
-          Only one device can view a share at a time. If you closed an earlier
-          tab, this should clear up within a few minutes.
+          {tx("share:features.shareWaiting.onlyOneDeviceCanViewAShareAt")}
         </p>
       </div>
     </div>

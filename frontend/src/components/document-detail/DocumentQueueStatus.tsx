@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { useTranslation } from "react-i18next";
 import { type ReactNode } from "react";
@@ -23,6 +24,16 @@ interface Props {
  * to a generic "Queued" pill until pipeline-status arrives from the server.
  */
 export default function DocumentQueueStatus({ docId }: Props) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   useTranslation("common");
   const { status } = usePipelineStatus();
 
@@ -33,7 +44,10 @@ export default function DocumentQueueStatus({ docId }: Props) {
     const stage = stageLabel(current.stage);
     const page =
       current.page_total && current.page_current != null
-        ? `page ${current.page_current}/${current.page_total}`
+        ? tx("documents:features.extra.queuePage", {
+            page: current.page_current,
+            total: current.page_total,
+          })
         : null;
     const detail = [stage, page].filter(Boolean).join(" · ");
     return (
@@ -54,7 +68,7 @@ export default function DocumentQueueStatus({ docId }: Props) {
       >
         <div className="flex items-center gap-1.5 rounded-md border border-info/25 bg-info-soft px-3 py-1.5 text-sm text-info cursor-help">
           <Loader2 className="h-4 w-4 animate-spin" />
-          <span className="font-medium">Processing</span>
+          <span className="font-medium">{tx("common:status.processing")}</span>
           {detail && (
             <span className="text-xs opacity-80 tabular-nums">{detail}</span>
           )}
@@ -67,9 +81,13 @@ export default function DocumentQueueStatus({ docId }: Props) {
   if (queueIndex >= 0) {
     const ahead = queueIndex + (current ? 1 : 0);
     const aheadText =
-      ahead === 0 ? "next up" : `${ahead} doc${ahead === 1 ? "" : "s"} ahead`;
+      ahead === 0
+        ? tx("documents:features.extra.nextUp")
+        : tx("common:features.extra.documentCount", { count: ahead });
     const aheadFilenames = [
-      ...(current?.doc_id != null ? [current.filename || "(running)"] : []),
+      ...(current?.doc_id != null
+        ? [current.filename || tx("documents:features.extra.runningFile")]
+        : []),
       ...queued.slice(0, queueIndex).map((q) => q.label),
     ];
     return (
@@ -90,7 +108,9 @@ export default function DocumentQueueStatus({ docId }: Props) {
       >
         <div className="flex items-center gap-1.5 rounded-md border border-warning/25 bg-warning-soft px-3 py-1.5 text-sm text-warning cursor-help">
           <Hourglass className="h-4 w-4" />
-          <span className="font-medium">Queued</span>
+          <span className="font-medium">
+            {tx("documents:features.documentQueueStatus.queued")}
+          </span>
           <span className="text-xs opacity-80 tabular-nums">{aheadText}</span>
         </div>
       </PillTooltip>
@@ -100,10 +120,12 @@ export default function DocumentQueueStatus({ docId }: Props) {
   return (
     <div
       className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm text-muted-foreground"
-      title="Queued for processing"
+      title={tx("documents:features.documentQueueStatus.queuedForProcessing")}
     >
       <Hourglass className="h-4 w-4" />
-      <span className="font-medium">Queued</span>
+      <span className="font-medium">
+        {tx("documents:features.documentQueueStatus.queued")}
+      </span>
     </div>
   );
 }
@@ -149,6 +171,16 @@ function ProcessingTooltipBody({
   providerNames: PipelineProviders | null;
   stageProvider: string | null;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { locale } = useUiFormat();
   useTranslation("common");
   const now = useNow(true);
@@ -157,25 +189,28 @@ function ProcessingTooltipBody({
   return (
     <div className="space-y-2">
       <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-        Processing
+        {tx("common:status.processing")}
       </p>
       <div className="space-y-1 text-xs">
         {stage && (
-          <Row label="Stage">
+          <Row label={tx("documents:features.documentQueueStatus.stage")}>
             <span className="font-medium text-foreground">
               {stageLabel(stage)}
             </span>
           </Row>
         )}
         {pageTotal && pageCurrent != null && (
-          <Row label="Page">
+          <Row label={tx("documents:features.documentQueueStatus.page")}>
             <span className="tabular-nums">
-              {pageCurrent} of {pageTotal}
+              {tx("documents:features.documentQueueStatus.of", {
+                value0: pageCurrent,
+                value1: pageTotal,
+              })}
             </span>
           </Row>
         )}
         {elapsed != null && (
-          <Row label="Elapsed">
+          <Row label={tx("documents:features.documentQueueStatus.elapsed")}>
             <span className="tabular-nums">
               {formatElapsed(elapsed, locale)}
             </span>
@@ -204,21 +239,35 @@ function QueuedTooltipBody({
   providers: PipelineProviders | null;
   providerNames: PipelineProviders | null;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   return (
     <div className="space-y-2">
       <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-        Waiting in queue
+        {tx("documents:features.documentQueueStatus.waitingInQueue")}
       </p>
       <div className="space-y-1 text-xs">
-        <Row label="Position">
+        <Row label={tx("documents:features.documentQueueStatus.position")}>
           <span className="tabular-nums">
-            {ahead === 0 ? "next up" : `${ahead} ahead`}
+            {ahead === 0
+              ? tx("documents:features.documentQueueStatus.nextUp")
+              : tx("documents:features.documentQueueStatus.ahead", {
+                  value0: ahead,
+                })}
           </span>
         </Row>
         {aheadFilenames.length > 0 && (
           <div className="space-y-0.5">
             <p className="text-[10px] uppercase tracking-wide text-muted-foreground/70">
-              Ahead of this doc
+              {tx("documents:features.documentQueueStatus.aheadOfThisDoc")}
             </p>
             <ul className="space-y-0.5 text-foreground">
               {aheadFilenames.slice(0, 5).map((f, i) => (
@@ -229,7 +278,9 @@ function QueuedTooltipBody({
               ))}
               {aheadFilenames.length > 5 && (
                 <li className="text-muted-foreground">
-                  + {aheadFilenames.length - 5} more
+                  {tx("documents:features.documentQueueStatus.more", {
+                    value0: aheadFilenames.length - 5,
+                  })}
                 </li>
               )}
             </ul>
@@ -256,6 +307,16 @@ function ProvidersBlock({
   providerNames: PipelineProviders | null;
   active: string | null;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const entries: Array<{ family: string; id: string; label: string }> = [];
   if (providers.ocr) {
     entries.push({
@@ -282,7 +343,7 @@ function ProvidersBlock({
   return (
     <div className="space-y-1 border-t pt-2">
       <p className="text-[10px] uppercase tracking-wide text-muted-foreground/70">
-        Models
+        {tx("documents:features.documentQueueStatus.models")}
       </p>
       <div className="flex flex-wrap gap-1">
         {entries.map(({ family, id, label }) => {

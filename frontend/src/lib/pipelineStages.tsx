@@ -1,3 +1,5 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
+import { i18n as featureI18n } from "@/i18n";
 import { i18n } from "@/i18n";
 import type { CommonKey, CommonTranslator } from "@/i18n/messages";
 import { useEffect, useState } from "react";
@@ -88,13 +90,13 @@ export function flowBadge(
 ): { label: string; pill: string } | null {
   if (stages.includes("vision_extraction")) {
     return {
-      label: "Vision-LLM",
+      label: featureI18n.t("common:features.pipelineStages.visionLlm"),
       pill: "bg-cat-violet-soft text-cat-violet border-cat-violet/25",
     };
   }
   if (stages.includes("ocr")) {
     return {
-      label: "OCR + LLM",
+      label: featureI18n.t("common:features.pipelineStages.ocrLlm"),
       pill: "bg-muted text-muted-foreground border-border",
     };
   }
@@ -131,6 +133,16 @@ export function formatElapsed(ms: number, locale = "en-GB"): string {
  * Returns the current ``Date.now()``; consumers re-render when it changes.
  */
 export function useNow(active: boolean): number {
+  useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [now, setNow] = useState<number>(() => Date.now());
   useEffect(() => {
     if (!active) return;

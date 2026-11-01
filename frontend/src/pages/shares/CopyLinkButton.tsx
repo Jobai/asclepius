@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useState } from "react";
 import { Check, Link as LinkIcon } from "lucide-react";
 
@@ -19,6 +20,16 @@ export default function CopyLinkButton({
   token: string;
   shareUrl: string | null;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [copied, setCopied] = useState(false);
   const onCopy = async () => {
     const url = buildShareUrl(token, shareUrl);
@@ -34,14 +45,20 @@ export default function CopyLinkButton({
     <button
       onClick={onCopy}
       className="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs hover:bg-accent"
-      title={copied ? "Copied" : "Copy share link"}
+      title={
+        copied
+          ? tx("share:features.shareDialog.copied")
+          : tx("share:features.copyLinkButton.copyShareLink")
+      }
     >
       {copied ? (
         <Check className="h-3 w-3 text-success" />
       ) : (
         <LinkIcon className="h-3 w-3" />
       )}
-      {copied ? "Copied" : "Link"}
+      {copied
+        ? tx("share:features.shareDialog.copied")
+        : tx("share:features.copyLinkButton.link")}
     </button>
   );
 }

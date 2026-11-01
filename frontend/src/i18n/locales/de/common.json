@@ -414,5 +414,218 @@
     "points_one": "Verlauf — {{count}} Datenpunkt",
     "points_other": "Verlauf — {{count}} Datenpunkte",
     "reference": "Referenzbereich (schattiert): {{low}}–{{high}}"
+  },
+  "features": {
+    "reportSlot": {
+      "thePdfDocumentStaysInThePatientS": "Das PDF-Dokument bleibt in der Dokumentliste des Patienten erhalten – nur die Verknüpfung mit dieser Bildgebungsstudie wird entfernt. Sie können es oder eine andere Datei jederzeit erneut anhängen.",
+      "radiologyReport": "Radiologischer Befund",
+      "uploadADifferentPdfAndReplaceTheCurrent": "Eine andere PDF hochladen und die aktuelle ersetzen",
+      "uploading": "Wird hochgeladen...",
+      "replaceWithPdf": "Durch PDF ersetzen",
+      "pickADifferentExistingPdf": "Eine andere vorhandene PDF auswählen",
+      "pickDifferentPdf": "Andere PDF auswählen",
+      "removeTheReportFromThisStudyThePdf": "Befund von dieser Studie entfernen (die PDF bleibt unter Dokumente erhalten)",
+      "searchPdfsForThisPatient": "PDFs dieses Patienten suchen...",
+      "noPdfsFoundForThisPatient": "Keine PDFs für diesen Patienten gefunden",
+      "noType": "kein Typ",
+      "noDate": "kein Datum",
+      "useThis": "Auswählen",
+      "noReportAttachedYet": "Noch kein Befund angehängt",
+      "uploadTheDoctorSPdfReportOrPick": "Laden Sie den ärztlichen PDF-Befund hoch oder wählen Sie ein vorhandenes Dokument dieses Patienten aus.",
+      "uploadPdf": "PDF hochladen",
+      "pickExistingPdf": "Vorhandene PDF auswählen",
+      "attach": "Anhängen"
+    },
+    "navDrawer": {
+      "asclepiusV": "Asclepius v{{value0}}"
+    },
+    "pipelineProgress": {
+      "pipelineStopped": "Verarbeitung angehalten",
+      "pipelineIdle": "Verarbeitung im Leerlauf",
+      "lastProcessed": "Zuletzt verarbeitet: {{value0}}",
+      "noDocumentsInFlight": "Keine Dokumente in Verarbeitung",
+      "part0Part0ProcessedPart1Part1Part2Part2Errors": "<part0>{{value0}}</part0> verarbeitet <part1>|</part1> <part2>{{value1}}</part2> Fehler",
+      "processed": "Verarbeitet",
+      "errors": "Fehler",
+      "flow": "Ablauf: {{value0}}",
+      "document": "Dokument #{{value0}}",
+      "unknown": "(unbekannt)",
+      "pipelineStageOf": "Verarbeitung · Schritt {{value0}} von {{value1}}",
+      "pipeline": "Verarbeitung",
+      "details": "Details",
+      "pageOf": "{{value0}}Seite {{value1}} von {{value2}}",
+      "queue": "Warteschlange",
+      "waiting": "{{value0}} wartend",
+      "moreQueued": "+ {{value0}} weitere eingereiht",
+      "models": "Modelle"
+    },
+    "multiSelect": {
+      "filterBy": "Nach {{value0}} filtern"
+    },
+    "selectionOverlay": {
+      "resizeSelection": "Auswahlgröße ändern ({{value0}})"
+    },
+    "pipelineStages": {
+      "visionLlm": "Vision-LLM",
+      "ocrLlm": "OCR + LLM"
+    },
+    "chat": {
+      "documentsTheAssistantCitesWillShowUpHere": "Vom Assistenten zitierte Dokumente werden hier angezeigt.",
+      "selectAPatientToStartAConversation": "Wählen Sie einen Patienten, um ein Gespräch zu beginnen",
+      "sources": "Quellen (",
+      "startNewChat": "Neuen Chat starten",
+      "askAQuestionAboutSMedicalHistory": "Stellen Sie eine Frage zur Krankengeschichte von {{value0}}",
+      "sources2": "Quellen",
+      "openDocument": "Dokument öffnen",
+      "thinking": "Antwort wird erstellt...",
+      "askAboutMedicalHistory": "Zur Krankengeschichte fragen...",
+      "send": "Senden",
+      "sourceDocuments": "Quelldokumente",
+      "sourceDocuments2": "Quelldokumente ({{value0}})"
+    },
+    "dashboard": {
+      "totalDocuments": "Dokumente insgesamt",
+      "recentErrors": "Letzte Fehler",
+      "recentDocuments": "Neueste Dokumente",
+      "viewAll": "Alle anzeigen",
+      "noDocumentsYetDropFilesIntoTheInbox": "Noch keine Dokumente. Legen Sie zuerst Dateien im Posteingang ab."
+    },
+    "fileBrowser": {
+      "moveFolder": "Ordner verschieben",
+      "moveFile": "Datei verschieben",
+      "deleteFile": "Datei löschen",
+      "filterFiles": "Dateien filtern...",
+      "refresh": "Aktualisieren",
+      "vaultRoot": "Stammverzeichnis der Dateiablage",
+      "move": "Verschieben",
+      "folder": "(Ordner)",
+      "editTheDestinationPathTheMatchingDocumentRecord": "Bearbeiten Sie den Zielpfad. Der passende Dokumenteintrag und seine untergeordneten Datensätze werden mitverschoben, damit vorhandene Verweise erhalten bleiben.",
+      "from": "Von",
+      "to": "Nach",
+      "patientsGiovi202620260101ConsultationPdf": "patients/giovi/2026/20260101_consultation.pdf",
+      "moving": "Wird verschoben...",
+      "noFilesFoundInVault": "Keine Dateien in der Ablage gefunden",
+      "uploadedDocumentsAreFiledHereAutomaticallyOnceThey": "Hochgeladene Dokumente werden nach der Verarbeitung automatisch hier abgelegt.",
+      "itemS_one": "{{count, number}} Eintrag",
+      "itemS_other": "{{count, number}} Einträge"
+    },
+    "search": {
+      "searchAcrossAllDocumentsLabResultsAndNotes": "Alle Dokumente, Laborwerte und Notizen durchsuchen...",
+      "resultFound_one": "{{count, number}} Ergebnis gefunden",
+      "resultFound_other": "{{count, number}} Ergebnisse gefunden"
+    },
+    "unclassified": {
+      "unclassified": "nicht zugeordnet",
+      "allDocumentsAreClassified": "Alle Dokumente sind zugeordnet.",
+      "assignToPatient": "Patienten zuweisen",
+      "assignToPatient2": "Patienten zuweisen..."
+    },
+    "extra": {
+      "cannotCancelUpload": "Upload-Aufträge können noch nicht aus der Warteschlange entfernt werden",
+      "cancelExtraction": "Diese Extraktion abbrechen",
+      "removeFromQueue": "Aus Warteschlange entfernen",
+      "active": "Aktiv",
+      "idle": "Leerlauf",
+      "stopped": "Angehalten",
+      "enums": {
+        "eventType": {
+          "symptom": "Symptom",
+          "diagnosis": "Diagnose",
+          "hospitalization": "Krankenhausaufenthalt",
+          "surgery": "Operation",
+          "treatment": "Behandlung",
+          "follow_up": "Nachkontrolle",
+          "emergency": "Notfall",
+          "pregnancy": "Schwangerschaft",
+          "chronic_condition": "Chronische Erkrankung",
+          "injury": "Verletzung",
+          "screening": "Vorsorge",
+          "other": "Andere"
+        },
+        "role": {
+          "admin": "Administrator",
+          "editor": "Bearbeiter",
+          "viewer": "Betrachter",
+          "owner": "Eigentümer"
+        },
+        "language": {
+          "English": "Englisch",
+          "Italian": "Italienisch",
+          "German": "Deutsch",
+          "French": "Französisch",
+          "Spanish": "Spanisch",
+          "Russian": "Russisch",
+          "Portuguese": "Portugiesisch",
+          "Dutch": "Niederländisch",
+          "Polish": "Polnisch",
+          "Romanian": "Rumänisch",
+          "Czech": "Tschechisch"
+        },
+        "linkType": {
+          "related": "Zugehörig",
+          "invoice_for": "Rechnung zu",
+          "report_for": "Befund zu",
+          "imaging_for": "Bildgebung zu",
+          "follow_up": "Nachkontrolle"
+        },
+        "shareStatus": {
+          "active": "Aktiv",
+          "expired": "Abgelaufen",
+          "revoked": "Widerrufen"
+        },
+        "normalization": {
+          "doctors": "Ärzte",
+          "facilities": "Einrichtungen",
+          "specialties": "Fachgebiete",
+          "lab_tests": "Laboruntersuchungen",
+          "diagnoses": "Diagnosen",
+          "medications": "Medikamente"
+        },
+        "normalizationSingular": {
+          "doctors": "Arzt",
+          "facilities": "Einrichtung",
+          "specialties": "Fachgebiet"
+        },
+        "flow": {
+          "ocr_llm": "OCR + LLM",
+          "vision_llm": "Vision-LLM",
+          "ocr_only": "Nur OCR",
+          "llm_only": "Nur LLM"
+        },
+        "modality": {
+          "CT": "CT",
+          "MR": "MRT",
+          "US": "Ultraschall",
+          "XR": "Röntgen",
+          "CR": "Röntgen (Speicherfolie)",
+          "DX": "Röntgen (digital)",
+          "MG": "Mammografie",
+          "PT": "PET",
+          "NM": "Nuklearmedizin",
+          "RF": "Durchleuchtung",
+          "OT": "Andere",
+          "unknown": "Unbekannt"
+        },
+        "sectionType": {
+          "lab_results_page": "Laborwertseite",
+          "clinical_notes": "Klinische Notizen",
+          "nursing_notes": "Pflegenotizen",
+          "vital_signs": "Vitalzeichen",
+          "consent_form": "Einwilligung",
+          "cover_page": "Deckblatt",
+          "medication_chart": "Medikationsplan",
+          "operative_notes": "Operationsnotizen",
+          "discharge_summary": "Entlassungszusammenfassung",
+          "imaging_report": "Bildgebender Befund",
+          "correspondence": "Korrespondenz",
+          "invoice_page": "Rechnungsseite"
+        }
+      },
+      "documentCount_one": "{{count, number}} Dokument",
+      "documentCount_other": "{{count, number}} Dokumente",
+      "providerDefault": "Standard (höchste Priorität)",
+      "metricsStages": "Schritte: {{stages}}",
+      "pipelineStageCount": "Schritt {{current}} von {{total}}"
+    }
   }
 }

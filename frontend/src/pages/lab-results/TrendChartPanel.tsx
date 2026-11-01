@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
 import {
   Check,
@@ -20,6 +21,16 @@ import type { LabRow } from "./types";
  * matching the original ``canonicalOptions.length > 0`` render gate.
  */
 export function TrendChartPanel({ rows }: { rows: LabRow[] }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [chartOpen, setChartOpen] = useState(false);
   const [chartSearch, setChartSearch] = useState("");
@@ -97,15 +108,18 @@ export function TrendChartPanel({ rows }: { rows: LabRow[] }) {
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         )}
         <LineChartIcon className="h-4 w-4 text-primary" />
-        <span>Trend chart</span>
+        <span>{tx("clinical:features.trendChartPanel.trendChart")}</span>
         {selectedCodes.length > 0 && (
           <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
-            {selectedCodes.length} selected
+            {tx("clinical:features.trendChartPanel.selected", {
+              value0: selectedCodes.length,
+            })}
           </span>
         )}
         <span className="ml-auto text-xs text-muted-foreground">
-          {canonicalOptions.length} test
-          {canonicalOptions.length === 1 ? "" : "s"} available
+          {tx("clinical:features.trendChartPanel.testAvailable", {
+            count: canonicalOptions.length,
+          })}
         </span>
       </button>
       {chartOpen && (
@@ -122,7 +136,7 @@ export function TrendChartPanel({ rows }: { rows: LabRow[] }) {
                   <button
                     onClick={() => toggleCode(opt.code)}
                     className="rounded-full hover:bg-primary/20"
-                    title="Remove"
+                    title={tx("clinical:features.trendChartPanel.remove")}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -132,7 +146,7 @@ export function TrendChartPanel({ rows }: { rows: LabRow[] }) {
                 onClick={() => setSelectedCodes([])}
                 className="rounded-full px-2 py-0.5 text-xs text-muted-foreground hover:text-foreground"
               >
-                clear all
+                {tx("clinical:features.trendChartPanel.clearAll")}
               </button>
             </div>
           )}
@@ -145,7 +159,9 @@ export function TrendChartPanel({ rows }: { rows: LabRow[] }) {
                 type="text"
                 value={chartSearch}
                 onChange={(e) => setChartSearch(e.target.value)}
-                placeholder="Search lab tests..."
+                placeholder={tx(
+                  "clinical:features.trendChartPanel.searchLabTests",
+                )}
                 className="w-full rounded-md border bg-background py-1.5 pl-7 pr-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -153,7 +169,9 @@ export function TrendChartPanel({ rows }: { rows: LabRow[] }) {
               onClick={() => setShowAllTests((v) => !v)}
               className="whitespace-nowrap rounded-md border px-2.5 py-1.5 text-xs hover:bg-accent"
             >
-              {showAllTests ? "Hide list" : "Show all"}
+              {showAllTests
+                ? tx("clinical:features.trendChartPanel.hideList")
+                : tx("clinical:features.trendChartPanel.showAll")}
             </button>
           </div>
 
@@ -188,7 +206,9 @@ export function TrendChartPanel({ rows }: { rows: LabRow[] }) {
           )}
           {chartSearch.trim() && filteredChartOptions.length === 0 && (
             <div className="rounded-md border px-3 py-2 text-xs text-muted-foreground">
-              No tests match "{chartSearch}".
+              {tx("clinical:features.trendChartPanel.noTestsMatch", {
+                value0: chartSearch,
+              })}
             </div>
           )}
 

@@ -1,3 +1,5 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { useTranslation } from "react-i18next";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -25,23 +27,8 @@ import Sheet from "@/components/ui/Sheet";
 import { useColumnPrefs } from "@/lib/columnPrefs";
 import type { ListResponse } from "@/types";
 
-const MODALITY_LABELS: Record<string, string> = {
-  CT: "CT scan",
-  MR: "MRI",
-  US: "Ultrasound",
-  XR: "X-ray",
-  CR: "X-ray (computed)",
-  DX: "X-ray (digital)",
-  MG: "Mammography",
-  PT: "PET",
-  NM: "Nuclear medicine",
-  RF: "Fluoroscopy",
-  OT: "Other",
-};
-function modalityLabel(code: string | null | undefined): string {
-  if (!code) return "Unknown";
-  return MODALITY_LABELS[code.toUpperCase()] || code;
-}
+const modalityLabel = (code: string | null | undefined) =>
+  enumLabel("modality", code?.toUpperCase() || "unknown");
 
 /** Title-case DICOM-source strings that arrive in ALL CAPS. */
 function niceCase(s: string | null | undefined): string {
@@ -101,6 +88,16 @@ function ReportBadge({ status }: { status: Study["report_status"] }) {
  * table collapses to a card list and the filter controls move into a Sheet.
  */
 export default function ImagingPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { selectedPatient } = usePatient();
   const navigate = useNavigate();
   const [items, setItems] = useState<Study[]>([]);
@@ -203,14 +200,16 @@ export default function ImagingPage() {
     <Select
       value={modalityFilter}
       onChange={(e) => setModalityFilter(e.target.value)}
-      aria-label="Imaging type"
+      aria-label={tx("clinical:features.imaging.imagingType")}
     >
-      <option value="">All types</option>
-      {Object.entries(MODALITY_LABELS).map(([code, label]) => (
-        <option key={code} value={code}>
-          {label} ({code})
-        </option>
-      ))}
+      <option value="">{tx("clinical:features.imaging.allTypes")}</option>
+      {["CT", "MR", "US", "XR", "CR", "DX", "MG", "PT", "NM", "RF", "OT"].map(
+        (code) => (
+          <option key={code} value={code}>
+            {modalityLabel(code)} ({code})
+          </option>
+        ),
+      )}
     </Select>
   );
 
@@ -218,11 +217,13 @@ export default function ImagingPage() {
     <Select
       value={reportStatusFilter}
       onChange={(e) => setReportStatusFilter(e.target.value as any)}
-      aria-label="Report status"
+      aria-label={tx("clinical:features.imaging.reportStatus")}
     >
-      <option value="">All reports</option>
-      <option value="attached">Report attached</option>
-      <option value="placeholder">Report pending</option>
+      <option value="">{tx("clinical:features.imaging.allReports")}</option>
+      <option value="attached">{tx("common:feedback.reportAttached")}</option>
+      <option value="placeholder">
+        {tx("clinical:features.imaging.reportPending")}
+      </option>
     </Select>
   );
 
@@ -244,7 +245,9 @@ export default function ImagingPage() {
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search body part, facility, doctor, description..."
+            placeholder={tx(
+              "clinical:features.imaging.searchBodyPartFacilityDoctorDescription",
+            )}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
@@ -256,38 +259,56 @@ export default function ImagingPage() {
           <Select
             value={modalityFilter}
             onChange={(e) => setModalityFilter(e.target.value)}
-            aria-label="Imaging type"
+            aria-label={tx("clinical:features.imaging.imagingType")}
             className="w-auto"
           >
-            <option value="">All types</option>
-            {Object.entries(MODALITY_LABELS).map(([code, label]) => (
+            <option value="">{tx("clinical:features.imaging.allTypes")}</option>
+            {[
+              "CT",
+              "MR",
+              "US",
+              "XR",
+              "CR",
+              "DX",
+              "MG",
+              "PT",
+              "NM",
+              "RF",
+              "OT",
+            ].map((code) => (
               <option key={code} value={code}>
-                {label} ({code})
+                {modalityLabel(code)} ({code})
               </option>
             ))}
           </Select>
           <Select
             value={reportStatusFilter}
             onChange={(e) => setReportStatusFilter(e.target.value as any)}
-            aria-label="Report status"
+            aria-label={tx("clinical:features.imaging.reportStatus")}
             className="w-auto"
           >
-            <option value="">All reports</option>
-            <option value="attached">Report attached</option>
-            <option value="placeholder">Report pending</option>
+            <option value="">
+              {tx("clinical:features.imaging.allReports")}
+            </option>
+            <option value="attached">
+              {tx("common:feedback.reportAttached")}
+            </option>
+            <option value="placeholder">
+              {tx("clinical:features.imaging.reportPending")}
+            </option>
           </Select>
           <Input
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            aria-label="From date"
+            aria-label={tx("clinical:features.imaging.fromDate")}
             className="w-auto"
           />
           <Input
             type="date"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            aria-label="To date"
+            aria-label={tx("clinical:features.imaging.toDate")}
             className="w-auto"
           />
         </div>
@@ -300,7 +321,7 @@ export default function ImagingPage() {
           onClick={() => setFiltersOpen(true)}
         >
           <SlidersHorizontal className="h-4 w-4" />
-          Filters
+          {tx("clinical:features.imaging.filters")}{" "}
           {activeFilterCount > 0 && (
             <Badge variant="info" size="sm">
               {activeFilterCount}
@@ -313,14 +334,16 @@ export default function ImagingPage() {
           size="md"
           onClick={() => setShowUpload((v) => !v)}
         >
-          {showUpload ? "Hide upload" : "Upload"}
+          {showUpload
+            ? tx("clinical:features.imaging.hideUpload")
+            : tx("common:actions.upload")}
         </Button>
       </div>
 
       <Sheet
         open={filtersOpen}
         onOpenChange={setFiltersOpen}
-        title="Filters"
+        title={tx("clinical:features.imaging.filters")}
         footer={
           <>
             <Button
@@ -329,25 +352,27 @@ export default function ImagingPage() {
               onClick={clearFilters}
               disabled={activeFilterCount === 0}
             >
-              Clear filters
+              {tx("clinical:features.imaging.clearFilters")}
             </Button>
             <Button size="md" onClick={() => setFiltersOpen(false)}>
-              Done
+              {tx("common:status.done")}
             </Button>
           </>
         }
       >
         <div className="space-y-4 pt-1">
-          <Field label="Type">{modalitySelect}</Field>
-          <Field label="Report">{reportStatusSelect}</Field>
-          <Field label="From date">
+          <Field label={tx("common:columns.type")}>{modalitySelect}</Field>
+          <Field label={tx("common:columns.report")}>
+            {reportStatusSelect}
+          </Field>
+          <Field label={tx("clinical:features.imaging.fromDate")}>
             <Input
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
             />
           </Field>
-          <Field label="To date">
+          <Field label={tx("clinical:features.imaging.toDate")}>
             <Input
               type="date"
               value={dateTo}
@@ -375,8 +400,11 @@ export default function ImagingPage() {
       {total > PAGE_SIZE && (
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
-            Showing {page * PAGE_SIZE + 1}-
-            {Math.min((page + 1) * PAGE_SIZE, total)} of {total}
+            {tx("clinical:features.imaging.showingOf", {
+              value0: page * PAGE_SIZE + 1,
+              value1: Math.min((page + 1) * PAGE_SIZE, total),
+              value2: total,
+            })}
           </span>
           <div className="flex gap-2">
             <Button
@@ -385,7 +413,7 @@ export default function ImagingPage() {
               onClick={() => setPage(Math.max(0, page - 1))}
               disabled={page === 0}
             >
-              Previous
+              {tx("clinical:features.imaging.previous")}
             </Button>
             <Button
               variant="secondary"
@@ -393,7 +421,7 @@ export default function ImagingPage() {
               onClick={() => setPage(page + 1)}
               disabled={(page + 1) * PAGE_SIZE >= total}
             >
-              Next
+              {tx("clinical:features.imaging.next")}
             </Button>
           </div>
         </div>
@@ -419,7 +447,7 @@ function cellContent(
     case "modality":
       return modalityLabel(s.modality);
     case "body_part":
-      return niceCase(s.body_part) || "Unknown";
+      return niceCase(s.body_part) || enumLabel("modality", "unknown");
     case "study_date":
       return s.study_date ? format.formatDate(s.study_date) : "";
     case "facility":
@@ -448,6 +476,16 @@ function ImagingTable({
   toggleSort: (k: string) => void;
   navigate: (p: string) => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const format = useUiFormat();
   const { t: ui } = useTranslation("common");
   const prefs = useColumnPrefs("imaging", IMAGING_DEFAULTS);
@@ -483,8 +521,10 @@ function ImagingTable({
       empty={
         <EmptyState
           icon={ImageIcon}
-          title="No imaging studies found"
-          description="Upload DICOM files or imaging reports and the studies will show up here."
+          title={tx("clinical:features.imaging.noImagingStudiesFound")}
+          description={tx(
+            "clinical:features.imaging.uploadDicomFilesOrImagingReportsAndThe",
+          )}
         />
       }
       renderCard={(s) => (
@@ -502,7 +542,14 @@ function ImagingTable({
             {[
               s.study_date ? format.formatDate(s.study_date) : null,
               s.patient_name,
-              `${s.num_series} series · ${s.num_images} images`,
+              tx("clinical:features.extra.studyCounts", {
+                series: tx("clinical:features.extra.seriesCount", {
+                  count: s.num_series,
+                }),
+                images: tx("clinical:features.extra.imageCount", {
+                  count: s.num_images,
+                }),
+              }),
             ]
               .filter(Boolean)
               .join(" · ")}

@@ -1,7 +1,18 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 
 export default function CopyCodeButton({ code }: { code: string }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [copied, setCopied] = useState(false);
   const onCopy = async () => {
     try {
@@ -16,7 +27,11 @@ export default function CopyCodeButton({ code }: { code: string }) {
     <button
       onClick={onCopy}
       className="rounded p-0.5 hover:bg-accent flex-shrink-0"
-      title={copied ? "Copied" : "Copy code"}
+      title={
+        copied
+          ? tx("share:features.shareDialog.copied")
+          : tx("share:features.shareDialog.copyCode")
+      }
     >
       {copied ? (
         <Check className="h-3 w-3 text-success" />

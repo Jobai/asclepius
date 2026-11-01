@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -30,6 +31,16 @@ export default function AttachedModelRow({
   onRemove,
   onTest,
 }: AttachedModelRowProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const KindIcon =
     m.kind === "vision" ? Eye : m.kind === "ocr" ? ScanText : Brain;
   // Mirrors PROVIDER_BADGE_CLASSES in lib/statusTokens.ts (llm/vision/ocr).
@@ -116,10 +127,14 @@ export default function AttachedModelRow({
       <button
         onClick={onToggle}
         title={
-          m.enabled ? "Enabled, click to disable" : "Disabled, click to enable"
+          m.enabled
+            ? tx("settings:features.attachedModelRow.enabledClickToDisable")
+            : tx("settings:features.attachedModelRow.disabledClickToEnable")
         }
         aria-label={
-          m.enabled ? "Enabled, click to disable" : "Disabled, click to enable"
+          m.enabled
+            ? tx("settings:features.attachedModelRow.enabledClickToDisable")
+            : tx("settings:features.attachedModelRow.disabledClickToEnable")
         }
         className={`flex items-center justify-center rounded-md p-1 ${m.enabled ? "text-success" : "text-muted-foreground"} hover:bg-accent coarse:min-h-11 coarse:min-w-11`}
       >
@@ -132,8 +147,8 @@ export default function AttachedModelRow({
       <button
         onClick={handleTest}
         disabled={testing}
-        title="Test connection"
-        aria-label="Test connection"
+        title={tx("settings:features.attachedModelRow.testConnection")}
+        aria-label={tx("settings:features.attachedModelRow.testConnection")}
         className="flex items-center justify-center rounded-md p-1 text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-50 coarse:min-h-11 coarse:min-w-11"
       >
         {testing ? (
@@ -144,15 +159,15 @@ export default function AttachedModelRow({
       </button>
       <button
         onClick={onEdit}
-        title="Edit model"
-        aria-label="Edit model"
+        title={tx("settings:features.attachedModelRow.editModel")}
+        aria-label={tx("settings:features.attachedModelRow.editModel")}
         className="flex items-center justify-center rounded-md p-1 text-muted-foreground hover:text-foreground hover:bg-accent coarse:min-h-11 coarse:min-w-11"
       >
         <Pencil className="h-3.5 w-3.5" />
       </button>
       <button
         onClick={onRemove}
-        aria-label="Remove model"
+        aria-label={tx("settings:features.attachedModelRow.removeModel")}
         className="flex items-center justify-center rounded-md p-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 coarse:min-h-11 coarse:min-w-11"
       >
         <Trash2 className="h-3.5 w-3.5" />

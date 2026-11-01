@@ -1,3 +1,6 @@
+import { enumLabel } from "@/lib/labels";
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import {
@@ -78,6 +81,16 @@ export default function ShareDialog({
   patientName,
   selectionLabel,
 }: ShareDialogProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const [recipientLabel, setRecipientLabel] = useState("");
   const [recipientContact, setRecipientContact] = useState("");
@@ -261,7 +274,8 @@ export default function ShareDialog({
 
   const docCountLabel =
     documentIds.length === 1
-      ? selectionLabel || `Document #${documentIds[0]}`
+      ? selectionLabel ||
+        tx("share:features.extra.documentId", { id: documentIds[0] })
       : `${documentIds.length} documents`;
 
   return (
@@ -271,18 +285,22 @@ export default function ShareDialog({
         if (!o) onClose();
       }}
       dismissible={false}
-      title="Share with doctor"
+      title={tx("share:features.shareDialog.shareWithDoctor")}
       // Near-full-height bottom sheet on phones (the form + existing-shares
       // list is tall); auto-sized centered dialog from sm up.
       contentClassName="h-[calc(100dvh-3rem)] sm:h-auto sm:max-w-2xl"
     >
       <div className="space-y-4 text-sm">
         <div className="rounded-md border bg-muted/30 px-3 py-2 text-xs">
-          <div className="text-muted-foreground">Sharing:</div>
+          <div className="text-muted-foreground">
+            {tx("share:features.shareDialog.sharing")}
+          </div>
           <div className="font-medium">{docCountLabel}</div>
           {patientName && (
             <div className="text-muted-foreground mt-0.5">
-              Patient: {patientName}
+              {tx("share:features.shareDialog.patient", {
+                value0: patientName,
+              })}
             </div>
           )}
         </div>
@@ -291,18 +309,20 @@ export default function ShareDialog({
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-medium mb-1">
-                Recipient name (shown on watermark + audit log)
+                {tx(
+                  "share:features.shareDialog.recipientNameShownOnWatermarkAuditLog",
+                )}
               </label>
               <Input
                 type="text"
                 value={recipientLabel}
                 onChange={(e) => setRecipientLabel(e.target.value)}
-                placeholder="e.g. Dr. Maria Rossi"
+                placeholder={tx("share:features.shareDialog.eGDrMariaRossi")}
               />
             </div>
             <div>
               <label className="block text-xs font-medium mb-1">
-                OTP delivery
+                {tx("share:features.shareDialog.otpDelivery")}
               </label>
               <div className="flex flex-col gap-1.5 rounded-md border bg-background p-2.5">
                 {/* The whole label is the touch target; coarse:min-h-11
@@ -318,11 +338,12 @@ export default function ShareDialog({
                   />
                   <span>
                     <span className="font-medium">
-                      I'll convey the code myself
+                      {tx("share:features.shareDialog.iLlConveyTheCodeMyself")}
                     </span>{" "}
                     <span className="text-muted-foreground">
-                      — the OTP appears in this dashboard so you can read it
-                      over the phone.
+                      {tx(
+                        "share:features.shareDialog.theOtpAppearsInThisDashboardSoYou",
+                      )}
                     </span>
                   </span>
                 </label>
@@ -340,12 +361,18 @@ export default function ShareDialog({
                   />
                   <span>
                     <span className="font-medium">
-                      Email the code to the recipient
+                      {tx(
+                        "share:features.shareDialog.emailTheCodeToTheRecipient",
+                      )}
                     </span>{" "}
                     <span className="text-muted-foreground">
                       {smtpEnabled
-                        ? "— the OTP is sent automatically. You still send the link separately."
-                        : "— configure SMTP in Settings → Email first."}
+                        ? tx(
+                            "share:features.shareDialog.theOtpIsSentAutomaticallyYouStillSend",
+                          )
+                        : tx(
+                            "share:features.shareDialog.configureSmtpInSettingsEmailFirst",
+                          )}
                     </span>
                   </span>
                 </label>
@@ -354,8 +381,12 @@ export default function ShareDialog({
             <div>
               <label className="block text-xs font-medium mb-1">
                 {otpDelivery === "email"
-                  ? "Recipient email (OTPs will be sent here)"
-                  : "Contact (free-text, for your records only)"}
+                  ? tx(
+                      "share:features.shareDialog.recipientEmailOtpsWillBeSentHere",
+                    )
+                  : tx(
+                      "share:features.shareDialog.contactFreeTextForYourRecordsOnly",
+                    )}
               </label>
               <Input
                 type={otpDelivery === "email" ? "email" : "text"}
@@ -364,13 +395,15 @@ export default function ShareDialog({
                 placeholder={
                   otpDelivery === "email"
                     ? "doctor@example.com"
-                    : "phone, email, or other identifier"
+                    : tx(
+                        "share:features.shareDialog.phoneEmailOrOtherIdentifier",
+                      )
                 }
               />
             </div>
             <div>
               <label className="block text-xs font-medium mb-1">
-                Expires after (days)
+                {tx("share:features.shareDialog.expiresAfterDays")}
               </label>
               <Input
                 type="number"
@@ -389,7 +422,7 @@ export default function ShareDialog({
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <label className="block text-xs font-medium mb-1">
-                  OCR provider for translation
+                  {tx("share:features.shareDialog.ocrProviderForTranslation")}
                 </label>
                 <ProviderSelect
                   kind="ocr"
@@ -400,7 +433,7 @@ export default function ShareDialog({
               </div>
               <div>
                 <label className="block text-xs font-medium mb-1">
-                  LLM provider for translation
+                  {tx("share:features.shareDialog.llmProviderForTranslation")}
                 </label>
                 <ProviderSelect
                   kind="llm"
@@ -419,7 +452,7 @@ export default function ShareDialog({
                 disabled={!patientId || documentIds.length === 0}
                 className="w-full sm:w-auto"
               >
-                Create share link
+                {tx("share:features.shareDialog.createShareLink")}
               </Button>
             </div>
           </div>
@@ -428,7 +461,9 @@ export default function ShareDialog({
         {createResult && (
           <div className="rounded-md border border-primary/40 bg-primary/5 p-3 space-y-2">
             <p className="text-xs font-medium text-primary">
-              Share created. Copy the link below; it is shown only once.
+              {tx(
+                "share:features.shareDialog.shareCreatedCopyTheLinkBelowItIs",
+              )}
             </p>
             <div className="flex items-center gap-1.5">
               <Input
@@ -438,7 +473,11 @@ export default function ShareDialog({
               />
               <IconButton
                 variant="secondary"
-                label={tokenCopied ? "Copied" : "Copy link"}
+                label={
+                  tokenCopied
+                    ? tx("share:features.shareDialog.copied")
+                    : tx("share:features.shareDialog.copyLink")
+                }
                 onClick={onCopyUrl}
                 // h-10 matches the Input primitive's height on fine
                 // pointers; both grow to 44px on coarse.
@@ -454,19 +493,22 @@ export default function ShareDialog({
             <p className="text-xs text-muted-foreground">
               {otpDelivery === "email" ? (
                 <>
-                  Send this link to the doctor. When they open it and request a
-                  code, it will be emailed automatically to{" "}
+                  {tx(
+                    "share:features.shareDialog.sendThisLinkToTheDoctorWhenThey",
+                  )}{" "}
                   <span className="font-mono">
-                    {recipientContact || "(no recipient)"}
+                    {recipientContact ||
+                      tx("share:features.shareDialog.noRecipient")}
                   </span>
-                  . The doctor will need a fresh code each session.
+                  {tx(
+                    "share:features.shareDialog.theDoctorWillNeedAFreshCodeEach",
+                  )}{" "}
                 </>
               ) : (
                 <>
-                  Send this link to the doctor. When they open it, they will
-                  request a 6-digit code which you can read from the list below
-                  and convey to them. The doctor will need a fresh code each
-                  session.
+                  {tx(
+                    "share:features.shareDialog.sendThisLinkToTheDoctorWhenThey2",
+                  )}
                 </>
               )}
             </p>
@@ -476,10 +518,12 @@ export default function ShareDialog({
         {patientId && (
           <div className="border-t pt-4">
             <h3 className="text-xs font-semibold uppercase text-muted-foreground mb-2">
-              Existing shares for this patient
+              {tx("share:features.shareDialog.existingSharesForThisPatient")}
             </h3>
             {shares.length === 0 ? (
-              <p className="text-xs text-muted-foreground">No shares yet.</p>
+              <p className="text-xs text-muted-foreground">
+                {tx("share:features.shareDialog.noSharesYet")}
+              </p>
             ) : (
               <ul className="space-y-2">
                 {shares.map((s) => {
@@ -499,19 +543,24 @@ export default function ShareDialog({
                       <div className="flex-1 min-w-0">
                         <div className="font-medium">{s.recipient_label}</div>
                         <div className="text-muted-foreground">
-                          {s.document_count} doc
-                          {s.document_count !== 1 ? "s" : ""} · expires{" "}
-                          {s.expires_at} · {status}
+                          {tx("share:features.shareDialog.docExpires", {
+                            value2: s.expires_at,
+                            value3: enumLabel("shareStatus", status),
+                            count: s.document_count,
+                          })}
                         </div>
                         {!isRevoked &&
                           !isExpired &&
                           s.otp_delivery === "email" && (
                             <div className="mt-1.5 text-xs text-muted-foreground italic">
-                              Code emailed to{" "}
-                              <span className="font-mono">
-                                {s.recipient_contact}
-                              </span>
-                              . The admin can't read it back.
+                              <FeatureTrans
+                                ns="share"
+                                i18nKey="features.shareDialog.codeEmailedToPart0Part0TheAdminCan"
+                                components={{
+                                  part0: <span className="font-mono" />,
+                                }}
+                                values={{ value0: s.recipient_contact }}
+                              />
                             </div>
                           )}
                         {!isRevoked &&
@@ -523,13 +572,16 @@ export default function ShareDialog({
                                   {loadingOtp[s.id] ? (
                                     <span className="inline-flex items-center gap-2 text-xs text-muted-foreground italic font-sans tracking-normal">
                                       <Loader2 className="h-3 w-3 animate-spin" />
-                                      Loading code...
+                                      {tx(
+                                        "share:features.shareDialog.loadingCode",
+                                      )}{" "}
                                     </span>
                                   ) : (
                                     activeOtps[s.id]?.code || (
                                       <span className="text-xs text-muted-foreground italic font-sans tracking-normal">
-                                        No active code; ask the doctor to
-                                        request one
+                                        {tx(
+                                          "share:features.shareDialog.noActiveCodeAskTheDoctorToRequest",
+                                        )}
                                       </span>
                                     )
                                   )}
@@ -540,8 +592,10 @@ export default function ShareDialog({
                                   size="sm"
                                   onClick={() => onRevealOtp(s.id)}
                                 >
-                                  <Eye className="h-3 w-3" aria-hidden /> Show
-                                  active code
+                                  <Eye className="h-3 w-3" aria-hidden />{" "}
+                                  {tx(
+                                    "share:features.shareDialog.showActiveCode",
+                                  )}{" "}
                                 </Button>
                               )}
                               {revealOtp[s.id] && !loadingOtp[s.id] && (
@@ -552,14 +606,18 @@ export default function ShareDialog({
                                     />
                                   )}
                                   <IconButton
-                                    label="Refetch code"
+                                    label={tx(
+                                      "share:features.shareDialog.refetchCode",
+                                    )}
                                     size="sm"
                                     onClick={() => onRevealOtp(s.id)}
                                   >
                                     <RefreshCw className="h-3 w-3" />
                                   </IconButton>
                                   <IconButton
-                                    label="Hide code"
+                                    label={tx(
+                                      "share:features.shareDialog.hideCode",
+                                    )}
                                     size="sm"
                                     onClick={() =>
                                       setRevealOtp((r) => ({
@@ -583,19 +641,22 @@ export default function ShareDialog({
                             onClick={() => onAddToShare(s.id)}
                             disabled={addingTo !== null}
                             className="border-primary/40 text-primary hover:bg-primary/5 active:bg-primary/5"
-                            title={`Add the ${docCountLabel} to this share`}
+                            title={tx(
+                              "share:features.shareDialog.addTheToThisShare",
+                              { value0: docCountLabel },
+                            )}
                           >
                             {addingTo === s.id ? (
                               <Loader2 className="h-3 w-3 animate-spin" />
                             ) : (
                               <Plus className="h-3 w-3" />
                             )}
-                            Add these
+                            {tx("share:features.shareDialog.addThese")}{" "}
                           </Button>
                         )}
                         {!isRevoked && (
                           <IconButton
-                            label="Revoke share"
+                            label={tx("share:features.shareDialog.revokeShare")}
                             variant="danger"
                             size="sm"
                             onClick={() => onRevoke(s.id)}
@@ -618,6 +679,16 @@ export default function ShareDialog({
 }
 
 function CopyOtpInlineButton({ code }: { code: string }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [copied, setCopied] = useState(false);
   const onCopy = async () => {
     try {
@@ -630,7 +701,11 @@ function CopyOtpInlineButton({ code }: { code: string }) {
   };
   return (
     <IconButton
-      label={copied ? "Copied" : "Copy code"}
+      label={
+        copied
+          ? tx("share:features.shareDialog.copied")
+          : tx("share:features.shareDialog.copyCode")
+      }
       size="sm"
       onClick={onCopy}
     >

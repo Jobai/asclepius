@@ -1,12 +1,16 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import OidcTab from "./OidcTab";
 import UsersTab from "./UsersTab";
 import SessionsTab from "./SessionsTab";
 
 const SUB_TABS = [
-  { key: "oidc", label: "OIDC / SSO" },
-  { key: "users", label: "Users" },
-  { key: "sessions", label: "Sessions" },
+  { key: "oidc", labelKey: "settings:features.extra.accessNavigation.oidc" },
+  { key: "users", labelKey: "settings:features.extra.accessNavigation.users" },
+  {
+    key: "sessions",
+    labelKey: "settings:features.extra.accessNavigation.sessions",
+  },
 ] as const;
 
 type SubTab = (typeof SUB_TABS)[number]["key"];
@@ -18,6 +22,16 @@ function isSubTab(v: string | undefined): v is SubTab {
 }
 
 export default function AccessTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const location = useLocation();
   const navigate = useNavigate();
   const segments = location.pathname.split("/").filter(Boolean); // ['settings', 'access', subtab?, ...]
@@ -41,7 +55,7 @@ export default function AccessTab() {
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
-            {t.label}
+            {tx(t.labelKey)}
           </button>
         ))}
       </div>

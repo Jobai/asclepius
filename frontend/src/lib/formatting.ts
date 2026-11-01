@@ -41,12 +41,24 @@ export function formatClinicalResult(
       : formatClinicalValue(row.value, locale);
 }
 
+export function formatFileSize(bytes: number, locale: string): string {
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let value = bytes,
+    index = 0;
+  while (value >= 1024 && index < units.length - 1) {
+    value /= 1024;
+    index++;
+  }
+  return `${formatNumber(value, locale, { maximumFractionDigits: index === 0 ? 0 : 2 })} ${units[index]}`;
+}
+
 export function useUiFormat() {
   const { t, i18n } = useTranslation("common");
   const locale =
     formattingLocales[i18n.resolvedLanguage === "de" ? "de" : "en"];
   return {
     locale,
+    formatFileSize: (bytes: number) => formatFileSize(bytes, locale),
     formatDate: (value: string | null | undefined) =>
       formatDate(value, locale, t("dates.noDate")),
     formatDocType: (value: string | null | undefined) =>

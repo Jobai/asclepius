@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { useColumnPrefs } from "@/lib/columnPrefs";
 import {
@@ -17,6 +18,16 @@ import { ChevronDown, ChevronUp, RotateCcw } from "lucide-react";
  * Persisted to ``user_view_prefs`` via /api/settings/view-prefs/{view_key}
  * so the choice follows the user across devices. */
 export default function ViewColumnsTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { t: ui } = useTranslation("common");
   return (
     <div className="space-y-6">
@@ -25,8 +36,9 @@ export default function ViewColumnsTab() {
           {ui("ui.tableColumns")}
         </h2>
         <p className="text-sm text-muted-foreground">
-          Pick which columns appear in each list view, and reorder them. Saves
-          automatically.
+          {tx(
+            "settings:features.viewColumnsTab.pickWhichColumnsAppearInEachListView",
+          )}
         </p>
       </div>
 
@@ -51,8 +63,9 @@ export default function ViewColumnsTab() {
       />
 
       <div className="rounded-md border bg-muted/30 p-3 text-xs text-muted-foreground">
-        Lab tests view uses a grouped layout (not a flat column list) and isn't
-        configurable from here yet. It's tracked for the next release.
+        {tx(
+          "settings:features.viewColumnsTab.labTestsViewUsesAGroupedLayoutNot",
+        )}
       </div>
     </div>
   );

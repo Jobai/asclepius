@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -52,6 +53,16 @@ export default function DocumentViewer({
   onSelectionConfirm,
   onSelectionCancel,
 }: DocumentViewerProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const fp = (filePath || "").toLowerCase();
   const fn = (originalFilename || "").toLowerCase();
   const { toast } = useToast();
@@ -201,13 +212,18 @@ export default function DocumentViewer({
       <div className="rounded-lg border p-6 space-y-3">
         <div className="text-center text-muted-foreground space-y-1">
           <FileX2 className="h-12 w-12 mx-auto mb-2 text-warning" />
-          <p className="text-foreground font-medium">File not available</p>
+          <p className="text-foreground font-medium">
+            {tx("documents:features.documentViewer.fileNotAvailable")}
+          </p>
           <p className="text-sm">
-            The document record exists but the file is missing on disk
+            {tx(
+              "documents:features.documentViewer.theDocumentRecordExistsButTheFileIs",
+            )}{" "}
             {filePath ? (
               <>
                 {" "}
-                at <code className="text-xs">{filePath}</code>
+                {tx("documents:features.documentViewer.at")}{" "}
+                <code className="text-xs">{filePath}</code>
               </>
             ) : (
               ""
@@ -215,7 +231,11 @@ export default function DocumentViewer({
             .
           </p>
           {scanning && (
-            <p className="text-xs">Scanning the vault for a matching file...</p>
+            <p className="text-xs">
+              {tx(
+                "documents:features.documentViewer.scanningTheVaultForAMatchingFile",
+              )}
+            </p>
           )}
         </div>
 
@@ -223,7 +243,9 @@ export default function DocumentViewer({
         {candidates !== null && candidates.length > 0 && (
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground">
-              Possible matches found in the vault — click to relink:
+              {tx(
+                "documents:features.documentViewer.possibleMatchesFoundInTheVaultClickTo",
+              )}
             </p>
             <div className="max-h-40 overflow-y-auto rounded-md border divide-y">
               {candidates.map((c) => (
@@ -251,8 +273,10 @@ export default function DocumentViewer({
               to={`/imaging/${imagingStudyId}`}
               className="flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90"
             >
-              <ImageIcon className="h-4 w-4" /> Open in Imaging view to attach a
-              report
+              <ImageIcon className="h-4 w-4" />{" "}
+              {tx(
+                "documents:features.documentViewer.openInImagingViewToAttachAReport",
+              )}{" "}
             </Link>
           ) : (
             <>
@@ -261,14 +285,16 @@ export default function DocumentViewer({
                 disabled={busy}
                 className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
-                <Search className="h-4 w-4" /> Pick file from vault
+                <Search className="h-4 w-4" />{" "}
+                {tx("documents:features.documentViewer.pickFileFromVault")}{" "}
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={busy}
                 className="flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
               >
-                <Upload className="h-4 w-4" /> Upload replacement
+                <Upload className="h-4 w-4" />{" "}
+                {tx("documents:features.documentViewer.uploadReplacement")}{" "}
               </button>
               <input
                 ref={fileInputRef}
@@ -297,7 +323,9 @@ export default function DocumentViewer({
                   type="text"
                   value={pickerSearch}
                   onChange={(e) => setPickerSearch(e.target.value)}
-                  placeholder="Filter files..."
+                  placeholder={tx(
+                    "documents:features.documentViewer.filterFiles",
+                  )}
                   className="w-full rounded-md border bg-background pl-7 pr-2 py-1.5 text-xs"
                 />
               </div>
@@ -309,7 +337,9 @@ export default function DocumentViewer({
               </button>
             </div>
             {filteredPicker.length === 0 ? (
-              <p className="text-xs text-muted-foreground">No files match.</p>
+              <p className="text-xs text-muted-foreground">
+                {tx("documents:features.documentViewer.noFilesMatch")}
+              </p>
             ) : (
               <div className="max-h-60 overflow-y-auto divide-y rounded-md border">
                 {filteredPicker.slice(0, 200).map((p) => (
@@ -364,17 +394,21 @@ export default function DocumentViewer({
       <div className="rounded-lg border p-8 text-center text-muted-foreground space-y-2">
         <ImageIcon className="h-12 w-12 mx-auto mb-2 text-primary" />
         <p className="text-foreground font-medium">
-          This document is the report for an imaging study
+          {tx(
+            "documents:features.documentViewer.thisDocumentIsTheReportForAnImaging",
+          )}
         </p>
         <p className="text-sm">
-          Open the Imaging view to scroll through the DICOM frames, attach a PDF
-          report, or change contrast on MRI series.
+          {tx(
+            "documents:features.documentViewer.openTheImagingViewToScrollThroughThe",
+          )}
         </p>
         <Link
           to={`/imaging/${imagingStudyId}`}
           className="inline-flex items-center gap-1 mt-2 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90"
         >
-          <ImageIcon className="h-4 w-4" /> Open in Imaging view
+          <ImageIcon className="h-4 w-4" />{" "}
+          {tx("documents:features.documentViewer.openInImagingView")}{" "}
         </Link>
       </div>
     );
@@ -382,14 +416,19 @@ export default function DocumentViewer({
   return (
     <div className="rounded-lg border p-8 text-center text-muted-foreground">
       <FileText className="h-12 w-12 mx-auto mb-2" />
-      <p>Preview not available for this file type</p>
+      <p>
+        {tx(
+          "documents:features.documentViewer.previewNotAvailableForThisFileType",
+        )}
+      </p>
       <a
         href={`/api/documents/${id}/file`}
         target="_blank"
         rel="noreferrer"
         className="inline-flex items-center gap-1 mt-2 text-sm text-primary hover:underline"
       >
-        <Download className="h-4 w-4" /> Download file
+        <Download className="h-4 w-4" />{" "}
+        {tx("documents:features.documentViewer.downloadFile")}{" "}
       </a>
     </div>
   );

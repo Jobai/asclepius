@@ -1,3 +1,5 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -21,6 +23,16 @@ import { useEventsPage } from "./events/useEventsPage";
 import type { LinkedDocument, MedicalEvent, MedicalEventDetail } from "@/types";
 
 export default function EventsPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { selectedPatient } = usePatient();
   const confirm = useConfirm();
   const { events, loading, loadEvents } = useEventsPage(selectedPatient);
@@ -150,14 +162,15 @@ export default function EventsPage() {
             onClick={() => setShowCreate(!showCreate)}
             className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
           >
-            <Plus className="h-4 w-4" /> New Event
+            <Plus className="h-4 w-4" />{" "}
+            {tx("clinical:features.events.newEvent")}{" "}
           </button>
         </div>
       )}
 
       {!selectedPatient && (
         <p className="text-muted-foreground">
-          Select a patient to view medical events.
+          {tx("clinical:features.events.selectAPatientToViewMedicalEvents")}
         </p>
       )}
 
@@ -176,11 +189,14 @@ export default function EventsPage() {
 
       {/* Events list */}
       {loading ? (
-        <p className="text-muted-foreground">Loading...</p>
+        <p className="text-muted-foreground">{tx("common:ui.loading")}</p>
       ) : events.length === 0 ? (
         <p className="text-muted-foreground">
-          No medical events yet.
-          {selectedPatient && " Create one to start organizing documents."}
+          {tx("clinical:features.events.noMedicalEventsYet", {
+            value0: selectedPatient
+              ? tx("clinical:features.extra.createEventHint")
+              : "",
+          })}
         </p>
       ) : (
         <div className="space-y-2">
@@ -197,11 +213,11 @@ export default function EventsPage() {
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{event.title}</span>
                     <span className="rounded-full bg-muted px-2 py-0.5 text-[10px]">
-                      {event.event_type.replace(/_/g, " ")}
+                      {enumLabel("eventType", event.event_type)}
                     </span>
                     {!!event.is_ongoing && (
                       <span className="rounded-full bg-warning-soft px-2 py-0.5 text-[10px] text-warning">
-                        ongoing
+                        {tx("clinical:features.events.ongoing")}
                       </span>
                     )}
                     {event.severity && (
@@ -220,7 +236,11 @@ export default function EventsPage() {
                     {event.diagnosis_text && (
                       <span>{event.diagnosis_text}</span>
                     )}
-                    <span>{event.document_count || 0} document(s)</span>
+                    <span>
+                      {tx("clinical:features.events.documentS", {
+                        count: event.document_count || 0,
+                      })}
+                    </span>
                   </div>
                 </div>
                 {expandedId === event.id ? (
@@ -256,7 +276,7 @@ export default function EventsPage() {
                       {/* Linked documents */}
                       <div>
                         <h4 className="text-sm font-medium mb-2">
-                          Linked Documents
+                          {tx("clinical:features.events.linkedDocuments")}
                         </h4>
                         {eventDetail.documents?.length > 0 ? (
                           <div className="space-y-1">
@@ -273,7 +293,7 @@ export default function EventsPage() {
                                       {doc.original_filename}
                                     </span>
                                     <span className="shrink-0 text-muted-foreground">
-                                      {doc.doc_type?.replace(/_/g, " ")}
+                                      {enumLabel("docType", doc.doc_type)}
                                     </span>
                                   </span>
                                   <span className="flex items-center gap-2 pl-5 sm:pl-0">
@@ -292,7 +312,9 @@ export default function EventsPage() {
                           </div>
                         ) : (
                           <p className="text-xs text-muted-foreground">
-                            No documents linked yet.
+                            {tx(
+                              "clinical:features.events.noDocumentsLinkedYet",
+                            )}
                           </p>
                         )}
                       </div>
@@ -302,18 +324,20 @@ export default function EventsPage() {
                           onClick={() => startEdit(event)}
                           className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs hover:bg-accent/30 coarse:min-h-11"
                         >
-                          <Pencil className="h-3 w-3" /> Edit
+                          <Pencil className="h-3 w-3" />{" "}
+                          {tx("clinical:features.labResultsEditor.edit")}{" "}
                         </button>
                         <button
                           onClick={() => handleDelete(event.id)}
                           className="flex items-center gap-1 rounded-md border border-destructive/30 px-3 py-1.5 text-xs text-destructive hover:bg-destructive-soft coarse:min-h-11"
                         >
-                          <Trash2 className="h-3 w-3" /> Delete Event
+                          <Trash2 className="h-3 w-3" />{" "}
+                          {tx("clinical:features.events.deleteEvent")}{" "}
                         </button>
                         <Menu>
                           <MenuTrigger asChild>
                             <IconButton
-                              label="More actions"
+                              label={tx("clinical:features.events.moreActions")}
                               variant="secondary"
                               size="sm"
                             >
@@ -325,8 +349,10 @@ export default function EventsPage() {
                               destructive
                               onSelect={() => handleDeleteWithDocs(event.id)}
                             >
-                              <Trash2 className="h-4 w-4" /> Delete Event &
-                              Documents
+                              <Trash2 className="h-4 w-4" />{" "}
+                              {tx(
+                                "clinical:features.events.deleteEventDocuments",
+                              )}{" "}
                             </MenuItem>
                           </MenuContent>
                         </Menu>

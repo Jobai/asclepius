@@ -116,7 +116,7 @@ export function useNormalization() {
     if (selectedIds.size === 0) return;
     let payload: any;
     let sources: number[];
-    let label: string;
+    let label: UiMessage;
     if (batchTargetId === -1) {
       if (!batchNewDisplay.trim()) {
         toast({
@@ -126,7 +126,9 @@ export function useNormalization() {
         return;
       }
       sources = Array.from(selectedIds);
-      label = `new "${batchNewDisplay.trim()}"`;
+      label = message("settings:features.extra.newTarget", {
+        name: batchNewDisplay.trim(),
+      });
       payload = {
         source_ids: sources,
         new_target: {
@@ -137,7 +139,7 @@ export function useNormalization() {
     } else if (batchTargetId) {
       sources = Array.from(selectedIds).filter((id) => id !== batchTargetId);
       if (sources.length === 0) return;
-      label = "the selected target";
+      label = message("settings:features.extra.selectedTarget");
       payload = { source_ids: sources, target_id: batchTargetId };
     } else {
       return;
@@ -149,7 +151,7 @@ export function useNormalization() {
       }),
       description: message(
         "feedback.aliasesAndReferencesWillBeMovedIntoAndTheSource",
-        { value0: String(label) },
+        { value0: label },
       ),
       confirmText: message("feedback.merge"),
       variant: "destructive",
@@ -386,7 +388,7 @@ export function useNormalization() {
 
   const handleMerge = async (sourceId: number, targetId: number) => {
     let payload: any;
-    let label: string;
+    let label: UiMessage;
     if (targetId === -1) {
       if (!rowNewDisplay.trim()) {
         toast({
@@ -395,7 +397,9 @@ export function useNormalization() {
         });
         return;
       }
-      label = `new "${rowNewDisplay.trim()}"`;
+      label = message("settings:features.extra.newTarget", {
+        name: rowNewDisplay.trim(),
+      });
       payload = {
         source_ids: [sourceId],
         new_target: {
@@ -404,14 +408,14 @@ export function useNormalization() {
         },
       };
     } else {
-      label = "the target";
+      label = message("settings:features.extra.target");
       payload = { source_ids: [sourceId], target_id: targetId };
     }
     const ok = await confirm({
       title: message("feedback.mergeThisEntry"),
       description: message(
         "feedback.allAliasesAndReferencesWillBeMovedIntoAndThe",
-        { value0: String(label) },
+        { value0: label },
       ),
       confirmText: message("feedback.merge"),
       variant: "destructive",

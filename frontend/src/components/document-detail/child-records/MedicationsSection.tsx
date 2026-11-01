@@ -1,3 +1,5 @@
+import type { MessageKey } from "@/i18n/messages";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useRef, useState } from "react";
 import api from "@/api/client";
@@ -17,14 +19,32 @@ import {
  * column. ``active_ingredient_original`` is the headline so it always
  * shows; the rest are gated on (a) having a value or (b) the user
  * having explicitly added them via the "+" menu. */
-const MED_FIELDS: Array<{ key: string; label: string }> = [
-  { key: "active_ingredient_original", label: "Active ingredient" },
-  { key: "brand_name", label: "Brand" },
-  { key: "dosage", label: "Dosage" },
-  { key: "form", label: "Form" },
-  { key: "frequency", label: "Frequency" },
-  { key: "duration", label: "Duration" },
-  { key: "quantity", label: "Quantity" },
+const MED_FIELDS: Array<{ key: string; labelKey: MessageKey }> = [
+  {
+    key: "active_ingredient_original",
+    labelKey: "clinical:features.extra.medicationFields.activeIngredient",
+  },
+  {
+    key: "brand_name",
+    labelKey: "clinical:features.extra.medicationFields.brand",
+  },
+  {
+    key: "dosage",
+    labelKey: "clinical:features.extra.medicationFields.dosage",
+  },
+  { key: "form", labelKey: "clinical:features.extra.medicationFields.form" },
+  {
+    key: "frequency",
+    labelKey: "clinical:features.extra.medicationFields.frequency",
+  },
+  {
+    key: "duration",
+    labelKey: "clinical:features.extra.medicationFields.duration",
+  },
+  {
+    key: "quantity",
+    labelKey: "clinical:features.extra.medicationFields.quantity",
+  },
 ];
 
 function MedicationRow({
@@ -36,6 +56,16 @@ function MedicationRow({
   onUpdated: () => void;
   onDelete: () => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   // Fields that have any DB value are always shown. The "+" menu only
   // surfaces the rest, and once a user picks one we keep it visible
   // even before they save anything so they can type into it.
@@ -60,14 +90,18 @@ function MedicationRow({
     <div className="space-y-1">
       <div className="flex items-center gap-2">
         <span className="text-sm font-semibold flex-1 truncate">
-          {med.active_ingredient_original || med.brand_name || "Medication"}
+          {med.active_ingredient_original ||
+            med.brand_name ||
+            tx("clinical:features.medicationsSection.medication")}
         </span>
         <MedFormBadge form={med.form} />
         <button
           onClick={onDelete}
           className="flex flex-shrink-0 items-center justify-center rounded border p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive coarse:min-h-11 coarse:min-w-11"
-          title="Delete medication"
-          aria-label="Delete medication"
+          title={tx("clinical:features.medicationsSection.deleteMedication")}
+          aria-label={tx(
+            "clinical:features.medicationsSection.deleteMedication",
+          )}
         >
           <Trash2 className="h-3.5 w-3.5" />
         </button>
@@ -75,7 +109,7 @@ function MedicationRow({
       {visible.map((f) => (
         <EditableField
           key={f.key}
-          label={f.label}
+          label={tx(f.labelKey)}
           value={med[f.key] || ""}
           field={f.key}
           docId={med.id}
@@ -90,7 +124,7 @@ function MedicationRow({
             className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary"
           >
             <Plus className="h-3 w-3" />
-            Add field
+            {tx("clinical:features.medicationsSection.addField")}{" "}
           </button>
           {pickerOpen && (
             <div className="absolute left-0 top-full z-10 mt-1 min-w-[160px] rounded-md border bg-background shadow-lg">
@@ -103,7 +137,7 @@ function MedicationRow({
                   }}
                   className="block w-full px-3 py-1.5 text-left text-xs hover:bg-accent"
                 >
-                  {f.label}
+                  {tx(f.labelKey)}
                 </button>
               ))}
             </div>
@@ -121,6 +155,16 @@ export function MedicationsSection({
   medications: any[];
   onUpdated?: () => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const confirm = useConfirm();
   const { toast } = useToast();
   const { isMobile } = useBreakpoint();
@@ -146,7 +190,7 @@ export function MedicationsSection({
 
   return (
     <Section
-      title="Medications"
+      title={tx("clinical:features.medicationsSection.medications")}
       icon={Pill}
       sectionId="medications"
       defaultOpen={!isMobile}

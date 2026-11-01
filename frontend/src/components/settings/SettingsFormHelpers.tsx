@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import React, { useState } from "react";
 import api from "@/api/client";
@@ -18,6 +19,16 @@ export function SettingsForm({
   saving: boolean;
   saved: boolean;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   return (
     <div className="rounded-lg border p-4 space-y-4">
       <h3 className="font-medium">{title}</h3>
@@ -28,7 +39,11 @@ export function SettingsForm({
         className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover disabled:opacity-50 coarse:min-h-11"
       >
         {saved ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
-        {saved ? "Saved" : saving ? "Saving..." : "Save"}
+        {saved
+          ? tx("common:messages.saved")
+          : saving
+            ? tx("common:ui.saving")
+            : tx("common:actions.save")}
       </button>
     </div>
   );

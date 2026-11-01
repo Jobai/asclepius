@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- English/German translations across login/setup, patients, documents and viewers,
+  clinical views/charts, chat, files, sharing, and settings. Counts, form validation,
+  upload outcomes, and prompt-editor help follow the selected UI language while
+  medical content, prompt bodies, and API values retain their original form.
+  Added UI-text coverage checks and language-switch regression tests. The public
+  share language selector remains available after the share session ends.
+
 - Compatible API error codes and safe numeric parameters for common authentication,
   authorization, upload, validation, and sharing failures. User-facing errors follow
   the selected English/German UI language, including errors already on screen.
@@ -23,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - English/German/automatic UI-language selectors in the main app, login/setup,
   mobile navigation, shared pages, and a personal Appearance settings section.
   Account preferences synchronize through the existing auth API; guest core and
-  share preferences stay separate. Feature-wide translations follow separately.
+  share preferences stay separate.
 
 ### Changed
 

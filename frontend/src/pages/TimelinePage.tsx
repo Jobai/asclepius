@@ -1,3 +1,6 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
+import { i18n as featureI18n } from "@/i18n";
 import { useTranslation } from "react-i18next";
 import { formatDocType } from "@/lib/utils";
 import { useUiFormat } from "@/lib/formatting";
@@ -22,75 +25,63 @@ interface TimelineDoc {
   event_color: string | null;
 }
 
-const TYPE_COLORS: Record<
-  string,
-  { bg: string; text: string; dot: string; label: string }
-> = {
+const TYPE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
   specialist_report: {
     bg: "bg-primary/10",
     text: "text-primary",
     dot: "bg-primary",
-    label: "Specialist Report",
   },
   discharge: {
     bg: "bg-primary/10",
     text: "text-primary",
     dot: "bg-primary",
-    label: "Discharge",
   },
   surgical_report: {
     bg: "bg-primary/10",
     text: "text-primary",
     dot: "bg-primary",
-    label: "Surgical Report",
   },
   lab_test: {
     bg: "bg-info/10",
     text: "text-info",
     dot: "bg-info",
-    label: "Lab Test",
   },
   invoice: {
     bg: "bg-success/10",
     text: "text-success",
     dot: "bg-success",
-    label: "Invoice",
   },
   imaging_report: {
     bg: "bg-cat-violet/10",
     text: "text-cat-violet",
     dot: "bg-cat-violet",
-    label: "Imaging",
   },
   prescription: {
     bg: "bg-warning/10",
     text: "text-warning",
     dot: "bg-warning",
-    label: "Prescription",
   },
   vaccination: {
     bg: "bg-cat-teal/10",
     text: "text-cat-teal",
     dot: "bg-cat-teal",
-    label: "Vaccination",
   },
   medical_certificate: {
     bg: "bg-warning/10",
     text: "text-warning",
     dot: "bg-warning",
-    label: "Medical Certificate",
   },
 };
 
-function getStyle(t: string) {
-  return (
-    TYPE_COLORS[t] || {
+function getStyle(type: string) {
+  return {
+    ...(TYPE_COLORS[type] || {
       bg: "bg-muted",
       text: "text-muted-foreground",
       dot: "bg-muted-foreground",
-      label: formatDocType(t) || "Other",
-    }
-  );
+    }),
+    label: formatDocType(type, featureI18n.getFixedT(null, "common")),
+  };
 }
 
 function getYear(s: string | null): string {
@@ -98,6 +89,16 @@ function getYear(s: string | null): string {
 }
 
 export default function TimelinePage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   useTranslation("common");
   const { formatDate, locale } = useUiFormat();
   const { selectedPatient } = usePatient();
@@ -257,8 +258,11 @@ export default function TimelinePage() {
     <div ref={mainRef}>
       {documents.length === 0 ? (
         <p className="text-muted-foreground">
-          No documents found.
-          {selectedPatient && ' Try selecting "All patients" in the sidebar.'}
+          {tx("clinical:features.timeline.noDocumentsFound", {
+            value0: selectedPatient
+              ? tx("clinical:features.extra.allPatientsHint")
+              : "",
+          })}
         </p>
       ) : (
         <div className="flex gap-4">
@@ -299,7 +303,7 @@ export default function TimelinePage() {
                       year: "numeric",
                     });
                   });
-                const tooltip = `${year} — ${count} doc${count !== 1 ? "s" : ""}${monthLabels.length > 0 ? "\n" + monthLabels.join(", ") : ""}`;
+                const tooltip = `${year === "Unknown" ? tx("common:features.extra.enums.modality.unknown") : year} — ${tx("common:features.extra.documentCount", { count })}${monthLabels.length > 0 ? "\n" + monthLabels.join(", ") : ""}`;
                 return (
                   <button
                     key={year}
@@ -353,10 +357,15 @@ export default function TimelinePage() {
                   <div className="w-6 flex justify-center">
                     <div className="h-1 w-3 bg-primary rounded-full" />
                   </div>
-                  <span className="ml-2 text-lg font-bold">{year}</span>
+                  <span className="ml-2 text-lg font-bold">
+                    {year === "Unknown"
+                      ? tx("common:features.extra.enums.modality.unknown")
+                      : year}
+                  </span>
                   <span className="ml-2 text-xs text-muted-foreground">
-                    ({grouped[year].length} document
-                    {grouped[year].length !== 1 ? "s" : ""})
+                    {tx("clinical:features.timeline.document", {
+                      count: grouped[year].length,
+                    })}
                   </span>
                 </div>
 
@@ -402,7 +411,7 @@ export default function TimelinePage() {
                             {doc.event_title}
                             {doc.event_type && (
                               <span className="opacity-60 text-[10px] font-normal">
-                                {doc.event_type.replace(/_/g, " ")}
+                                {enumLabel("eventType", doc.event_type)}
                               </span>
                             )}
                           </div>
@@ -456,7 +465,7 @@ export default function TimelinePage() {
             onClick={scrollToDate}
             className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 whitespace-nowrap coarse:min-h-11"
           >
-            Go to date
+            {tx("clinical:features.timeline.goToDate")}
           </button>
         </div>
       )}

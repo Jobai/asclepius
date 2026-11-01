@@ -1,3 +1,5 @@
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -81,6 +83,16 @@ export default function PdfViewer({
   onSelectionConfirm,
   onSelectionCancel,
 }: PdfViewerProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState(1);
@@ -357,7 +369,7 @@ export default function PdfViewer({
         {/* Page navigation */}
         <div className="flex items-center gap-0.5">
           <IconButton
-            label="Previous page"
+            label={tx("documents:features.pdfViewer.previousPage")}
             size="md"
             onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
             disabled={pageNumber <= 1}
@@ -369,7 +381,7 @@ export default function PdfViewer({
             {pageNumber} / {numPages}
           </span>
           <IconButton
-            label="Next page"
+            label={tx("documents:features.pdfViewer.nextPage")}
             size="md"
             onClick={() => setPageNumber((p) => Math.min(numPages, p + 1))}
             disabled={pageNumber >= numPages}
@@ -382,7 +394,7 @@ export default function PdfViewer({
         {/* Zoom + Rotate */}
         <div className="flex items-center gap-0.5">
           <IconButton
-            label="Zoom out"
+            label={tx("documents:features.pdfViewer.zoomOut")}
             size="md"
             onClick={() => stepZoom(-BUTTON_ZOOM_STEP)}
           >
@@ -397,12 +409,14 @@ export default function PdfViewer({
                 ? "text-primary hover:bg-accent hover:text-foreground"
                 : "cursor-default text-muted-foreground",
             )}
-            title="Fit to width"
+            title={tx("documents:features.pdfViewer.fitToWidth")}
           >
-            {userZoomed ? `${Math.round(scale * 100)}%` : "Fit"}
+            {userZoomed
+              ? `${Math.round(scale * 100)}%`
+              : tx("documents:features.pdfViewer.fit")}
           </button>
           <IconButton
-            label="Zoom in"
+            label={tx("documents:features.pdfViewer.zoomIn")}
             size="md"
             onClick={() => stepZoom(BUTTON_ZOOM_STEP)}
           >
@@ -416,7 +430,7 @@ export default function PdfViewer({
 
               {/* Per-page rotate: inline from md up, in the menu below md. */}
               <IconButton
-                label="Rotate this page 90° left"
+                label={tx("documents:features.pdfViewer.rotateThisPage90Left")}
                 size="md"
                 onClick={() => handleRotate(270, "page")}
                 disabled={rotating}
@@ -425,7 +439,7 @@ export default function PdfViewer({
                 <RotateCcw className="h-4 w-4" />
               </IconButton>
               <IconButton
-                label="Rotate this page 90° right"
+                label={tx("documents:features.pdfViewer.rotateThisPage90Right")}
                 size="md"
                 onClick={() => handleRotate(90, "page")}
                 disabled={rotating}
@@ -439,13 +453,15 @@ export default function PdfViewer({
               <Menu>
                 <MenuTrigger asChild>
                   <IconButton
-                    label="Rotate options"
+                    label={tx("documents:features.pdfViewer.rotateOptions")}
                     size="md"
                     disabled={rotating}
                     className="disabled:opacity-30"
                   >
                     <MoreHorizontal className="h-4 w-4 md:hidden" />
-                    <span className="hidden text-[11px] md:inline">All</span>
+                    <span className="hidden text-[11px] md:inline">
+                      {tx("common:ui.all")}
+                    </span>
                   </IconButton>
                 </MenuTrigger>
                 <MenuContent align="end">
@@ -453,19 +469,23 @@ export default function PdfViewer({
                     onSelect={() => handleRotate(270, "page")}
                     className="md:hidden"
                   >
-                    <RotateCcw className="h-3.5 w-3.5" /> This page 90° left
+                    <RotateCcw className="h-3.5 w-3.5" />{" "}
+                    {tx("documents:features.pdfViewer.thisPage90Left")}{" "}
                   </MenuItem>
                   <MenuItem
                     onSelect={() => handleRotate(90, "page")}
                     className="md:hidden"
                   >
-                    <RotateCw className="h-3.5 w-3.5" /> This page 90° right
+                    <RotateCw className="h-3.5 w-3.5" />{" "}
+                    {tx("documents:features.pdfViewer.thisPage90Right")}{" "}
                   </MenuItem>
                   <MenuItem onSelect={() => handleRotate(270, "all")}>
-                    <RotateCcw className="h-3.5 w-3.5" /> All pages 90° left
+                    <RotateCcw className="h-3.5 w-3.5" />{" "}
+                    {tx("documents:features.pdfViewer.allPages90Left")}{" "}
                   </MenuItem>
                   <MenuItem onSelect={() => handleRotate(90, "all")}>
-                    <RotateCw className="h-3.5 w-3.5" /> All pages 90° right
+                    <RotateCw className="h-3.5 w-3.5" />{" "}
+                    {tx("documents:features.pdfViewer.allPages90Right")}{" "}
                   </MenuItem>
                 </MenuContent>
               </Menu>
@@ -478,11 +498,15 @@ export default function PdfViewer({
       {selectionMode && (
         <div className="flex items-center justify-between gap-2 border-b border-warning/25 bg-warning-soft px-3 py-1.5 text-xs text-warning">
           <span>
-            Drag on page {pageNumber} to select a region.
-            <span className="hidden sm:inline"> Press Esc to cancel.</span>
+            <FeatureTrans
+              ns="documents"
+              i18nKey="features.pdfViewer.dragOnPageToSelectARegionPart0"
+              components={{ part0: <span className="hidden sm:inline" /> }}
+              values={{ value0: pageNumber }}
+            />
           </span>
           <IconButton
-            label="Cancel selection"
+            label={tx("documents:features.pdfViewer.cancelSelection")}
             size="sm"
             onClick={selection.cancel}
             className="text-warning hover:bg-warning/10"
@@ -524,7 +548,7 @@ export default function PdfViewer({
               }}
               className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
             >
-              Retry
+              {tx("common:actions.retry")}
             </button>
           </div>
         ) : (
@@ -535,7 +559,7 @@ export default function PdfViewer({
             onLoadError={onDocumentLoadError}
             loading={
               <div className="py-8 text-sm text-muted-foreground">
-                Loading PDF...
+                {tx("documents:features.pdfViewer.loadingPdf")}
               </div>
             }
             options={docOptions}
@@ -565,7 +589,7 @@ export default function PdfViewer({
                 }}
                 loading={
                   <div className="py-8 text-sm text-muted-foreground">
-                    Rendering page...
+                    {tx("documents:features.pdfViewer.renderingPage")}
                   </div>
                 }
               />
@@ -580,7 +604,7 @@ export default function PdfViewer({
                 <SelectionActionBar
                   visible
                   variant="floating"
-                  confirmLabel="Translate this region"
+                  confirmLabel={tx("documents:features.extra.translateRegion")}
                   onConfirm={confirmSelection}
                   onCancel={selection.cancel}
                   position={{
@@ -599,7 +623,7 @@ export default function PdfViewer({
         <SelectionActionBar
           visible={Boolean(selection.lockedRect)}
           variant="bar"
-          confirmLabel="Translate this region"
+          confirmLabel={tx("documents:features.extra.translateRegion")}
           onConfirm={confirmSelection}
           onCancel={selection.cancel}
         />

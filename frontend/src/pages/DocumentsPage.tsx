@@ -1,3 +1,5 @@
+import type { MessageKey } from "@/i18n/messages";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowUpDown, Upload } from "lucide-react";
@@ -31,16 +33,29 @@ import { useLlmProviders, useOcrProviders } from "@/hooks/data";
 import ShareDialog from "@/components/share/ShareDialog";
 
 /** Fields offered by the phone sort sheet (same keys toggleSort handles). */
-const SORT_FIELDS: { key: SortKey; label: string }[] = [
-  { key: "file", label: "File" },
-  { key: "type", label: "Type" },
-  { key: "date", label: "Date" },
-  { key: "facility", label: "Facility" },
-  { key: "status", label: "Status" },
-  { key: "date_added", label: "Date added" },
+const SORT_FIELDS: { key: SortKey; labelKey: MessageKey }[] = [
+  { key: "file", labelKey: "documents:features.extra.sortFields.file" },
+  { key: "type", labelKey: "documents:features.extra.sortFields.type" },
+  { key: "date", labelKey: "documents:features.extra.sortFields.date" },
+  { key: "facility", labelKey: "documents:features.extra.sortFields.facility" },
+  { key: "status", labelKey: "documents:features.extra.sortFields.status" },
+  {
+    key: "date_added",
+    labelKey: "documents:features.extra.sortFields.dateAdded",
+  },
 ];
 
 export default function DocumentsPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { selectedPatient } = usePatient();
   const { toast } = useToast();
   const confirm = useConfirm();
@@ -113,9 +128,9 @@ export default function DocumentsPage() {
   }, [documents, selectedIds]);
 
   const shareTooltip = sharePatient.conflict
-    ? "Selection spans multiple patients. A share covers one patient at a time."
+    ? tx("documents:features.extra.shareMultiplePatients")
     : !sharePatient.id
-      ? "Selected documents are not assigned to a patient."
+      ? tx("documents:features.extra.shareNoPatient")
       : null;
   const { data: llmData } = useLlmProviders();
   const { data: ocrData } = useOcrProviders();
@@ -215,7 +230,11 @@ export default function DocumentsPage() {
         }),
         description:
           failures.slice(0, 3).join(" • ") +
-          (failures.length > 3 ? ` (+${failures.length - 3} more)` : ""),
+          (failures.length > 3
+            ? tx("documents:features.documents.more", {
+                value0: failures.length - 3,
+              })
+            : ""),
         variant: "error",
       });
     }
@@ -358,7 +377,11 @@ export default function DocumentsPage() {
           className="gap-1.5"
         >
           <ArrowUpDown className="h-4 w-4" aria-hidden />
-          {activeSortField ? `Sort: ${activeSortField.label}` : "Sort"}
+          {activeSortField
+            ? tx("documents:features.documents.sort", {
+                value0: tx(activeSortField.labelKey),
+              })
+            : tx("documents:features.documents.sort2")}
           {activeSortField &&
             (sort.sortOrder === "asc" ? (
               <ArrowUp className="h-3.5 w-3.5" aria-hidden />
@@ -377,14 +400,18 @@ export default function DocumentsPage() {
             }
           }}
         >
-          {selectionMode ? `Cancel (${selectedIds.size})` : "Select"}
+          {selectionMode
+            ? tx("documents:features.documents.cancel", {
+                value0: selectedIds.size,
+              })
+            : tx("common:actions.select")}
         </Button>
       </div>
 
       <Sheet
         open={sortSheetOpen}
         onOpenChange={setSortSheetOpen}
-        title="Sort by"
+        title={tx("documents:features.documents.sortBy")}
       >
         <div className="flex flex-col">
           {SORT_FIELDS.map((f) => {
@@ -397,7 +424,7 @@ export default function DocumentsPage() {
                 className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm hover:bg-accent coarse:min-h-11"
               >
                 <span className={active ? "font-medium text-primary" : ""}>
-                  {f.label}
+                  {tx(f.labelKey)}
                 </span>
                 {active &&
                   (sort.sortOrder === "asc" ? (
@@ -444,7 +471,9 @@ export default function DocumentsPage() {
         patientId={sharePatient.id}
         documentIds={Array.from(selectedIds)}
         patientName={sharePatient.name}
-        selectionLabel={`${selectedIds.size} document${selectedIds.size === 1 ? "" : "s"}`}
+        selectionLabel={tx("common:features.extra.documentCount", {
+          count: selectedIds.size,
+        })}
       />
 
       <DocumentTable
@@ -470,8 +499,11 @@ export default function DocumentsPage() {
       {total > limit && (
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
-            Showing {page * limit + 1}-{Math.min((page + 1) * limit, total)} of{" "}
-            {total}
+            {tx("documents:features.documents.showingOf", {
+              value0: page * limit + 1,
+              value1: Math.min((page + 1) * limit, total),
+              value2: total,
+            })}
           </span>
           <div className="flex gap-2">
             <button
@@ -479,14 +511,14 @@ export default function DocumentsPage() {
               disabled={page === 0}
               className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
             >
-              Previous
+              {tx("documents:features.documents.previous")}
             </button>
             <button
               onClick={() => setPage(page + 1)}
               disabled={(page + 1) * limit >= total}
               className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
             >
-              Next
+              {tx("documents:features.documents.next")}
             </button>
           </div>
         </div>
@@ -498,7 +530,7 @@ export default function DocumentsPage() {
         <button
           type="button"
           onClick={() => setShowUpload(!showUpload)}
-          aria-label="Upload documents"
+          aria-label={tx("documents:actions.upload")}
           className="fixed bottom-5 right-4 z-fab flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-floating transition-colors duration-fast hover:bg-primary-hover active:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:hidden"
         >
           <Upload className="h-6 w-6" aria-hidden />

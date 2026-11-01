@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useMemo, useRef, useState } from "react";
 import api from "@/api/client";
@@ -28,6 +29,16 @@ function DiagnosisHeading({
   encounterId: number;
   onSaved: () => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState(value || "");
@@ -84,20 +95,22 @@ function DiagnosisHeading({
           disabled={saving}
         />
         <ActionButton onClick={handleSave} disabled={saving} variant="primary">
-          {saving ? "..." : "Save"}
+          {saving ? "..." : tx("common:actions.save")}
         </ActionButton>
         {value && (
           <ActionButton
             onClick={handleDelete}
             disabled={saving}
             variant="danger"
-            title="Delete the saved diagnosis"
+            title={tx(
+              "clinical:features.encountersSection.deleteTheSavedDiagnosis",
+            )}
           >
-            Delete
+            {tx("common:actions.delete")}
           </ActionButton>
         )}
         <IconButton
-          label="Close"
+          label={tx("common:actions.close")}
           onClick={() => {
             setEditing(false);
             setVal(value || "");
@@ -120,7 +133,7 @@ function DiagnosisHeading({
       <span className="flex-1 text-base font-semibold truncate">
         {value || (
           <span className="text-muted-foreground italic font-normal">
-            No diagnosis — click to add
+            {tx("clinical:features.encountersSection.noDiagnosisClickToAdd")}
           </span>
         )}
       </span>
@@ -143,6 +156,16 @@ function IcdCodeSelect({
   encounterId: number;
   onSaved: () => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const diagnoses = useDiagnoses();
   const [editing, setEditing] = useState(false);
@@ -217,7 +240,7 @@ function IcdCodeSelect({
                   save(filtered[0].icd10_code);
                 }
               }}
-              placeholder="Search ICD-10 code or diagnosis..."
+              placeholder={tx("clinical:features.extra.searchIcd")}
               className="w-full h-7 rounded border bg-background pl-7 pr-2 text-sm"
               autoFocus
               disabled={saving}
@@ -228,13 +251,13 @@ function IcdCodeSelect({
               onClick={() => save(null)}
               disabled={saving}
               variant="danger"
-              title="Delete the saved ICD-10 code"
+              title={tx("clinical:features.extra.deleteIcd")}
             >
-              Delete
+              {tx("common:actions.delete")}
             </ActionButton>
           )}
           <IconButton
-            label="Close"
+            label={tx("common:actions.close")}
             onClick={() => {
               setEditing(false);
               setQuery("");
@@ -246,11 +269,11 @@ function IcdCodeSelect({
         <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-64 overflow-y-auto rounded-md border bg-background shadow-lg">
           {diagnoses.loading ? (
             <div className="px-3 py-2 text-xs text-muted-foreground">
-              Loading...
+              {tx("common:ui.loading")}
             </div>
           ) : filtered.length === 0 ? (
             <div className="px-3 py-2 text-xs text-muted-foreground">
-              No matching ICD-10 codes.
+              {tx("clinical:features.extra.noIcdMatches")}
             </div>
           ) : (
             filtered.map((opt: any) => {
@@ -295,7 +318,7 @@ function IcdCodeSelect({
           : "inline-flex items-center rounded-md border border-dashed px-2 h-6 text-[11px] text-muted-foreground hover:bg-accent hover:text-foreground"
       }
     >
-      {value || "+ ICD-10"}
+      {value || tx("clinical:features.encountersSection.icd10")}
     </button>
   );
 }
@@ -307,6 +330,16 @@ export function EncountersSection({
   encounters: any[];
   onUpdated?: () => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const confirm = useConfirm();
   const { toast } = useToast();
   const { isMobile } = useBreakpoint();
@@ -332,7 +365,7 @@ export function EncountersSection({
 
   return (
     <Section
-      title="Encounters"
+      title={tx("clinical:features.encountersSection.encounters")}
       icon={Stethoscope}
       sectionId="encounters"
       defaultOpen={!isMobile}
@@ -359,7 +392,9 @@ export function EncountersSection({
                 onSaved={onUpdated || (() => {})}
               />
               <IconButton
-                label="Delete encounter"
+                label={tx(
+                  "clinical:features.encountersSection.deleteEncounter",
+                )}
                 onClick={() => handleDelete(enc.id)}
                 className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40"
               >
@@ -369,7 +404,7 @@ export function EncountersSection({
           </div>
           <div className="mt-2 pl-3 border-l-2 border-muted">
             <EditableField
-              label="Details"
+              label={tx("clinical:features.encountersSection.details")}
               value={enc.notes || ""}
               field="notes"
               docId={enc.id}

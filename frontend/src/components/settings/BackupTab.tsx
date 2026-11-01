@@ -1,3 +1,6 @@
+import { useUiFormat } from "@/lib/formatting";
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import api from "@/api/client";
@@ -37,34 +40,40 @@ type BackupFile = {
 };
 
 const SCHEDULE_OPTIONS = [
-  { value: "hourly", label: "Hourly" },
-  { value: "daily", label: "Daily" },
-  { value: "weekly", label: "Weekly" },
-];
+  {
+    value: "hourly",
+    labelKey: "settings:features.extra.backups.schedules.hourly",
+  },
+  {
+    value: "daily",
+    labelKey: "settings:features.extra.backups.schedules.daily",
+  },
+  {
+    value: "weekly",
+    labelKey: "settings:features.extra.backups.schedules.weekly",
+  },
+] as const;
 
 const RETENTION_OPTIONS = [
-  { value: "count", label: "Keep the last N backups" },
-  { value: "days", label: "Keep backups newer than N days" },
-];
-
-function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  const units = ["KB", "MB", "GB", "TB"];
-  let value = bytes / 1024;
-  let i = 0;
-  while (value >= 1024 && i < units.length - 1) {
-    value /= 1024;
-    i++;
-  }
-  return `${value.toFixed(value < 10 ? 2 : 1)} ${units[i]}`;
-}
-
-function formatWhen(iso: string | null): string {
-  if (!iso) return "never";
-  return iso.replace("T", " ");
-}
+  {
+    value: "count",
+    labelKey: "settings:features.extra.backups.retention.count",
+  },
+  { value: "days", labelKey: "settings:features.extra.backups.retention.days" },
+] as const;
 
 export default function BackupTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
+  const { formatFileSize, formatDateTime } = useUiFormat();
   const { toast } = useToast();
   const confirm = useConfirm();
   const { saving, saved, save } = useSettingsSave();
@@ -101,7 +110,9 @@ export default function BackupTab() {
   }, []);
 
   if (!state || !form)
-    return <div className="text-muted-foreground">Loading...</div>;
+    return (
+      <div className="text-muted-foreground">{tx("common:ui.loading")}</div>
+    );
 
   const scopeOk = form.include_database || form.include_vault;
 
@@ -229,34 +240,44 @@ export default function BackupTab() {
 
   const retentionLabel =
     form.retention_mode === "count"
-      ? "Number of backups to keep"
-      : "Age limit in days";
+      ? tx("settings:features.extra.keepBackupCount")
+      : tx("settings:features.extra.backupAgeLimit");
 
   return (
     <div className="space-y-6">
       <div className="rounded-lg border p-4">
-        <h3 className="font-medium">Scheduled backups</h3>
+        <h3 className="font-medium">
+          {tx("settings:features.backupTab.scheduledBackups")}
+        </h3>
         <p className="text-sm text-muted-foreground mt-1">
-          Files are written to <code>{state.directory}</code>. Pick what to back
-          up, how often, and a single retention strategy.
+          <FeatureTrans
+            ns="settings"
+            i18nKey="features.backupTab.filesAreWrittenToPart0Part0PickWhat"
+            components={{ part0: <code /> }}
+            values={{ value0: state.directory }}
+          />
         </p>
       </div>
 
       <SettingsForm
-        title="Backup job"
+        title={tx("settings:features.backupTab.backupJob")}
         saving={saving}
         saved={saved}
         onSave={saveJob}
       >
         <ToggleField
-          label="Enabled"
+          label={tx("settings:features.backupTab.enabled")}
           value={form.enabled}
           onChange={(v) => setForm({ ...form, enabled: v })}
-          description="When on, the scheduler runs this job in the background on the chosen interval."
+          description={tx(
+            "settings:features.backupTab.whenOnTheSchedulerRunsThisJobIn",
+          )}
         />
 
         <div className="space-y-2">
-          <span className="text-sm font-medium">What to back up</span>
+          <span className="text-sm font-medium">
+            {tx("settings:features.backupTab.whatToBackUp")}
+          </span>
           <div className="flex flex-col gap-2 rounded-md border bg-background p-3">
             <label className="flex items-center gap-2 text-sm coarse:min-h-11">
               <input
@@ -267,7 +288,9 @@ export default function BackupTab() {
                 }
                 className="h-4 w-4 rounded coarse:h-5 coarse:w-5"
               />
-              <span>Database (SQLite snapshot)</span>
+              <span>
+                {tx("settings:features.backupTab.databaseSqliteSnapshot")}
+              </span>
             </label>
             <label className="flex items-center gap-2 text-sm coarse:min-h-11">
               <input
@@ -278,28 +301,39 @@ export default function BackupTab() {
                 }
                 className="h-4 w-4 rounded coarse:h-5 coarse:w-5"
               />
-              <span>Vault (document files)</span>
+              <span>
+                {tx("settings:features.backupTab.vaultDocumentFiles")}
+              </span>
             </label>
           </div>
           {!scopeOk && (
-            <p className="text-xs text-destructive">Select at least one.</p>
+            <p className="text-xs text-destructive">
+              {tx("settings:features.backupTab.selectAtLeastOne")}
+            </p>
           )}
           <p className="text-xs text-muted-foreground">
-            Selecting both produces a single combined archive.
+            {tx(
+              "settings:features.backupTab.selectingBothProducesASingleCombinedArchive",
+            )}
           </p>
         </div>
 
         <SelectField
-          label="Schedule"
+          label={tx("settings:features.backupTab.schedule")}
           value={form.schedule}
           onChange={(v) => setForm({ ...form, schedule: v as Schedule })}
-          options={SCHEDULE_OPTIONS}
+          options={SCHEDULE_OPTIONS.map((o) => ({
+            ...o,
+            label: tx(o.labelKey),
+          }))}
         />
 
         <div className="space-y-2 rounded-md border bg-muted/30 p-3">
-          <span className="text-sm font-medium">Retention strategy</span>
+          <span className="text-sm font-medium">
+            {tx("settings:features.backupTab.retentionStrategy")}
+          </span>
           <p className="text-xs text-muted-foreground">
-            Pick one strategy. The other is ignored.
+            {tx("settings:features.backupTab.pickOneStrategyTheOtherIsIgnored")}
           </p>
           <div className="flex flex-col gap-2 pt-1">
             {RETENTION_OPTIONS.map((opt) => (
@@ -320,7 +354,7 @@ export default function BackupTab() {
                   }
                   className="h-4 w-4 coarse:h-5 coarse:w-5"
                 />
-                <span>{opt.label}</span>
+                <span>{tx(opt.labelKey)}</span>
               </label>
             ))}
           </div>
@@ -343,10 +377,16 @@ export default function BackupTab() {
 
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground pt-1">
           <span>
-            Last run:{" "}
-            <span className="font-mono">
-              {formatWhen(state.last_backup_at)}
-            </span>
+            <FeatureTrans
+              ns="settings"
+              i18nKey="features.backupTab.lastRunPart0Part0"
+              components={{ part0: <span className="font-mono" /> }}
+              values={{
+                value0: state.last_backup_at
+                  ? formatDateTime(state.last_backup_at)
+                  : tx("share:features.extra.never"),
+              }}
+            />
           </span>
           <button
             type="button"
@@ -359,7 +399,9 @@ export default function BackupTab() {
             ) : (
               <Play className="h-3 w-3" />
             )}
-            {running ? "Running..." : "Run now"}
+            {running
+              ? tx("settings:features.backupTab.running")
+              : tx("settings:features.backupTab.runNow")}
           </button>
         </div>
       </SettingsForm>
@@ -367,7 +409,7 @@ export default function BackupTab() {
       <div className="rounded-lg border p-4 space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-medium">
-            Backup files
+            {tx("settings:features.backupTab.backupFiles")}{" "}
             {files.length > 0 && (
               <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
                 {files.length}
@@ -378,25 +420,35 @@ export default function BackupTab() {
             onClick={loadFiles}
             className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs hover:bg-accent coarse:min-h-11"
           >
-            <RefreshCw className="h-3 w-3" /> Refresh
+            <RefreshCw className="h-3 w-3" />{" "}
+            {tx("settings:features.backupTab.refresh")}{" "}
           </button>
         </div>
 
         {files.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No backup files yet. Enable the job or click &quot;Run now&quot;
-            above.
+            {tx("settings:features.backupTab.noBackupFilesYetEnableTheJobOr")}
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="text-left text-xs text-muted-foreground">
                 <tr className="border-b">
-                  <th className="py-2 pr-2 font-medium">Name</th>
-                  <th className="py-2 pr-2 font-medium">Type</th>
-                  <th className="py-2 pr-2 font-medium">Size</th>
-                  <th className="py-2 pr-2 font-medium">Created</th>
-                  <th className="py-2 pr-2 font-medium text-right">Actions</th>
+                  <th className="py-2 pr-2 font-medium">
+                    {tx("settings:features.backupTab.name")}
+                  </th>
+                  <th className="py-2 pr-2 font-medium">
+                    {tx("common:columns.type")}
+                  </th>
+                  <th className="py-2 pr-2 font-medium">
+                    {tx("settings:features.backupTab.size")}
+                  </th>
+                  <th className="py-2 pr-2 font-medium">
+                    {tx("settings:features.backupTab.created")}
+                  </th>
+                  <th className="py-2 pr-2 font-medium text-right">
+                    {tx("settings:features.backupTab.actions")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -410,7 +462,7 @@ export default function BackupTab() {
                     </td>
                     <td className="py-2 pr-2 uppercase text-xs">{f.type}</td>
                     <td className="py-2 pr-2 whitespace-nowrap">
-                      {formatSize(f.size)}
+                      {formatFileSize(f.size)}
                     </td>
                     <td className="py-2 pr-2 whitespace-nowrap font-mono text-xs">
                       {f.created_at.replace("T", " ")}
@@ -420,15 +472,18 @@ export default function BackupTab() {
                         <button
                           onClick={() => downloadFile(f)}
                           className="flex items-center gap-1 rounded-md border px-2 py-1 text-xs hover:bg-accent coarse:min-h-11"
-                          title="Download"
+                          title={tx("settings:features.backupTab.download")}
                         >
-                          <Download className="h-3 w-3" /> Download
+                          <Download className="h-3 w-3" />{" "}
+                          {tx("settings:features.backupTab.download")}{" "}
                         </button>
                         <button
                           onClick={() => deleteFile(f)}
-                          aria-label="Delete backup file"
+                          aria-label={tx(
+                            "settings:features.backupTab.deleteBackupFile",
+                          )}
                           className="flex items-center justify-center rounded p-1 text-muted-foreground hover:text-destructive coarse:min-h-11 coarse:min-w-11"
-                          title="Delete"
+                          title={tx("common:actions.delete")}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
@@ -443,11 +498,13 @@ export default function BackupTab() {
       </div>
 
       <div className="rounded-lg border p-4 space-y-4">
-        <h3 className="font-medium">One-shot database download</h3>
+        <h3 className="font-medium">
+          {tx("settings:features.backupTab.oneShotDatabaseDownload")}
+        </h3>
         <p className="text-sm text-muted-foreground">
-          Download a consistent SQLite snapshot right now, without saving it on
-          the server. Handy for ad-hoc pulls; use the scheduler above for
-          regular backups with retention.
+          {tx(
+            "settings:features.backupTab.downloadAConsistentSqliteSnapshotRightNowWithout",
+          )}
         </p>
         <button
           onClick={downloadOneShot}
@@ -455,7 +512,9 @@ export default function BackupTab() {
           className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover disabled:opacity-50 coarse:min-h-11"
         >
           <Download className="h-4 w-4" />
-          {downloadingOneShot ? "Downloading..." : "Download database backup"}
+          {downloadingOneShot
+            ? tx("settings:features.backupTab.downloading")
+            : tx("settings:features.backupTab.downloadDatabaseBackup")}
         </button>
       </div>
     </div>

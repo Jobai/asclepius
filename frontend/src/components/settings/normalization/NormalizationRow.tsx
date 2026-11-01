@@ -1,3 +1,5 @@
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import React from "react";
 import {
@@ -65,12 +67,24 @@ function RowActions({
   NormalizationRowProps,
   "onViewDocuments" | "onToggleMerge" | "onDelete"
 >) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   return (
     <div className="flex gap-1">
       <IconButton
         size="sm"
         variant="secondary"
-        label="Show documents that reference this entry"
+        label={tx(
+          "settings:features.normalizationRow.showDocumentsThatReferenceThisEntry",
+        )}
         onClick={onViewDocuments}
       >
         <FileText className="h-3.5 w-3.5" />
@@ -78,7 +92,7 @@ function RowActions({
       <IconButton
         size="sm"
         variant="secondary"
-        label="Merge into another entry"
+        label={tx("settings:features.normalizationRow.mergeIntoAnotherEntry")}
         onClick={onToggleMerge}
       >
         <GitMerge className="h-3.5 w-3.5" />
@@ -86,7 +100,7 @@ function RowActions({
       <IconButton
         size="sm"
         variant="danger"
-        label="Delete this entry"
+        label={tx("settings:features.normalizationRow.deleteThisEntry")}
         onClick={onDelete}
         className="border"
       >
@@ -121,19 +135,39 @@ function MergeForm({
   | "onMerge"
   | "onCancelMerge"
 >) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   return (
     <div className="flex flex-col gap-2 text-sm">
       <div className="flex flex-col gap-2 md:flex-row md:flex-wrap md:items-center md:gap-3">
         <span className="text-muted-foreground">
-          Merge <strong>{item.canonical_display}</strong> into:
+          <FeatureTrans
+            ns="settings"
+            i18nKey="features.normalizationRow.mergePart0Part0Into"
+            components={{ part0: <strong /> }}
+            values={{ value0: item.canonical_display }}
+          />
         </span>
         <div className="w-full md:w-auto md:min-w-[240px] md:max-w-xs">
           <Combobox
             value={mergeTargetId === null ? null : String(mergeTargetId)}
             onChange={(v) => onMergeTargetChange(v === null ? null : Number(v))}
-            placeholder="Select target..."
-            title="Merge into..."
-            pinnedOptions={[{ value: "-1", label: "+ Create new entry..." }]}
+            placeholder={tx("settings:features.normalizationRow.selectTarget")}
+            title={tx("settings:features.batchMergeBar.mergeInto")}
+            pinnedOptions={[
+              {
+                value: "-1",
+                label: tx("settings:features.batchMergeBar.createNewEntry"),
+              },
+            ]}
             options={normItems
               .filter((n) => n.id !== item.id)
               .map((n) => ({
@@ -151,30 +185,35 @@ function MergeForm({
               !mergeTargetId || (mergeTargetId === -1 && !rowNewDisplay.trim())
             }
           >
-            Merge
+            {tx("common:feedback.merge")}
           </Button>
           <Button size="sm" variant="secondary" onClick={onCancelMerge}>
-            Cancel
+            {tx("common:feedback.cancel")}
           </Button>
         </div>
       </div>
       {mergeTargetId === -1 && (
         <div className="flex flex-col gap-2 md:flex-row md:flex-wrap md:items-center md:pl-1">
           <label className="flex flex-col gap-1 text-xs text-muted-foreground md:flex-row md:items-center md:gap-1.5">
-            Name
+            {tx("settings:features.backupTab.name")}{" "}
             <Input
               value={rowNewDisplay}
               onChange={(e) => onRowNewDisplayChange(e.target.value)}
-              placeholder="Display name for the new entry"
+              placeholder={tx(
+                "settings:features.batchMergeBar.displayNameForTheNewEntry",
+              )}
               className="md:w-64"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs text-muted-foreground md:flex-row md:items-center md:gap-1.5">
-            Code <span className="text-[10px]">(optional)</span>
+            {tx("settings:features.batchMergeBar.code")}{" "}
+            <span className="text-[10px]">
+              {tx("settings:features.normalizationRow.optional")}
+            </span>
             <Input
               value={rowNewCode}
               onChange={(e) => onRowNewCodeChange(e.target.value)}
-              placeholder="auto"
+              placeholder={tx("settings:features.batchMergeBar.auto")}
               className="font-mono md:w-40"
             />
           </label>
@@ -226,16 +265,29 @@ function ExpandedDetail({
   | "onDeleteAlias"
   | "onConfirmAll"
 >) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   return (
     <div className="space-y-4 max-w-2xl">
       {/* Canonical Entry */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium">Canonical Entry</h4>
+          <h4 className="text-sm font-medium">
+            {tx("settings:features.normalizationRow.canonicalEntry")}
+          </h4>
           {!editing && (
             <Button size="sm" variant="secondary" onClick={onStartEdit}>
-              <Edit3 className="h-3 w-3" /> Edit
+              <Edit3 className="h-3 w-3" />{" "}
+              {tx("settings:features.normalizationRow.edit")}{" "}
             </Button>
           )}
         </div>
@@ -243,7 +295,9 @@ function ExpandedDetail({
           <div className="grid gap-2">
             <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
               <label className="space-y-1">
-                <span className="text-xs text-muted-foreground">Code</span>
+                <span className="text-xs text-muted-foreground">
+                  {tx("settings:features.batchMergeBar.code")}
+                </span>
                 <Input
                   value={editCode}
                   onChange={(e) => onEditCodeChange(e.target.value)}
@@ -252,7 +306,7 @@ function ExpandedDetail({
               </label>
               <label className="space-y-1">
                 <span className="text-xs text-muted-foreground">
-                  Display Name
+                  {tx("settings:features.normalizationRow.displayName")}
                 </span>
                 <Input
                   value={editDisplay}
@@ -262,10 +316,10 @@ function ExpandedDetail({
             </div>
             <div className="flex gap-2">
               <Button size="sm" onClick={onSaveEdit}>
-                <Save className="h-3 w-3" /> Save
+                <Save className="h-3 w-3" /> {tx("common:actions.save")}{" "}
               </Button>
               <Button size="sm" variant="secondary" onClick={onCancelEdit}>
-                Cancel
+                {tx("common:feedback.cancel")}
               </Button>
             </div>
             {saveError && (
@@ -277,16 +331,24 @@ function ExpandedDetail({
         ) : (
           <div className="flex flex-col gap-1 text-sm md:flex-row md:gap-4">
             <span className="text-muted-foreground">
-              Code:{" "}
-              <span className="font-mono text-foreground">
-                {detail.canonical_code}
-              </span>
+              <FeatureTrans
+                ns="settings"
+                i18nKey="features.normalizationRow.codePart0Part0"
+                components={{
+                  part0: <span className="font-mono text-foreground" />,
+                }}
+                values={{ value0: detail.canonical_code }}
+              />
             </span>
             <span className="text-muted-foreground">
-              Name:{" "}
-              <span className="font-medium text-foreground">
-                {detail.canonical_display}
-              </span>
+              <FeatureTrans
+                ns="settings"
+                i18nKey="features.normalizationRow.namePart0Part0"
+                components={{
+                  part0: <span className="font-medium text-foreground" />,
+                }}
+                values={{ value0: detail.canonical_display }}
+              />
             </span>
           </div>
         )}
@@ -296,10 +358,13 @@ function ExpandedDetail({
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           <h4 className="text-sm font-medium">
-            Aliases ({detail.aliases?.length || 0})
+            {tx("settings:features.normalizationRow.aliases")}
+            {detail.aliases?.length || 0})
             {(item.unreviewed_count ?? 0) > 0 && (
               <Badge variant="warning" size="sm" className="ml-2">
-                {item.unreviewed_count} unreviewed
+                {tx("settings:features.normalizationRow.unreviewed", {
+                  value0: item.unreviewed_count,
+                })}
               </Badge>
             )}
           </h4>
@@ -307,9 +372,12 @@ function ExpandedDetail({
             <Button
               size="sm"
               onClick={onConfirmAll}
-              title="Accept every auto-mapped alias listed below as correct"
+              title={tx(
+                "settings:features.normalizationRow.acceptEveryAutoMappedAliasListedBelowAs",
+              )}
             >
-              <Check className="h-3 w-3" /> Confirm all
+              <Check className="h-3 w-3" />{" "}
+              {tx("settings:features.normalizationRow.confirmAll")}{" "}
             </Button>
           )}
         </div>
@@ -333,14 +401,14 @@ function ExpandedDetail({
                       size="sm"
                       className="flex-shrink-0"
                     >
-                      auto
+                      {tx("settings:features.batchMergeBar.auto")}
                     </Badge>
                   )}
                 </div>
                 <IconButton
                   size="sm"
                   variant="danger"
-                  label="Delete alias"
+                  label={tx("settings:features.normalizationRow.deleteAlias")}
                   onClick={() => onDeleteAlias(a.id)}
                   className="ml-2 flex-shrink-0"
                 >
@@ -350,30 +418,39 @@ function ExpandedDetail({
             ))}
           </div>
         ) : (
-          <p className="text-xs text-muted-foreground">No aliases yet.</p>
+          <p className="text-xs text-muted-foreground">
+            {tx("settings:features.normalizationRow.noAliasesYet")}
+          </p>
         )}
 
         <div className="flex flex-wrap gap-2 items-end">
           <label className="space-y-1 w-full md:w-auto md:flex-1">
-            <span className="text-xs text-muted-foreground">New alias</span>
+            <span className="text-xs text-muted-foreground">
+              {tx("settings:features.normalizationRow.newAlias")}
+            </span>
             <Input
               value={newAlias}
               onChange={(e) => onNewAliasChange(e.target.value)}
-              placeholder="e.g. Emocromo, CBC, ..."
+              placeholder={tx(
+                "settings:features.normalizationRow.eGEmocromoCbc",
+              )}
               onKeyDown={(e) => e.key === "Enter" && onAddAlias()}
             />
           </label>
           <label className="space-y-1 w-24 flex-1 md:flex-none md:w-20">
-            <span className="text-xs text-muted-foreground">Lang</span>
+            <span className="text-xs text-muted-foreground">
+              {tx("settings:features.normalizationRow.lang")}
+            </span>
             <Input
               value={newAliasLang}
               onChange={(e) => onNewAliasLangChange(e.target.value)}
-              placeholder="en"
+              placeholder={tx("settings:features.normalizationRow.en")}
               onKeyDown={(e) => e.key === "Enter" && onAddAlias()}
             />
           </label>
           <Button size="sm" onClick={onAddAlias} disabled={!newAlias.trim()}>
-            <Plus className="h-3 w-3" /> Add
+            <Plus className="h-3 w-3" />{" "}
+            {tx("settings:features.normalizationRow.add")}{" "}
           </Button>
         </div>
       </div>
@@ -383,6 +460,16 @@ function ExpandedDetail({
 
 /** Table presentation (md and up). */
 export default function NormalizationRow(props: NormalizationRowProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const {
     item,
     detail,
@@ -408,7 +495,9 @@ export default function NormalizationRow(props: NormalizationRowProps) {
               type="checkbox"
               checked={selected}
               onChange={onToggleSelect}
-              aria-label={`Select ${item.canonical_display || item.id}`}
+              aria-label={tx("settings:features.normalizationRow.select", {
+                value0: item.canonical_display || item.id,
+              })}
             />
           </label>
         </td>
@@ -430,10 +519,13 @@ export default function NormalizationRow(props: NormalizationRowProps) {
           {item.canonical_display}
         </td>
         <td className="px-3 py-1.5 text-muted-foreground whitespace-nowrap">
-          {item.alias_count || 0} aliases
+          {item.alias_count || 0}{" "}
+          {tx("settings:features.normalizationRow.aliases2")}{" "}
           {(item.unreviewed_count ?? 0) > 0 && (
             <Badge variant="warning" size="sm" className="ml-1.5">
-              {item.unreviewed_count} unreviewed
+              {tx("settings:features.normalizationRow.unreviewed", {
+                value0: item.unreviewed_count,
+              })}
             </Badge>
           )}
         </td>
@@ -480,6 +572,16 @@ export default function NormalizationRow(props: NormalizationRowProps) {
  *  tapping the header expands the same detail content, the checkbox feeds
  *  the batch-merge selection, and the action buttons match the table's. */
 export function NormalizationCard(props: NormalizationRowProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const {
     item,
     detail,
@@ -507,7 +609,9 @@ export function NormalizationCard(props: NormalizationRowProps) {
             type="checkbox"
             checked={selected}
             onChange={onToggleSelect}
-            aria-label={`Select ${item.canonical_display || item.id}`}
+            aria-label={tx("settings:features.normalizationRow.select", {
+              value0: item.canonical_display || item.id,
+            })}
           />
         </label>
         <div className="min-w-0 flex-1">
@@ -518,10 +622,16 @@ export function NormalizationCard(props: NormalizationRowProps) {
             </div>
           )}
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
-            <Badge size="sm">{item.alias_count || 0} aliases</Badge>
+            <Badge size="sm">
+              {tx("settings:features.normalizationRow.aliases3", {
+                value0: item.alias_count || 0,
+              })}
+            </Badge>
             {(item.unreviewed_count ?? 0) > 0 && (
               <Badge variant="warning" size="sm">
-                {item.unreviewed_count} unreviewed
+                {tx("settings:features.normalizationRow.unreviewed", {
+                  value0: item.unreviewed_count,
+                })}
               </Badge>
             )}
           </div>

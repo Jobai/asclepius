@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
 import { Crop, FileText } from "lucide-react";
 import api from "@/api/client";
@@ -40,6 +41,16 @@ export function TranslateOptionsPanel({
   onStartRegionSelection,
   onClose,
 }: TranslateOptionsPanelProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const docDisabled = !hasOcrText;
   const regionDisabled = !canSelectRegion;
   const [tab, setTab] = useState<Tab>(docDisabled ? "region" : "doc");
@@ -89,11 +100,14 @@ export function TranslateOptionsPanel({
           } disabled:opacity-40 disabled:cursor-not-allowed`}
           title={
             docDisabled
-              ? "Document has no OCR text yet."
-              : "Translate the entire document body"
+              ? tx("documents:features.translateMenu.documentHasNoOcrTextYet")
+              : tx(
+                  "documents:features.translateMenu.translateTheEntireDocumentBody",
+                )
           }
         >
-          <FileText className="h-3 w-3" /> Whole document
+          <FileText className="h-3 w-3" />{" "}
+          {tx("documents:features.translateMenu.wholeDocument")}{" "}
         </button>
         <button
           type="button"
@@ -106,28 +120,36 @@ export function TranslateOptionsPanel({
           } disabled:opacity-40 disabled:cursor-not-allowed`}
           title={
             regionDisabled
-              ? "No PDF file to crop a region from."
-              : "OCR + translate a rectangle on the page"
+              ? tx(
+                  "documents:features.translateMenu.noPdfFileToCropARegionFrom",
+                )
+              : tx(
+                  "documents:features.translateMenu.ocrTranslateARectangleOnThePage",
+                )
           }
         >
-          <Crop className="h-3 w-3" /> Region on PDF
+          <Crop className="h-3 w-3" />{" "}
+          {tx("documents:features.translateMenu.regionOnPdf")}{" "}
         </button>
       </div>
 
       {tab === "doc" ? (
         <>
           <p className="text-xs text-muted-foreground">
-            Translate the document body to English. Only prose is translated;
-            names, dates, codes, and values stay as-is.
+            {tx(
+              "documents:features.translateMenu.translateTheDocumentBodyToEnglishOnlyProse",
+            )}
           </p>
           {llmProviders.length === 0 ? (
             <p className="text-xs text-warning">
-              No text LLM providers enabled. Add one under Settings.
+              {tx(
+                "documents:features.translateMenu.noTextLlmProvidersEnabledAddOneUnder",
+              )}
             </p>
           ) : (
             <div>
               <p className="text-xs font-medium text-muted-foreground mb-1">
-                LLM Provider
+                {tx("documents:features.readOnlySections.llmProvider")}
               </p>
               <ProviderSelect
                 kind="llm"
@@ -142,23 +164,26 @@ export function TranslateOptionsPanel({
             disabled={llmProviders.length === 0 || docDisabled}
             className="w-full"
           >
-            Start Translation
+            {tx("documents:features.translateMenu.startTranslation")}
           </Button>
         </>
       ) : (
         <>
           <p className="text-xs text-muted-foreground">
-            OCR and translate a portion of the PDF. After clicking below, click
-            and drag on the page to select a region.
+            {tx(
+              "documents:features.translateMenu.ocrAndTranslateAPortionOfThePdf",
+            )}
           </p>
           {ocrProviders.length === 0 ? (
             <p className="text-xs text-warning">
-              No OCR providers enabled. Add one under Settings.
+              {tx(
+                "documents:features.translateMenu.noOcrProvidersEnabledAddOneUnderSettings",
+              )}
             </p>
           ) : (
             <div>
               <p className="text-xs font-medium text-muted-foreground mb-1">
-                OCR Engine
+                {tx("documents:features.readOnlySections.ocrEngine")}
               </p>
               <ProviderSelect
                 kind="ocr"
@@ -170,12 +195,14 @@ export function TranslateOptionsPanel({
           )}
           {llmProviders.length === 0 ? (
             <p className="text-xs text-warning">
-              No text LLM providers enabled. Add one under Settings.
+              {tx(
+                "documents:features.translateMenu.noTextLlmProvidersEnabledAddOneUnder",
+              )}
             </p>
           ) : (
             <div>
               <p className="text-xs font-medium text-muted-foreground mb-1">
-                LLM Provider
+                {tx("documents:features.readOnlySections.llmProvider")}
               </p>
               <ProviderSelect
                 kind="llm"
@@ -194,7 +221,8 @@ export function TranslateOptionsPanel({
             }
             className="w-full"
           >
-            <Crop className="h-3.5 w-3.5" /> Select region on PDF
+            <Crop className="h-3.5 w-3.5" />{" "}
+            {tx("documents:features.translateMenu.selectRegionOnPdf")}{" "}
           </Button>
         </>
       )}
@@ -229,11 +257,21 @@ export default function TranslateSheet({
   onTranslated,
   onStartRegionSelection,
 }: TranslateSheetProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   return (
     <Sheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Translate document"
+      title={tx("documents:features.translateMenu.translateDocument")}
       contentClassName="sm:max-w-md"
     >
       <TranslateOptionsPanel

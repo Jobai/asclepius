@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { Activity, Loader2, RefreshCw, Trash2 } from "lucide-react";
 import type { SessionsResponse } from "./types";
@@ -15,49 +16,62 @@ export default function SessionsPanel({
   onRevokeSession: (rowid: number) => void;
   onDropQueue: (rowid: number) => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const active = data?.active || [];
   const queued = data?.queued || [];
   const empty = !loading && active.length === 0 && queued.length === 0;
   return (
     <div>
       <div className="flex items-center gap-2 text-xs font-semibold uppercase text-muted-foreground mb-2">
-        <Activity className="h-3 w-3" /> Sessions
+        <Activity className="h-3 w-3" />{" "}
+        {tx("share:features.sessionsPanel.sessions")}{" "}
         <button
           onClick={onRefresh}
           className="rounded p-0.5 hover:bg-accent"
-          title="Refresh sessions"
-          aria-label="Refresh sessions"
+          title={tx("share:features.sessionsPanel.refreshSessions")}
+          aria-label={tx("share:features.sessionsPanel.refreshSessions")}
         >
           <RefreshCw className="h-3 w-3" />
         </button>
       </div>
       {loading ? (
         <div className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
-          <Loader2 className="h-3 w-3 animate-spin" /> Loading...
+          <Loader2 className="h-3 w-3 animate-spin" />{" "}
+          {tx("common:ui.loading")}{" "}
         </div>
       ) : empty ? (
         <div className="text-xs text-muted-foreground italic">
-          No active session and no waiters.
+          {tx("share:features.sessionsPanel.noActiveSessionAndNoWaiters")}
         </div>
       ) : (
         <div className="space-y-3">
           {active.length > 0 && (
             <SessionsTable
-              title="Active"
-              caption="At most one slot per share. Idle sessions are still
-                       listed but the queue treats them as free."
+              title={tx("share:features.sessionsPanel.active")}
+              caption={tx(
+                "share:features.sessionsPanel.atMostOneSlotPerShareIdleSessions",
+              )}
               rows={active}
-              actionLabel="Kill"
-              actionTitle="Force-terminate this session"
+              actionLabel={tx("share:features.extra.revokeSession")}
+              actionTitle={tx("share:features.extra.terminateSession")}
               onAction={onRevokeSession}
               renderStatus={(r) =>
                 r.is_idle ? (
                   <span className="rounded bg-warning-soft px-1.5 py-0.5 text-warning">
-                    idle
+                    {tx("share:features.sessionsPanel.idle")}
                   </span>
                 ) : (
                   <span className="rounded bg-success-soft px-1.5 py-0.5 text-success">
-                    live
+                    {tx("share:features.sessionsPanel.live")}
                   </span>
                 )
               }
@@ -65,12 +79,15 @@ export default function SessionsPanel({
           )}
           {queued.length > 0 && (
             <SessionsTable
-              title={`Queued (${queued.length})`}
-              caption="Waiters are first-come, first-served once the active
-                       session ends."
+              title={tx("share:features.sessionsPanel.queued", {
+                value0: queued.length,
+              })}
+              caption={tx(
+                "share:features.sessionsPanel.waitersAreFirstComeFirstServedOnceThe",
+              )}
               rows={queued}
-              actionLabel="Drop"
-              actionTitle="Drop this queued waiter"
+              actionLabel={tx("share:features.extra.dropWaiter")}
+              actionTitle={tx("share:features.extra.removeWaiter")}
               onAction={onDropQueue}
             />
           )}
@@ -107,6 +124,16 @@ function SessionsTable<T extends SessionTableRow>({
   onAction: (rowid: number) => void;
   renderStatus?: (r: T) => React.ReactNode;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { formatDateTime: formatLocal } = useUiFormat();
   const actionButton = (rowid: number) => (
     <button
@@ -122,7 +149,7 @@ function SessionsTable<T extends SessionTableRow>({
       renderStatus(r)
     ) : (
       <span className="rounded bg-info-soft px-1.5 py-0.5 text-info">
-        waiting
+        {tx("share:features.sessionsPanel.waiting")}
       </span>
     );
   return (
@@ -135,12 +162,24 @@ function SessionsTable<T extends SessionTableRow>({
       <table className="hidden w-full text-xs md:table">
         <thead className="bg-muted/20 text-muted-foreground">
           <tr>
-            <th className="text-left px-2 py-1 w-20">Status</th>
-            <th className="text-left px-2 py-1">Started</th>
-            <th className="text-left px-2 py-1">Last seen</th>
-            <th className="text-left px-2 py-1">Expires</th>
-            <th className="text-left px-2 py-1">IP</th>
-            <th className="text-left px-2 py-1">User-Agent</th>
+            <th className="text-left px-2 py-1 w-20">
+              {tx("common:columns.status")}
+            </th>
+            <th className="text-left px-2 py-1">
+              {tx("share:features.sessionsPanel.started")}
+            </th>
+            <th className="text-left px-2 py-1">
+              {tx("share:features.sessionsPanel.lastSeen")}
+            </th>
+            <th className="text-left px-2 py-1">
+              {tx("share:features.sessionsPanel.expires")}
+            </th>
+            <th className="text-left px-2 py-1">
+              {tx("share:features.auditPanel.ip")}
+            </th>
+            <th className="text-left px-2 py-1">
+              {tx("share:features.auditPanel.userAgent")}
+            </th>
             <th className="text-right px-2 py-1 w-20"></th>
           </tr>
         </thead>
@@ -181,11 +220,21 @@ function SessionsTable<T extends SessionTableRow>({
               <span className="ml-auto">{actionButton(r.rowid)}</span>
             </div>
             <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-muted-foreground">
-              <span>started {formatLocal(r.created_at)}</span>
               <span>
-                seen {r.last_seen_at ? formatLocal(r.last_seen_at) : "—"}
+                {tx("share:features.sessionsPanel.started2", {
+                  value0: formatLocal(r.created_at),
+                })}
               </span>
-              <span>expires {formatLocal(r.expires_at)}</span>
+              <span>
+                {tx("share:features.sessionsPanel.seen", {
+                  value0: r.last_seen_at ? formatLocal(r.last_seen_at) : "—",
+                })}
+              </span>
+              <span>
+                {tx("share:features.sessionsPanel.expires2", {
+                  value0: formatLocal(r.expires_at),
+                })}
+              </span>
             </div>
             {r.user_agent && (
               <div className="truncate text-muted-foreground">

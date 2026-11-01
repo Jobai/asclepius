@@ -1,4 +1,9 @@
-import { Section, getSectionTypeStyle } from "@/components/document-detail/DocumentDetailHelpers";
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
+import {
+  Section,
+  getSectionTypeStyle,
+} from "@/components/document-detail/DocumentDetailHelpers";
 
 /** Vision-LLM emits structured DOM-like text ("<div data-bbox=...>") to
  * preserve layout. When the LLM-summarisation step is skipped (>10 sections)
@@ -29,10 +34,22 @@ export function DocumentSectionsList({
   /** Extra classes on the card root (e.g. CSS `order-*` utilities). */
   className?: string;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   if (!sections?.length) return null;
   return (
     <Section
-      title={`Document Sections (${sections.length})`}
+      title={tx("clinical:features.documentSectionsList.documentSections", {
+        value0: sections.length,
+      })}
       sectionId="document-sections"
       defaultOpen={false}
       className={className}
@@ -45,14 +62,16 @@ export function DocumentSectionsList({
             className="flex items-center gap-3 text-sm rounded-md border p-2"
           >
             <span className="text-xs text-muted-foreground w-16">
-              pp. {section.page_start}
-              {"\u2013"}
-              {section.page_end}
+              {tx("clinical:features.documentSectionsList.pp", {
+                value0: section.page_start,
+                value1: "\u2013",
+                value2: section.page_end,
+              })}
             </span>
             <span
               className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${getSectionTypeStyle(section.section_type)}`}
             >
-              {section.section_type?.replace(/_/g, " ")}
+              {enumLabel("sectionType", section.section_type)}
             </span>
             {cleaned && (
               <span

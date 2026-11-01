@@ -1,3 +1,8 @@
+import { promptMessage } from "./promptLabels";
+import { useMessage } from "@/i18n/messages";
+import { enumLabel, enumMessage } from "@/lib/labels";
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useEffect, useState } from "react";
 import api from "@/api/client";
@@ -22,6 +27,17 @@ const CANONICAL_LANGUAGES = [
 ];
 
 export default function PromptsTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
+  const renderMessage = useMessage();
   const { toast } = useToast();
   const confirm = useConfirm();
   const [prompts, setPrompts] = useState<any[]>([]);
@@ -54,7 +70,7 @@ export default function PromptsTab() {
       toast({
         title: message("feedback.canonicalLanguageUpdated"),
         description: message("feedback.allLlmOutputWillNowBeIn", {
-          value0: String(value),
+          value0: enumMessage("language", value),
         }),
       });
     } catch {
@@ -103,13 +119,12 @@ export default function PromptsTab() {
       <div className="rounded-md border p-3 space-y-2">
         <div className="flex items-center gap-2 text-sm font-medium">
           <Languages className="h-4 w-4 text-primary" />
-          Canonical output language
+          {tx("settings:features.promptsTab.canonicalOutputLanguage")}{" "}
         </div>
         <p className="text-xs text-muted-foreground">
-          Every free-form field produced by the LLM (summaries, canonical names,
-          findings, notes, etc.) will be written in this language, regardless of
-          the document's source language. Codes (ICD-10, LOINC, ISO 4217, etc.)
-          are always kept as-is.
+          {tx(
+            "settings:features.promptsTab.everyFreeFormFieldProducedByTheLlm",
+          )}
         </p>
         <div className="flex items-center gap-2">
           <select
@@ -123,23 +138,28 @@ export default function PromptsTab() {
             )}
             {CANONICAL_LANGUAGES.map((lang) => (
               <option key={lang} value={lang}>
-                {lang}
+                {enumLabel("language", lang)}
               </option>
             ))}
           </select>
           {savingLanguage && (
-            <span className="text-xs text-muted-foreground">Saving…</span>
+            <span className="text-xs text-muted-foreground">
+              {tx("settings:features.priorityTab.saving")}
+            </span>
           )}
         </div>
       </div>
 
       <div className="text-sm text-muted-foreground">
-        Customize the LLM prompts used for document classification, extraction,
-        chat, and more. Prompts are Python{" "}
-        <code className="font-mono text-xs">str.format()</code> templates —
-        expand a prompt to see the exact{" "}
-        <code className="font-mono text-xs">{"{variable}"}</code> placeholders
-        it supports. Click a prompt to edit it. Reset to revert to the default.
+        <FeatureTrans
+          ns="settings"
+          i18nKey="features.promptsTab.customizeTheLlmPromptsUsedForDocumentClassification"
+          components={{
+            part0: <code className="font-mono text-xs" />,
+            part1: <code className="font-mono text-xs" />,
+          }}
+          values={{ value0: "{variable}" }}
+        />
       </div>
       {prompts.map((p) => (
         <div key={p.key} className="rounded-lg border">
@@ -156,30 +176,47 @@ export default function PromptsTab() {
           >
             <div>
               <span className="text-sm font-medium">
-                {p.key.replace(/_/g, " ")}
+                {renderMessage(
+                  promptMessage("title", p.key, p.key.replace(/_/g, " ")),
+                )}
               </span>
               {p.is_custom && (
                 <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary">
-                  customized
+                  {tx("settings:features.promptsTab.customized")}
                 </span>
               )}
-              <p className="text-xs text-muted-foreground">{p.description}</p>
+              <p className="text-xs text-muted-foreground">
+                {renderMessage(
+                  promptMessage("description", p.key, p.description),
+                )}
+              </p>
             </div>
             <span className="text-xs text-muted-foreground">
-              {p.text?.length || 0} chars
+              {tx("settings:features.promptsTab.chars", {
+                value0: p.text?.length || 0,
+              })}
             </span>
           </div>
           {editing === p.key && (
             <div className="border-t p-3 space-y-2">
               {p.variables && p.variables.length > 0 && (
                 <div className="space-y-1">
-                  <div className="text-xs font-medium">Available variables</div>
+                  <div className="text-xs font-medium">
+                    {tx("settings:features.promptsTab.availableVariables")}
+                  </div>
                   <div className="flex flex-wrap gap-1">
                     {p.variables.map((v: any) => (
                       <button
                         key={v.name}
                         type="button"
-                        title={`${v.description}${v.optional ? " (optional)" : ""}\n\nClick to copy`}
+                        title={tx("settings:features.promptsTab.clickToCopy", {
+                          value0: renderMessage(
+                            promptMessage("variable", v.name, v.description),
+                          ),
+                          value1: v.optional
+                            ? tx("settings:features.extra.variableOptional")
+                            : "",
+                        })}
                         onClick={() => {
                           const token = `{${v.name}}`;
                           navigator.clipboard?.writeText(token);
@@ -197,11 +234,12 @@ export default function PromptsTab() {
                     ))}
                   </div>
                   <p className="text-[11px] text-muted-foreground">
-                    Click a chip to copy the placeholder. Variables marked with{" "}
-                    <code className="font-mono">?</code> are optional —
-                    substituted only if the placeholder actually appears in the
-                    template. Using an unknown placeholder will break
-                    extraction.
+                    <FeatureTrans
+                      ns="settings"
+                      i18nKey="features.promptsTab.clickAChipToCopyThePlaceholderVariables"
+                      components={{ part0: <code className="font-mono" /> }}
+                      values={{}}
+                    />
                   </p>
                 </div>
               )}
@@ -217,21 +255,23 @@ export default function PromptsTab() {
                   disabled={saving}
                   className="flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground disabled:opacity-50 coarse:min-h-11"
                 >
-                  <Save className="h-3 w-3" /> {saving ? "Saving..." : "Save"}
+                  <Save className="h-3 w-3" />{" "}
+                  {saving ? tx("common:ui.saving") : tx("common:actions.save")}
                 </button>
                 {p.is_custom && (
                   <button
                     onClick={() => handleReset(p.key)}
                     className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs hover:bg-accent coarse:min-h-11"
                   >
-                    <RotateCcw className="h-3 w-3" /> Reset to default
+                    <RotateCcw className="h-3 w-3" />{" "}
+                    {tx("settings:features.promptsTab.resetToDefault")}{" "}
                   </button>
                 )}
                 <button
                   onClick={() => setEditing(null)}
                   className="flex items-center rounded-md border px-3 py-1.5 text-xs hover:bg-accent coarse:min-h-11"
                 >
-                  Cancel
+                  {tx("common:feedback.cancel")}
                 </button>
               </div>
             </div>

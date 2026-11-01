@@ -1,3 +1,6 @@
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
+import { i18n as featureI18n } from "@/i18n";
 import { useUiFormat } from "@/lib/formatting";
 import { message } from "@/i18n/messages";
 import { useTranslation } from "react-i18next";
@@ -40,7 +43,7 @@ function kindBadge(kind: PipelineJobKind | null): {
 } {
   if (kind === "reprocess") {
     return {
-      label: "Reprocess",
+      label: featureI18n.t("documents:actions.reprocess"),
       pill: kindBadgeClasses(kind),
       ring: "ring-cat-violet/30",
       glow: "from-cat-violet/10 via-cat-violet/5 to-transparent",
@@ -48,7 +51,7 @@ function kindBadge(kind: PipelineJobKind | null): {
   }
   if (kind === "translate") {
     return {
-      label: "Translate",
+      label: featureI18n.t("common:pipeline.translate"),
       pill: kindBadgeClasses(kind),
       ring: "ring-cat-teal/30",
       glow: "from-cat-teal/10 via-cat-teal/5 to-transparent",
@@ -56,14 +59,14 @@ function kindBadge(kind: PipelineJobKind | null): {
   }
   if (kind === "ai_edit") {
     return {
-      label: "AI edit",
+      label: featureI18n.t("common:stages.ai_edit"),
       pill: kindBadgeClasses(kind),
       ring: "ring-warning/30",
       glow: "from-warning/10 via-warning/5 to-transparent",
     };
   }
   return {
-    label: "Upload",
+    label: featureI18n.t("common:actions.upload"),
     pill: kindBadgeClasses("upload"),
     ring: "ring-info/30",
     glow: "from-info/10 via-info/5 to-transparent",
@@ -83,6 +86,16 @@ interface Props {
  *   - Compact "Up next" rail underneath, scaled to feel secondary.
  */
 export default function PipelineProgress({ status }: Props) {
+  useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const job = status.current_job;
   const queued = status.queued_jobs ?? [];
 
@@ -111,6 +124,16 @@ export default function PipelineProgress({ status }: Props) {
 }
 
 function IdleCard({ status }: { status: PipelineStatus }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const stopped = status.watcher_active === false;
   const Icon = stopped ? AlertCircle : Activity;
   return (
@@ -128,34 +151,49 @@ function IdleCard({ status }: { status: PipelineStatus }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium">
-            {stopped ? "Pipeline stopped" : "Pipeline idle"}
+            {stopped
+              ? tx("common:features.pipelineProgress.pipelineStopped")
+              : tx("common:features.pipelineProgress.pipelineIdle")}
           </p>
           <p className="text-xs text-muted-foreground truncate">
             {status.last_processed
-              ? `Last processed: ${status.last_processed}`
-              : "No documents in flight"}
+              ? tx("common:features.pipelineProgress.lastProcessed", {
+                  value0: status.last_processed,
+                })
+              : tx("common:features.pipelineProgress.noDocumentsInFlight")}
           </p>
           <p className="text-xs text-muted-foreground sm:hidden">
-            <span className="tabular-nums">{status.total_processed}</span>{" "}
-            processed
-            <span className="mx-1 opacity-30">|</span>
-            <span
-              className={
-                status.total_errors > 0
-                  ? "text-destructive font-medium tabular-nums"
-                  : "tabular-nums"
-              }
-            >
-              {status.total_errors}
-            </span>{" "}
-            errors
+            <FeatureTrans
+              ns="common"
+              i18nKey="features.pipelineProgress.part0Part0ProcessedPart1Part1Part2Part2Errors"
+              components={{
+                part0: <span className="tabular-nums" />,
+                part1: <span className="mx-1 opacity-30" />,
+                part2: (
+                  <span
+                    className={
+                      status.total_errors > 0
+                        ? "text-destructive font-medium tabular-nums"
+                        : "tabular-nums"
+                    }
+                  />
+                ),
+              }}
+              values={{
+                value0: status.total_processed,
+                value1: status.total_errors,
+              }}
+            />
           </p>
         </div>
         <div className="hidden sm:flex items-center gap-3 text-xs text-muted-foreground">
-          <Stat label="Processed" value={status.total_processed} />
+          <Stat
+            label={tx("common:features.pipelineProgress.processed")}
+            value={status.total_processed}
+          />
           <span className="opacity-30">|</span>
           <Stat
-            label="Errors"
+            label={tx("common:features.pipelineProgress.errors")}
             value={status.total_errors}
             tone={status.total_errors > 0 ? "red" : undefined}
           />
@@ -174,6 +212,16 @@ function Stat({
   value: number | string;
   tone?: "red";
 }) {
+  useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   return (
     <div className="text-center">
       <div className="text-[10px] uppercase tracking-wide opacity-70">
@@ -195,6 +243,16 @@ function RunningCard({
   job: NonNullable<PipelineStatus["current_job"]>;
   status: PipelineStatus;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { locale } = useUiFormat();
   const badge = kindBadge(job.kind);
   const planned = job.stages_planned ?? [];
@@ -246,7 +304,9 @@ function RunningCard({
               {flow && (
                 <span
                   className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${flow.pill}`}
-                  title={`Flow: ${flow.label}`}
+                  title={tx("common:features.pipelineProgress.flow", {
+                    value0: flow.label,
+                  })}
                 >
                   {flow.label}
                 </span>
@@ -266,21 +326,27 @@ function RunningCard({
                 className="block text-base font-semibold truncate hover:underline"
                 title={job.filename || ""}
               >
-                {job.filename || `Document #${job.doc_id}`}
+                {job.filename ||
+                  tx("common:features.pipelineProgress.document", {
+                    value0: job.doc_id,
+                  })}
               </Link>
             ) : (
               <span
                 className="block text-base font-semibold truncate"
                 title={job.filename || ""}
               >
-                {job.filename || "(unknown)"}
+                {job.filename || tx("common:features.pipelineProgress.unknown")}
               </span>
             )}
           </div>
           <div className="hidden sm:flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
-            <Stat label="Processed" value={status.total_processed} />
             <Stat
-              label="Errors"
+              label={tx("common:features.pipelineProgress.processed")}
+              value={status.total_processed}
+            />
+            <Stat
+              label={tx("common:features.pipelineProgress.errors")}
               value={status.total_errors}
               tone={status.total_errors > 0 ? "red" : undefined}
             />
@@ -385,13 +451,25 @@ function Stepper({
   providers?: PipelineProviders | null;
   providerNames?: PipelineProviders | null;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   useTranslation("common");
   return (
     <div>
       <div className="flex items-end justify-between mb-2">
         <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Pipeline · stage {Math.min(planned.length, progressIndex + 1)} of{" "}
-          {planned.length}
+          {tx("common:features.pipelineProgress.pipelineStageOf", {
+            value0: Math.min(planned.length, progressIndex + 1),
+            value1: planned.length,
+          })}
         </span>
         <span className="text-xs font-semibold tabular-nums">
           {overallPct}%
@@ -517,6 +595,16 @@ function MobileStages({
   providers?: PipelineProviders | null;
   providerNames?: PipelineProviders | null;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   useTranslation("common");
   const activeStage =
     currentStage && planned.includes(currentStage)
@@ -528,7 +616,10 @@ function MobileStages({
     providerNames ?? null,
   );
   const summary = [
-    `Stage ${Math.min(planned.length, progressIndex + 1)} of ${planned.length}`,
+    tx("common:features.extra.pipelineStageCount", {
+      current: Math.min(planned.length, progressIndex + 1),
+      total: planned.length,
+    }),
     stageLabel(activeStage),
     activeProvider ?? "",
   ]
@@ -539,7 +630,7 @@ function MobileStages({
     <div>
       <div className="mb-1 flex items-end justify-between">
         <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Pipeline
+          {tx("common:features.pipelineProgress.pipeline")}
         </span>
         <span className="text-xs font-semibold tabular-nums">
           {overallPct}%
@@ -556,7 +647,7 @@ function MobileStages({
       <details className="group/stages mt-1">
         <summary className="inline-flex cursor-pointer select-none list-none items-center gap-1 py-1 text-xs font-medium text-muted-foreground coarse:min-h-11 [&::-webkit-details-marker]:hidden">
           <ChevronRight className="h-3.5 w-3.5 transition-transform group-open/stages:rotate-90" />
-          Details
+          {tx("common:features.pipelineProgress.details")}{" "}
         </summary>
         <ol className="mt-1 space-y-1.5">
           {planned.map((s, i) => {
@@ -617,13 +708,27 @@ function PageProgress({
   total: number;
   stage: string | null | undefined;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   useTranslation("common");
   const pct = Math.min(100, Math.round((current / total) * 100));
   return (
     <div>
       <div className="flex items-center justify-between text-xs mb-1">
         <span className="text-muted-foreground">
-          {stage ? `${stageLabel(stage)} · ` : ""}page {current} of {total}
+          {tx("common:features.pipelineProgress.pageOf", {
+            value0: stage ? `${stageLabel(stage)} · ` : "",
+            value1: current,
+            value2: total,
+          })}
         </span>
         <span className="font-semibold tabular-nums">{pct}%</span>
       </div>
@@ -646,14 +751,26 @@ function QueueCard({
 }: {
   queued: NonNullable<PipelineStatus["queued_jobs"]>;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   return (
     <div className="rounded-xl border bg-card/50 p-4">
       <div className="flex items-center justify-between mb-2">
         <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Queue
+          {tx("common:features.pipelineProgress.queue")}
         </p>
         <span className="text-xs text-muted-foreground tabular-nums">
-          {queued.length} waiting
+          {tx("common:features.pipelineProgress.waiting", {
+            value0: queued.length,
+          })}
         </span>
       </div>
       <ul className="space-y-1">
@@ -708,7 +825,9 @@ function QueueCard({
         })}
         {queued.length > 5 && (
           <li className="px-2 pt-1 text-xs text-muted-foreground">
-            + {queued.length - 5} more queued
+            {tx("common:features.pipelineProgress.moreQueued", {
+              value0: queued.length - 5,
+            })}
           </li>
         )}
       </ul>
@@ -764,12 +883,22 @@ function ProvidersRow({
   providerNames?: PipelineProviders | null;
   activeProviderId: string | null;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const entries = buildProviderEntries(providers, providerNames);
   if (entries.length === 0) return null;
   return (
     <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
       <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-        Models
+        {tx("common:features.pipelineProgress.models")}
       </span>
       {entries.map(({ family, id, label }) => {
         const active = id === activeProviderId;
@@ -805,6 +934,16 @@ function ProviderPills({
   providers: PipelineProviders;
   providerNames?: PipelineProviders | null;
 }) {
+  useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const entries = buildProviderEntries(providers, providerNames);
   if (entries.length === 0) return null;
   return (
@@ -844,6 +983,16 @@ function CancelJobButton({
   variant: "running" | "queued";
   disabled?: boolean;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const confirm = useConfirm();
   const { refresh } = usePipelineStatus();
   const { toast } = useToast();
@@ -887,10 +1036,10 @@ function CancelJobButton({
   };
 
   const title = disabled
-    ? "Upload jobs can't be cancelled from the queue yet"
+    ? tx("common:features.extra.cannotCancelUpload")
     : variant === "running"
-      ? "Cancel this extraction"
-      : "Remove from queue";
+      ? tx("common:features.extra.cancelExtraction")
+      : tx("common:features.extra.removeFromQueue");
 
   if (variant === "running") {
     return (
@@ -906,7 +1055,7 @@ function CancelJobButton({
         ) : (
           <X className="h-3.5 w-3.5" />
         )}
-        Cancel
+        {tx("common:feedback.cancel")}{" "}
       </button>
     );
   }

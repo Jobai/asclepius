@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
 import api from "@/api/client";
 import {
@@ -28,6 +29,16 @@ export function ReprocessOptionsPanel({
   onReprocessed,
   onClose,
 }: ReprocessOptionsPanelProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { data: llmAll } = useLlmProviders();
   const { data: ocrAll } = useOcrProviders();
   const { data: visionAll } = useVisionProviders();
@@ -71,14 +82,26 @@ export function ReprocessOptionsPanel({
   return (
     <div className="space-y-3">
       <p className="text-xs font-medium text-muted-foreground">
-        What to reprocess
+        {tx("documents:features.reprocessMenu.whatToReprocess")}
       </p>
       <div className="grid grid-cols-2 gap-1">
         {[
-          { value: "both", label: "OCR + LLM" },
-          { value: "ocr", label: "OCR only" },
-          { value: "llm", label: "LLM only" },
-          { value: "vision_llm", label: "Vision-LLM" },
+          {
+            value: "both",
+            label: tx("documents:features.reprocessMenu.ocrLlm"),
+          },
+          {
+            value: "ocr",
+            label: tx("documents:features.reprocessMenu.ocrOnly"),
+          },
+          {
+            value: "llm",
+            label: tx("documents:features.reprocessMenu.llmOnly"),
+          },
+          {
+            value: "vision_llm",
+            label: tx("documents:features.reprocessMenu.visionLlm"),
+          },
         ].map((opt) => (
           <button
             key={opt.value}
@@ -98,12 +121,13 @@ export function ReprocessOptionsPanel({
       {mode === "vision_llm" ? (
         <div>
           <p className="text-xs font-medium text-muted-foreground mb-1">
-            Vision-LLM Provider
+            {tx("documents:features.reprocessMenu.visionLlmProvider")}
           </p>
           {visionProviders.length === 0 ? (
             <p className="text-xs text-warning">
-              No Vision-LLM providers enabled. Add one under Settings →
-              Document Analysis → Vision-LLM Providers.
+              {tx(
+                "documents:features.reprocessMenu.noVisionLlmProvidersEnabledAddOneUnder",
+              )}
             </p>
           ) : (
             <ProviderSelect
@@ -119,7 +143,7 @@ export function ReprocessOptionsPanel({
           {mode !== "llm" && ocrProviders.length > 0 && (
             <div>
               <p className="text-xs font-medium text-muted-foreground mb-1">
-                OCR Provider
+                {tx("documents:features.reprocessMenu.ocrProvider")}
               </p>
               <ProviderSelect
                 kind="ocr"
@@ -132,7 +156,7 @@ export function ReprocessOptionsPanel({
           {mode !== "ocr" && llmProviders.length > 0 && (
             <div>
               <p className="text-xs font-medium text-muted-foreground mb-1">
-                LLM Provider
+                {tx("documents:features.readOnlySections.llmProvider")}
               </p>
               <ProviderSelect
                 kind="llm"
@@ -150,7 +174,7 @@ export function ReprocessOptionsPanel({
         disabled={mode === "vision_llm" && visionProviders.length === 0}
         className="w-full"
       >
-        Start Reprocessing
+        {tx("documents:features.reprocessMenu.startReprocessing")}
       </Button>
     </div>
   );
@@ -175,11 +199,21 @@ export default function ReprocessSheet({
   onBeforeReprocess,
   onReprocessed,
 }: ReprocessSheetProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   return (
     <Sheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Reprocess document"
+      title={tx("documents:features.reprocessMenu.reprocessDocument")}
       contentClassName="sm:max-w-md"
     >
       <ReprocessOptionsPanel

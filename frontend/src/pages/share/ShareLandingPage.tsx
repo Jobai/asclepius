@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
 import { FormEvent, useEffect, useState } from "react";
@@ -25,13 +26,23 @@ type DeliveryInfo = {
  * surfaced — neither here nor in the endpoint response — so a shoulder-
  * surfer cannot learn the doctor's mailbox from the landing page.
  *
- * Clicking "Request access code" calls request-otp. For email shares
+ * Clicking tx("share:features.extra.requestCode") calls request-otp. For email shares
  * the server dispatches an SMTP message synchronously; a 502 here
  * means SMTP itself failed (server unreachable, rejected envelope,
  * etc.) and the doctor should ask the practice to switch the share
  * to manual delivery.
  */
 export default function ShareLandingPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
@@ -85,21 +96,15 @@ export default function ShareLandingPage() {
   // is intentionally NOT shown — the doctor knows where their mailbox
   // is, and printing it on the landing page would let a shoulder-surfer
   // or anyone who opens the URL on a shared computer learn it.
-  let bodyCopy: string;
-  if (info?.delivery === "email") {
-    bodyCopy =
-      "You have been invited to view a curated set of medical documents. " +
-      "Click below and we will email you a 6-digit access code at the " +
-      "address your contact has on file for you.";
-  } else {
-    bodyCopy =
-      "You have been invited to view a curated set of medical documents. " +
-      "To continue, request a 6-digit access code. The person who shared " +
-      "this link with you will tell you the code directly.";
-  }
+  const bodyCopy =
+    info?.delivery === "email"
+      ? tx("share:features.extra.invitationEmail")
+      : tx("share:features.extra.invitationManual");
 
   const buttonLabel =
-    info?.delivery === "email" ? "Email me a code" : "Request access code";
+    info?.delivery === "email"
+      ? tx("share:features.extra.emailCode")
+      : tx("share:features.extra.requestCode");
 
   return (
     <div className="min-h-dvh flex items-center justify-center bg-muted/30 px-4">
@@ -109,7 +114,9 @@ export default function ShareLandingPage() {
         </div>
         <div className="flex items-center gap-2 text-primary">
           <ShieldCheck className="h-6 w-6" />
-          <h1 className="text-lg font-semibold">Secure document share</h1>
+          <h1 className="text-lg font-semibold">
+            {tx("share:features.shareLanding.secureDocumentShare")}
+          </h1>
         </div>
         <p className="text-sm text-muted-foreground">{bodyCopy}</p>
         <form onSubmit={onSubmit} className="space-y-3">
@@ -129,8 +136,9 @@ export default function ShareLandingPage() {
           )}
         </form>
         <p className="text-xs text-muted-foreground border-t pt-4">
-          Sessions expire automatically. The documents are read-only and cannot
-          be downloaded or modified.
+          {tx(
+            "share:features.shareLanding.sessionsExpireAutomaticallyTheDocumentsAreReadOnly",
+          )}
         </p>
       </div>
     </div>

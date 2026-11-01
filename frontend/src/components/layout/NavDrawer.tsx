@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { LogOut, Moon, Sun } from "lucide-react";
@@ -26,6 +27,16 @@ export interface NavDrawerProps {
  * destinations, not corner furniture.
  */
 export default function NavDrawer({ open, onOpenChange }: NavDrawerProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { t: ui } = useTranslation("common");
   const { user, logout } = useAuth();
   const location = useLocation();
@@ -87,7 +98,9 @@ export default function NavDrawer({ open, onOpenChange }: NavDrawerProps) {
             rel="noreferrer"
             className="text-[10px] text-muted-foreground/60 transition-colors hover:text-muted-foreground"
           >
-            Asclepius v{packageJson.version}
+            {tx("common:features.navDrawer.asclepiusV", {
+              value0: packageJson.version,
+            })}
           </a>
           <div className="flex items-center gap-1">
             <IconButton

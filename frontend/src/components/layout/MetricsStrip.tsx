@@ -72,13 +72,21 @@ function buildChips(status: PipelineStatus, ui: CommonTranslator): ChipSpec[] {
         : "";
     const stagesInfo =
       (job?.stages_planned || []).length > 0
-        ? `Stages: ${job!.stages_planned.map((s) => (job!.stages_done.includes(s) ? `✓ ${stageLabel(s, ui)}` : stageLabel(s, ui))).join(" → ")}`
+        ? ui("features.extra.metricsStages", {
+            stages: job!.stages_planned
+              .map((s) =>
+                job!.stages_done.includes(s)
+                  ? `✓ ${stageLabel(s, ui)}`
+                  : stageLabel(s, ui),
+              )
+              .join(" → "),
+          })
         : "";
     chips.push({
       key: "pipeline-doc",
       icon: FileText,
       label: `${kindLabel}: ${filename}${step}`,
-      cardTitle: filename || "Pipeline",
+      cardTitle: filename || ui("features.pipelineProgress.pipeline"),
       cardSubtitle: [
         kindLabel,
         stageRaw ? stageLabel(stageRaw, ui) : "",

@@ -1,3 +1,6 @@
+import { enumLabel } from "@/lib/labels";
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { getErrorMessage } from "@/lib/errors";
 import { message, useMessage, type UiMessage } from "@/i18n/messages";
 import { useCallback, useRef, useState } from "react";
@@ -46,6 +49,16 @@ interface DuplicateInfo {
 }
 
 export default function FileUpload({ onUploadComplete }: FileUploadProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const { selectedPatient } = usePatient();
   const [dragging, setDragging] = useState(false);
@@ -96,11 +109,18 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
         setResult({
           ok: true,
           message: processAt
-            ? `${uploadedDocIds.length} file(s) scheduled for later processing`
-            : `${uploadedDocIds.length} file(s) queued for immediate processing`,
+            ? message("documents:features.extra.scheduled", {
+                count: uploadedDocIds.length,
+              })
+            : message("documents:features.extra.queuedFiles", {
+                count: uploadedDocIds.length,
+              }),
         });
       } catch {
-        setResult({ ok: false, message: "Failed to schedule batch" });
+        setResult({
+          ok: false,
+          message: message("documents:features.extra.scheduleFailed"),
+        });
       }
       setShowScheduleDialog(false);
       setUploadedDocIds([]);
@@ -177,20 +197,26 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
       setUploadedCount(successCount);
       setShowFailures(false);
 
-      const dupSegment =
-        duplicateCount > 0 ? `, ${duplicateCount} already in system` : "";
       if (errorCount === 0) {
-        let baseMsg: string;
-        if (sawZip) {
-          baseMsg = `Extracted ${zipExtracted} files (${zipDicom} DICOM frames, ${zipOther} other) and queued for processing`;
-        } else if (successCount === 0 && duplicateCount > 0) {
-          baseMsg =
-            duplicateCount === 1
-              ? "File already in system"
-              : `All ${duplicateCount} files already in system`;
-        } else {
-          baseMsg = `${successCount} file(s) uploaded${dupSegment}`;
-        }
+        const baseMsg: UiMessage = sawZip
+          ? message("documents:features.extra.zipExtracted", {
+              files: zipExtracted,
+              dicom: zipDicom,
+              other: zipOther,
+            })
+          : successCount === 0 && duplicateCount > 0
+            ? message("documents:features.extra.duplicates", {
+                count: duplicateCount,
+              })
+            : message("documents:features.extra.uploaded", {
+                count: successCount,
+                duplicates:
+                  duplicateCount > 0
+                    ? message("documents:features.extra.duplicatesSuffix", {
+                        count: duplicateCount,
+                      })
+                    : "",
+              });
         setResult({
           ok: true,
           message: baseMsg,
@@ -261,7 +287,9 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
       {showPatientPrompt && pendingFiles && (
         <div className="rounded-lg border bg-card p-4 space-y-3">
           <p className="text-sm font-medium">
-            Assign {pendingFiles.length} file(s) to a patient:
+            {tx("documents:features.fileUpload.assignFileSToAPatient", {
+              count: pendingFiles.length,
+            })}
           </p>
           <Combobox
             value={chosenPatientId || null}
@@ -270,8 +298,10 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
               value: String(p.id),
               label: p.display_name,
             }))}
-            placeholder="No patient (process unassigned)"
-            title="Select patient"
+            placeholder={tx(
+              "documents:features.fileUpload.noPatientProcessUnassigned",
+            )}
+            title={tx("patients:select")}
           />
           <Combobox
             value={chosenEventId || null}
@@ -279,10 +309,10 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
             options={events.map((ev) => ({
               value: String(ev.id),
               label: ev.title,
-              hint: ev.event_type?.replace(/_/g, " "),
+              hint: enumLabel("eventType", ev.event_type),
             }))}
-            placeholder="No medical event"
-            title="Select medical event"
+            placeholder={tx("documents:features.fileUpload.noMedicalEvent")}
+            title={tx("documents:features.fileUpload.selectMedicalEvent")}
           />
           <div className="flex gap-2">
             <button
@@ -296,7 +326,9 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
               disabled={uploading}
               className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {uploading ? "Uploading..." : "Upload"}
+              {uploading
+                ? tx("documents:features.fileUpload.uploading")
+                : tx("common:actions.upload")}
             </button>
             <button
               onClick={() => {
@@ -306,7 +338,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
               disabled={uploading}
               className="rounded-md border px-4 py-2 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Cancel
+              {tx("common:feedback.cancel")}
             </button>
           </div>
         </div>
@@ -318,20 +350,23 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
             <p className="text-sm font-medium">
-              You uploaded {uploadedCount} file(s). Process now or schedule for
-              later?
+              {tx(
+                "documents:features.fileUpload.youUploadedFileSProcessNowOrSchedule",
+                { count: uploadedCount },
+              )}
             </p>
           </div>
           <p className="text-xs text-muted-foreground">
-            Scheduling allows processing during off-peak hours to avoid
-            slowdowns.
+            {tx(
+              "documents:features.fileUpload.schedulingAllowsProcessingDuringOffPeakHoursTo",
+            )}
           </p>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => scheduleBatch(null)}
               className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
             >
-              Process Now
+              {tx("documents:features.fileUpload.processNow")}
             </button>
             <button
               onClick={() => {
@@ -343,7 +378,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
               }}
               className="rounded-md border px-4 py-2 text-sm hover:bg-accent"
             >
-              Schedule for Tonight (22:00)
+              {tx("documents:features.fileUpload.scheduleForTonight2200")}
             </button>
             <button
               onClick={() => {
@@ -354,7 +389,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
               }}
               className="rounded-md border px-4 py-2 text-sm hover:bg-accent"
             >
-              Schedule for Tomorrow (06:00)
+              {tx("documents:features.fileUpload.scheduleForTomorrow0600")}
             </button>
             <button
               onClick={() => {
@@ -363,7 +398,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
               }}
               className="rounded-md border px-4 py-2 text-sm text-muted-foreground hover:bg-accent"
             >
-              Dismiss
+              {tx("common:actions.dismiss")}
             </button>
           </div>
         </div>
@@ -388,8 +423,11 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
             <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2" />
             <p className="text-sm">
               {uploadProgress
-                ? `Uploading ${uploadProgress.current} of ${uploadProgress.total}…`
-                : "Uploading…"}
+                ? tx("documents:features.fileUpload.uploadingOf", {
+                    value0: uploadProgress.current,
+                    value1: uploadProgress.total,
+                  })
+                : tx("documents:features.fileUpload.uploading2")}
             </p>
           </div>
         ) : (
@@ -402,11 +440,17 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
               <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
               <p className="text-sm text-muted-foreground mb-1">
                 <span className="coarse:hidden">
-                  Drag & drop files here, or{" "}
-                  <span className="text-primary hover:underline">browse</span>
+                  <FeatureTrans
+                    ns="documents"
+                    i18nKey="features.fileUpload.dragDropFilesHereOrPart0BrowsePart0"
+                    components={{
+                      part0: <span className="text-primary hover:underline" />,
+                    }}
+                    values={{}}
+                  />
                 </span>
                 <span className="hidden coarse:inline">
-                  Tap to choose files
+                  {tx("documents:features.fileUpload.tapToChooseFiles")}
                 </span>
               </p>
               <input
@@ -418,10 +462,17 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
               />
             </label>
             <p className="text-xs text-muted-foreground">
-              PDF, JPEG, PNG, TIFF, DICOM, ZIP (DICOM bundle)
+              {tx(
+                "documents:features.fileUpload.pdfJpegPngTiffDicomZipDicomBundle",
+              )}{" "}
               {selectedPatient && (
                 <span className="ml-1">
-                  — assigning to <strong>{selectedPatient.display_name}</strong>
+                  <FeatureTrans
+                    ns="documents"
+                    i18nKey="features.fileUpload.assigningToPart0Part0"
+                    components={{ part0: <strong /> }}
+                    values={{ value0: selectedPatient.display_name }}
+                  />
                 </span>
               )}
             </p>
@@ -431,7 +482,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
                 picker on Android). */}
             <label className="mt-3 hidden coarse:inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-md border px-3 py-2 text-sm hover:bg-accent active:bg-accent">
               <Camera className="h-4 w-4" />
-              Take photo
+              {tx("documents:features.fileUpload.takePhoto")}{" "}
               <input
                 type="file"
                 accept="image/*"
@@ -448,10 +499,12 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
                   options={events.map((ev) => ({
                     value: String(ev.id),
                     label: ev.title,
-                    hint: ev.event_type?.replace(/_/g, " "),
+                    hint: enumLabel("eventType", ev.event_type),
                   }))}
-                  placeholder="No medical event"
-                  title="Select medical event"
+                  placeholder={tx(
+                    "documents:features.fileUpload.noMedicalEvent",
+                  )}
+                  title={tx("documents:features.fileUpload.selectMedicalEvent")}
                 />
               </div>
             )}
@@ -476,13 +529,15 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
                   onClick={() => setShowFailures((v) => !v)}
                   className="ml-1 underline text-xs"
                 >
-                  {showFailures ? "Hide" : "Show"} details
+                  {showFailures
+                    ? tx("documents:features.extra.hideUploadDetails")
+                    : tx("documents:features.extra.showUploadDetails")}
                 </button>
               )}
               <button
                 onClick={() => setResult(null)}
                 className="ml-1 inline-flex items-center justify-center rounded coarse:min-h-11 coarse:min-w-11"
-                aria-label="Dismiss result"
+                aria-label={tx("documents:features.fileUpload.dismissResult")}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -507,13 +562,26 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
                     <div className="flex-1 min-w-0">
                       <div className="font-medium truncate">{d.file}</div>
                       <div className="text-muted-foreground">
-                        Already in system as{" "}
-                        <Link
-                          to={`/documents/${d.existingId}`}
-                          className="text-primary underline hover:no-underline"
-                        >
-                          {d.existingFilename || `document #${d.existingId}`}
-                        </Link>
+                        <FeatureTrans
+                          ns="documents"
+                          i18nKey="features.fileUpload.alreadyInSystemAsPart0Part0"
+                          components={{
+                            part0: (
+                              <Link
+                                to={`/documents/${d.existingId}`}
+                                className="text-primary underline hover:no-underline"
+                              />
+                            ),
+                          }}
+                          values={{
+                            value0:
+                              d.existingFilename ||
+                              tx(
+                                "documents:features.extra.existingDocumentId",
+                                { id: d.existingId },
+                              ),
+                          }}
+                        />
                       </div>
                     </div>
                   </li>

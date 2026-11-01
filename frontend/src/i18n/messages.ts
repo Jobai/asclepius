@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 export type CommonKey = ParseKeys<"common">;
 export type CommonTranslator = TFunction<"common">;
-type MessageKey = ParseKeys<
+export type MessageKey = ParseKeys<
   [
     "common",
     "auth",

@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import {
   SettingsForm,
@@ -20,6 +21,16 @@ const arraysEqual = (a: string[], b: string[]): boolean => {
 };
 
 export default function OidcTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [s, setS] = useState<any>(null);
   const [f, setF] = useState<any>({});
   const { saving, saved, save } = useSettingsSave();
@@ -48,7 +59,10 @@ export default function OidcTab() {
     });
   }, [settingsData]);
 
-  if (!s) return <div className="text-muted-foreground">Loading...</div>;
+  if (!s)
+    return (
+      <div className="text-muted-foreground">{tx("common:ui.loading")}</div>
+    );
 
   const admin = parseRoleList(f.oidc_admin_roles || "");
   const editor = parseRoleList(f.oidc_editor_roles || "");
@@ -56,7 +70,7 @@ export default function OidcTab() {
 
   return (
     <SettingsForm
-      title="OIDC / SSO (Authentik, Keycloak, etc.)"
+      title={tx("settings:features.oidcTab.oidcSsoAuthentikKeycloakEtc")}
       saving={saving}
       saved={saved}
       onSave={() =>
@@ -115,108 +129,132 @@ export default function OidcTab() {
       }
     >
       <ToggleField
-        label="Enable OIDC"
+        label={tx("settings:features.oidcTab.enableOidc")}
         value={f.oidc_enabled}
         onChange={(v) => setF({ ...f, oidc_enabled: v })}
-        description="Show 'Sign in with SSO' on the login page"
+        description={tx(
+          "settings:features.oidcTab.showSignInWithSsoOnTheLogin",
+        )}
       />
       <ToggleField
-        label="Hide password login"
+        label={tx("settings:features.oidcTab.hidePasswordLogin")}
         value={f.oidc_hide_password_login}
         onChange={(v) => setF({ ...f, oidc_hide_password_login: v })}
-        description="When SSO is enabled, hide the username/password form on the login page. The login API stays available so an admin can still recover if the IDP is down."
+        description={tx(
+          "settings:features.oidcTab.whenSsoIsEnabledHideTheUsernamePassword",
+        )}
       />
       <TextField
-        label="Provider URL"
+        label={tx("settings:features.oidcTab.providerUrl")}
         value={f.oidc_provider_url}
         onChange={(v) => setF({ ...f, oidc_provider_url: v })}
         placeholder="https://auth.example.com/application/o/asclepius/"
       />
       <TextField
-        label="Client ID"
+        label={tx("settings:features.oidcTab.clientId")}
         value={f.oidc_client_id}
         onChange={(v) => setF({ ...f, oidc_client_id: v })}
       />
       <TextField
-        label="Client Secret"
+        label={tx("settings:features.oidcTab.clientSecret")}
         value={f.oidc_client_secret}
         onChange={(v) => setF({ ...f, oidc_client_secret: v })}
         type="password"
-        placeholder={s.oidc.has_client_secret ? "configured" : "Not set"}
+        placeholder={
+          s.oidc.has_client_secret
+            ? tx("settings:features.oidcTab.configured")
+            : tx("settings:features.oidcTab.notSet")
+        }
       />
       <TextField
-        label="Scopes"
+        label={tx("settings:features.oidcTab.scopes")}
         value={f.oidc_scopes}
         onChange={(v) => setF({ ...f, oidc_scopes: v })}
-        description="Add 'groups' when syncing roles so the provider returns group membership"
+        description={tx(
+          "settings:features.oidcTab.addGroupsWhenSyncingRolesSoTheProvider",
+        )}
       />
       <ToggleField
-        label="Auto-create Users"
+        label={tx("settings:features.oidcTab.autoCreateUsers")}
         value={f.oidc_auto_create_user}
         onChange={(v) => setF({ ...f, oidc_auto_create_user: v })}
-        description="Create a local user on first OIDC login. Auto-created users start with the 'editor' role unless 'Sync roles on login' below maps them to admin. Promote them via the Users tab if needed."
+        description={tx(
+          "settings:features.oidcTab.createALocalUserOnFirstOidcLogin",
+        )}
       />
       <TextField
-        label="Username Claim"
+        label={tx("settings:features.oidcTab.usernameClaim")}
         value={f.oidc_username_claim}
         onChange={(v) => setF({ ...f, oidc_username_claim: v })}
-        placeholder="preferred_username"
+        placeholder={tx("settings:features.oidcTab.preferredUsername")}
       />
       <TextField
-        label="Display Name Claim"
+        label={tx("settings:features.oidcTab.displayNameClaim")}
         value={f.oidc_display_name_claim}
         onChange={(v) => setF({ ...f, oidc_display_name_claim: v })}
-        placeholder="name"
+        placeholder={tx("settings:features.oidcTab.name")}
       />
 
       <div className="pt-2 border-t">
-        <h4 className="text-sm font-semibold mb-2">Role sync</h4>
+        <h4 className="text-sm font-semibold mb-2">
+          {tx("settings:features.oidcTab.roleSync")}
+        </h4>
         <p className="text-xs text-muted-foreground mb-3">
-          When enabled, a user's local role is recomputed on every OIDC login
-          from the provider's group/role claim. First match wins in the order
-          admin, editor, viewer.
+          {tx("settings:features.oidcTab.whenEnabledAUserSLocalRoleIs")}
         </p>
       </div>
       <ToggleField
-        label="Sync roles on login"
+        label={tx("settings:features.oidcTab.syncRolesOnLogin")}
         value={f.oidc_sync_roles}
         onChange={(v) => setF({ ...f, oidc_sync_roles: v })}
-        description="Overwrite the local role from OIDC groups on every login"
+        description={tx(
+          "settings:features.oidcTab.overwriteTheLocalRoleFromOidcGroupsOn",
+        )}
       />
       <TextField
-        label="Roles claim"
+        label={tx("settings:features.oidcTab.rolesClaim")}
         value={f.oidc_roles_claim}
         onChange={(v) => setF({ ...f, oidc_roles_claim: v })}
-        placeholder="groups"
-        description="Dotted path. Authentik: 'groups'. Keycloak realm roles: 'realm_access.roles'."
+        placeholder={tx("settings:features.oidcTab.groups")}
+        description={tx(
+          "settings:features.oidcTab.dottedPathAuthentikGroupsKeycloakRealmRolesRealm",
+        )}
       />
       <TextField
-        label="Admin groups"
+        label={tx("settings:features.oidcTab.adminGroups")}
         value={f.oidc_admin_roles}
         onChange={(v) => setF({ ...f, oidc_admin_roles: v })}
-        placeholder="asclepius-admins"
-        description="Comma-separated list of OIDC group/role names that map to admin"
+        placeholder={tx("settings:features.oidcTab.asclepiusAdmins")}
+        description={tx(
+          "settings:features.oidcTab.commaSeparatedListOfOidcGroupRoleNames",
+        )}
       />
       <TextField
-        label="Editor groups"
+        label={tx("settings:features.oidcTab.editorGroups")}
         value={f.oidc_editor_roles}
         onChange={(v) => setF({ ...f, oidc_editor_roles: v })}
-        placeholder="asclepius-editors"
-        description="Comma-separated list of OIDC group/role names that map to editor"
+        placeholder={tx("settings:features.oidcTab.asclepiusEditors")}
+        description={tx(
+          "settings:features.oidcTab.commaSeparatedListOfOidcGroupRoleNames2",
+        )}
       />
       <TextField
-        label="Viewer groups"
+        label={tx("settings:features.oidcTab.viewerGroups")}
         value={f.oidc_viewer_roles}
         onChange={(v) => setF({ ...f, oidc_viewer_roles: v })}
-        placeholder="asclepius-viewers"
-        description="Comma-separated list of OIDC group/role names that map to viewer"
+        placeholder={tx("settings:features.oidcTab.asclepiusViewers")}
+        description={tx(
+          "settings:features.oidcTab.commaSeparatedListOfOidcGroupRoleNames3",
+        )}
       />
       <TextField
-        label="Default role"
+        label={tx("settings:features.oidcTab.defaultRole")}
         value={f.oidc_default_role}
         onChange={(v) => setF({ ...f, oidc_default_role: v })}
-        placeholder="viewer"
-        description="Applied when sync is on and no mapping matches. Use admin, editor, or viewer."
+        placeholder={tx("settings:features.oidcTab.viewer")}
+        description={tx(
+          "settings:features.oidcTab.appliedWhenSyncIsOnAndNoMapping",
+        )}
       />
     </SettingsForm>
   );

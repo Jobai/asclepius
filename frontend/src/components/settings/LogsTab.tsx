@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
 import api from "@/api/client";
 import { usePolling } from "@/lib/polling";
@@ -6,6 +7,16 @@ import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 
 export default function LogsTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [logs, setLogs] = useState<any[]>([]);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [autoScroll, setAutoScroll] = useState(true);
@@ -63,15 +74,21 @@ export default function LogsTab() {
           onChange={(e) => setLevelFilter(e.target.value)}
           className="w-auto"
         >
-          <option value="">All levels</option>
-          <option value="ERROR">Errors only</option>
-          <option value="WARNING,ERROR">Warnings + Errors</option>
-          <option value="INFO">Info only</option>
-          <option value="DEBUG">Debug</option>
+          <option value="">{tx("settings:features.logsTab.allLevels")}</option>
+          <option value="ERROR">
+            {tx("settings:features.logsTab.errorsOnly")}
+          </option>
+          <option value="WARNING,ERROR">
+            {tx("settings:features.logsTab.warningsErrors")}
+          </option>
+          <option value="INFO">
+            {tx("settings:features.logsTab.infoOnly")}
+          </option>
+          <option value="DEBUG">{tx("settings:features.logsTab.debug")}</option>
         </Select>
         <Input
           type="text"
-          placeholder="Filter by module..."
+          placeholder={tx("settings:features.logsTab.filterByModule")}
           value={moduleFilter}
           onChange={(e) => setModuleFilter(e.target.value)}
           className="w-48"
@@ -83,7 +100,7 @@ export default function LogsTab() {
             onChange={(e) => setAutoRefresh(e.target.checked)}
             className="coarse:h-5 coarse:w-5"
           />
-          Auto-refresh (3s)
+          {tx("settings:features.logsTab.autoRefresh3s")}{" "}
         </label>
         <label className="flex items-center gap-1.5 text-xs coarse:min-h-11">
           <input
@@ -92,13 +109,13 @@ export default function LogsTab() {
             onChange={(e) => setAutoScroll(e.target.checked)}
             className="coarse:h-5 coarse:w-5"
           />
-          Auto-scroll
+          {tx("settings:features.logsTab.autoScroll")}{" "}
         </label>
         <Button variant="secondary" onClick={fetchLogs}>
-          Refresh
+          {tx("settings:features.backupTab.refresh")}
         </Button>
         <span className="text-xs text-muted-foreground ml-auto">
-          {total} total log entries
+          {tx("settings:features.logsTab.totalLogEntries", { value0: total })}
         </span>
       </div>
 
@@ -109,7 +126,7 @@ export default function LogsTab() {
         >
           {logs.length === 0 ? (
             <p className="p-4 text-muted-foreground text-center">
-              No logs found
+              {tx("settings:features.logsTab.noLogsFound")}
             </p>
           ) : (
             // Below md each entry renders as two lines (meta line, then the

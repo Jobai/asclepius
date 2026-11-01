@@ -1,3 +1,5 @@
+import { enumLabel, enumMessage } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { getErrorMessage } from "@/lib/errors";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message as uiMessage } from "@/i18n/messages";
@@ -71,6 +73,16 @@ export default function ShareTranslateMenu({
   onStartRegionSelection,
   onQueued,
 }: ShareTranslateMenuProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -113,12 +125,12 @@ export default function ShareTranslateMenu({
       await shareApi.post(`/documents/${documentId}/translate-region`, {
         page: currentPage,
         bbox: { x: 0, y: 0, w: 1, h: 1 },
-        target_language: targetLanguage,
+        target_language: enumMessage("language", targetLanguage),
       });
       setMessage(
         uiMessage("feedback.translationQueued", {
           page: currentPage,
-          language: targetLanguage,
+          language: enumMessage("language", targetLanguage),
         }),
       );
       onQueued?.();
@@ -145,9 +157,9 @@ export default function ShareTranslateMenu({
   // a second translate while the first is still in flight.
   const isBusy = submitting || translationPending;
   const disabledReason = !hasFile
-    ? "This document has no file to translate."
+    ? tx("share:features.extra.noFile")
     : translationPending
-      ? "A translation is in progress; please wait."
+      ? tx("share:features.extra.translationBusy")
       : undefined;
 
   const showPicker = allowedLanguages.length > 1;
@@ -162,9 +174,14 @@ export default function ShareTranslateMenu({
       >
         <FileText className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
         <div className="min-w-0">
-          <div className="font-medium">Translate current page</div>
+          <div className="font-medium">
+            {tx("share:features.shareTranslateMenu.translateCurrentPage")}
+          </div>
           <div className="text-xs text-muted-foreground">
-            Page {currentPage} into {targetLanguage}.
+            {tx("share:features.shareTranslateMenu.pageInto", {
+              value0: currentPage,
+              value1: enumLabel("language", targetLanguage),
+            })}
           </div>
         </div>
       </button>
@@ -174,9 +191,14 @@ export default function ShareTranslateMenu({
       >
         <Crop className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
         <div className="min-w-0">
-          <div className="font-medium">Translate selected region</div>
+          <div className="font-medium">
+            {tx("share:features.shareTranslateMenu.translateSelectedRegion")}
+          </div>
           <div className="text-xs text-muted-foreground">
-            Drag a rectangle on the page; output in {targetLanguage}.
+            {tx(
+              "share:features.shareTranslateMenu.dragARectangleOnThePageOutputIn",
+              { value0: enumLabel("language", targetLanguage) },
+            )}
           </div>
         </div>
       </button>
@@ -188,7 +210,7 @@ export default function ShareTranslateMenu({
       <div className="flex flex-wrap items-center gap-2">
         {showPicker && (
           <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            Into
+            {tx("share:features.shareTranslateMenu.into")}{" "}
             <select
               value={targetLanguage}
               onChange={(e) => onTargetLanguageChange(e.target.value)}
@@ -197,7 +219,7 @@ export default function ShareTranslateMenu({
             >
               {allowedLanguages.map((lang) => (
                 <option key={lang} value={lang}>
-                  {lang}
+                  {enumLabel("language", lang)}
                 </option>
               ))}
             </select>
@@ -213,12 +235,12 @@ export default function ShareTranslateMenu({
               {isBusy ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Translating...
+                  {tx("share:features.shareTranslateMenu.translating")}{" "}
                 </>
               ) : (
                 <>
                   <Languages className="h-4 w-4" />
-                  Translate
+                  {tx("common:pipeline.translate")}{" "}
                   <ChevronDown className="h-3 w-3 opacity-60" />
                 </>
               )}
@@ -230,7 +252,7 @@ export default function ShareTranslateMenu({
       <Sheet
         open={open && !isBusy && !isSm}
         onOpenChange={setOpen}
-        title="Translate"
+        title={tx("common:pipeline.translate")}
       >
         <div className="space-y-1">{menuOptions}</div>
       </Sheet>

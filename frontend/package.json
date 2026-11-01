@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:i18n": "node --test scripts/validate-locales.node.mjs && node scripts/validate-locales.mjs",
+    "check:i18n": "node --test scripts/validate-locales.node.mjs scripts/check-ui-text.node.mjs && node scripts/validate-locales.mjs && node scripts/check-ui-text.mjs",
     "inventory:i18n": "node scripts/inventory-i18n.mjs",
     "gen:api": "openapi-typescript src/openapi.json -o src/api/schema.ts"
   },

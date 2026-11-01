@@ -1,14 +1,25 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { Syringe } from "lucide-react";
 import { Section } from "@/components/document-detail/DocumentDetailHelpers";
 import Badge from "@/components/ui/Badge";
 import { useBreakpoint } from "@/hooks/useMediaQuery";
 
 export function VaccinationsSection({ vaccinations }: { vaccinations: any[] }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { isMobile } = useBreakpoint();
   if (!vaccinations?.length) return null;
   return (
     <Section
-      title="Vaccinations"
+      title={tx("clinical:features.vaccinationsSection.vaccinations")}
       icon={Syringe}
       sectionId="vaccinations"
       defaultOpen={!isMobile}
@@ -20,13 +31,14 @@ export function VaccinationsSection({ vaccinations }: { vaccinations: any[] }) {
           {vax.date_administered && (
             <span className="text-muted-foreground">
               {" "}
-              \u2014 {vax.date_administered}
+              — {vax.date_administered}
             </span>
           )}
           {vax.dose_number && (
             <span className="text-muted-foreground">
-              {" "}
-              (dose {vax.dose_number})
+              {tx("clinical:features.vaccinationsSection.dose", {
+                value0: vax.dose_number,
+              })}
             </span>
           )}
         </div>

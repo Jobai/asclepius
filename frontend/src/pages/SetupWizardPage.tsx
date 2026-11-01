@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
 import { useState } from "react";
@@ -14,6 +15,16 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 type Step = "welcome" | "account" | "patient" | "done";
 
 export default function SetupWizardPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
@@ -120,18 +131,21 @@ export default function SetupWizardPage() {
                 alt="Asclepius"
                 className="h-14 w-14 mx-auto rounded-lg"
               />
-              <h1 className="text-2xl font-semibold">Welcome to Asclepius</h1>
+              <h1 className="text-2xl font-semibold">
+                {tx("auth:features.setupWizard.welcomeToAsclepius")}
+              </h1>
               <p className="text-muted-foreground text-sm">
-                Your self-hosted medical records manager. Let's set up your
-                account and create your first patient profile in a few quick
-                steps.
+                {tx(
+                  "auth:features.setupWizard.yourSelfHostedMedicalRecordsManagerLetS",
+                )}
               </p>
               <Button
                 size="lg"
                 className="mt-4 w-full sm:w-auto"
                 onClick={() => setStep("account")}
               >
-                Get Started <ChevronRight className="h-4 w-4" />
+                {tx("auth:features.setupWizard.getStarted")}{" "}
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           )}
@@ -141,11 +155,14 @@ export default function SetupWizardPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-2">
                 <User className="h-5 w-5 text-primary" />
-                <h2 className="text-lg font-semibold">Create Your Account</h2>
+                <h2 className="text-lg font-semibold">
+                  {tx("auth:features.setupWizard.createYourAccount")}
+                </h2>
               </div>
               <p className="text-sm text-muted-foreground">
-                This will be the administrator account for your Asclepius
-                instance.
+                {tx(
+                  "auth:features.setupWizard.thisWillBeTheAdministratorAccountForYour",
+                )}
               </p>
 
               {error && (
@@ -155,33 +172,41 @@ export default function SetupWizardPage() {
               )}
 
               <div>
-                <label className={labelClass}>Display Name</label>
+                <label className={labelClass}>
+                  {tx("auth:features.setupWizard.displayName")}
+                </label>
                 <Input
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="e.g. John Smith"
+                  placeholder={tx("auth:features.setupWizard.eGJohnSmith")}
                   autoFocus
                 />
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Your full name (used to pre-fill patient profile)
+                  {tx(
+                    "auth:features.setupWizard.yourFullNameUsedToPreFillPatient",
+                  )}
                 </p>
               </div>
 
               <div>
-                <label className={labelClass}>Username *</label>
+                <label className={labelClass}>
+                  {tx("auth:features.setupWizard.username")}
+                </label>
                 <Input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="e.g. jsmith"
+                  placeholder={tx("auth:features.setupWizard.eGJsmith")}
                   required
                 />
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className={labelClass}>Password *</label>
+                  <label className={labelClass}>
+                    {tx("auth:features.setupWizard.password")}
+                  </label>
                   <Input
                     type="password"
                     value={password}
@@ -190,7 +215,9 @@ export default function SetupWizardPage() {
                   />
                 </div>
                 <div>
-                  <label className={labelClass}>Confirm Password *</label>
+                  <label className={labelClass}>
+                    {tx("auth:features.setupWizard.confirmPassword")}
+                  </label>
                   <Input
                     type="password"
                     value={confirmPassword}
@@ -207,14 +234,16 @@ export default function SetupWizardPage() {
                   className="w-full sm:w-auto"
                   onClick={() => setStep("welcome")}
                 >
-                  <ChevronLeft className="h-4 w-4" /> Back
+                  <ChevronLeft className="h-4 w-4" />{" "}
+                  {tx("auth:features.setupWizard.back")}{" "}
                 </Button>
                 <Button
                   size="lg"
                   className="w-full sm:w-auto"
                   onClick={goToPatient}
                 >
-                  Next <ChevronRight className="h-4 w-4" />
+                  {tx("auth:features.setupWizard.next")}{" "}
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -225,11 +254,14 @@ export default function SetupWizardPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-2">
                 <Heart className="h-5 w-5 text-primary" />
-                <h2 className="text-lg font-semibold">First Patient Profile</h2>
+                <h2 className="text-lg font-semibold">
+                  {tx("auth:features.setupWizard.firstPatientProfile")}
+                </h2>
               </div>
               <p className="text-sm text-muted-foreground">
-                Pre-filled with your account info. Edit as needed — you can add
-                more patients later.
+                {tx(
+                  "auth:features.setupWizard.preFilledWithYourAccountInfoEditAs",
+                )}
               </p>
 
               {error && (
@@ -239,7 +271,9 @@ export default function SetupWizardPage() {
               )}
 
               <div>
-                <label className={labelClass}>Patient Name *</label>
+                <label className={labelClass}>
+                  {tx("auth:features.setupWizard.patientName")}
+                </label>
                 <Input
                   type="text"
                   value={patientName}
@@ -251,7 +285,9 @@ export default function SetupWizardPage() {
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className={labelClass}>Date of Birth</label>
+                  <label className={labelClass}>
+                    {tx("auth:features.setupWizard.dateOfBirth")}
+                  </label>
                   <Input
                     type="date"
                     value={patientDob}
@@ -259,15 +295,23 @@ export default function SetupWizardPage() {
                   />
                 </div>
                 <div>
-                  <label className={labelClass}>Sex</label>
+                  <label className={labelClass}>
+                    {tx("auth:features.setupWizard.sex")}
+                  </label>
                   <Select
                     value={patientSex}
                     onChange={(e) => setPatientSex(e.target.value)}
                   >
                     <option value="">—</option>
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                    <option value="O">Other</option>
+                    <option value="M">
+                      {tx("auth:features.setupWizard.male")}
+                    </option>
+                    <option value="F">
+                      {tx("auth:features.setupWizard.female")}
+                    </option>
+                    <option value="O">
+                      {tx("auth:features.setupWizard.other")}
+                    </option>
                   </Select>
                 </div>
               </div>
@@ -279,7 +323,8 @@ export default function SetupWizardPage() {
                   className="w-full sm:w-auto"
                   onClick={() => setStep("account")}
                 >
-                  <ChevronLeft className="h-4 w-4" /> Back
+                  <ChevronLeft className="h-4 w-4" />{" "}
+                  {tx("auth:features.setupWizard.back")}{" "}
                 </Button>
                 <Button
                   size="lg"
@@ -287,7 +332,9 @@ export default function SetupWizardPage() {
                   onClick={handleComplete}
                   loading={loading}
                 >
-                  {loading ? "Setting up..." : "Complete Setup"}
+                  {loading
+                    ? tx("auth:features.setupWizard.settingUp")
+                    : tx("auth:features.setupWizard.completeSetup")}
                   {!loading && <Check className="h-4 w-4" />}
                 </Button>
               </div>
@@ -300,18 +347,21 @@ export default function SetupWizardPage() {
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success-soft">
                 <Check className="h-8 w-8 text-success" />
               </div>
-              <h2 className="text-xl font-semibold">You're All Set!</h2>
+              <h2 className="text-xl font-semibold">
+                {tx("auth:features.setupWizard.youReAllSet")}
+              </h2>
               <p className="text-sm text-muted-foreground">
-                Your account and patient profile have been created. You can now
-                start uploading medical documents, configuring your LLM and OCR
-                settings, and managing your records.
+                {tx(
+                  "auth:features.setupWizard.yourAccountAndPatientProfileHaveBeenCreated",
+                )}
               </p>
               <Button
                 size="lg"
                 className="mt-2 w-full sm:w-auto"
                 onClick={handleFinish}
               >
-                Go to Dashboard <ChevronRight className="h-4 w-4" />
+                {tx("auth:features.setupWizard.goToDashboard")}{" "}
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           )}

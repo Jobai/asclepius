@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -15,6 +16,16 @@ export default function InlineRenameCell({
   doc,
   onRenamed,
 }: InlineRenameCellProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState(doc.original_filename || "");
@@ -64,7 +75,7 @@ export default function InlineRenameCell({
           onClick={handleSave}
           disabled={saving}
           className="rounded p-1 text-success hover:bg-success-soft disabled:opacity-50"
-          aria-label="Save filename"
+          aria-label={tx("documents:features.inlineRenameCell.saveFilename")}
         >
           <Check className="h-3.5 w-3.5" />
         </button>
@@ -74,7 +85,7 @@ export default function InlineRenameCell({
             setVal(doc.original_filename);
           }}
           className="rounded p-1 text-muted-foreground hover:bg-accent"
-          aria-label="Cancel rename"
+          aria-label={tx("documents:features.inlineRenameCell.cancelRename")}
         >
           <X className="h-3.5 w-3.5" />
         </button>
@@ -102,8 +113,8 @@ export default function InlineRenameCell({
         // the desktop (md+) table — the mobile card list uses DocumentCard.
         // focus-visible keeps it reachable for keyboard users.
         className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 rounded p-1 text-muted-foreground hover:text-foreground hover:bg-accent"
-        title="Rename"
-        aria-label="Rename"
+        title={tx("documents:features.inlineRenameCell.rename")}
+        aria-label={tx("documents:features.inlineRenameCell.rename")}
       >
         <Pencil className="h-3 w-3" />
       </button>

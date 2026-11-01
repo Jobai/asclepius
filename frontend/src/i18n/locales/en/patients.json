@@ -1,5 +1,23 @@
 {
   "title": "Patients",
   "select": "Select patient",
-  "all": "All patients"
+  "all": "All patients",
+  "features": {
+    "patients": {
+      "newPatient": "New Patient",
+      "createNewPatient": "Create New Patient",
+      "fullName": "Full Name *",
+      "dateOfBirth": "Date of Birth",
+      "sex": "Sex",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "creating": "Creating...",
+      "createPatient": "Create Patient",
+      "name": "Name",
+      "noPatientsFound": "No patients found",
+      "createAPatientToStartFilingDocumentsAnd": "Create a patient to start filing documents and lab results against them.",
+      "fullName2": "Full Name"
+    }
+  }
 }

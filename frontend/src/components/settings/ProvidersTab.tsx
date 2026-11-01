@@ -1,3 +1,5 @@
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message, type UiMessage } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
 import { KeyRound, Plus } from "lucide-react";
@@ -21,6 +23,16 @@ import CredentialCard, { modelKey } from "./providers/CredentialCard";
 import type { AttachedModel, ModelKind } from "./providers/types";
 
 export default function ProvidersTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const {
     data: credData,
@@ -98,11 +110,11 @@ export default function ProvidersTab() {
       // renaming "fredrezones55/chandra-ocr-2" to "Chandra" actually sticks.
       const label =
         p.type === "llm_vision"
-          ? p.name || p.llm_model || "LLM vision OCR"
+          ? p.name || p.llm_model || tx("settings:features.extra.visionOcr")
           : p.type === "google_vision"
             ? p.name || "Google Vision OCR"
             : p.type === "tesseract_remote"
-              ? p.name || "Tesseract remote"
+              ? p.name || tx("settings:features.extra.remoteOcr")
               : p.name || p.type;
       arr.push({
         kind: "ocr",
@@ -116,7 +128,7 @@ export default function ProvidersTab() {
       map.set(p.credential_id, arr);
     }
     return map;
-  }, [llm, vision, ocr]);
+  }, [llm, vision, ocr, tx]);
 
   // ── Credential CRUD ──────────────────────────────────────────
   const handleSaveCredential = async (c: Credential) => {
@@ -299,9 +311,17 @@ export default function ProvidersTab() {
       const resp = await api.post(path, { provider_id: m.entry_id });
       const data = resp.data ?? {};
       if (data.ok) {
-        return { ok: true, message: data.detail || "Connection OK" };
+        return {
+          ok: true,
+          message:
+            data.detail || message("settings:features.extra.connectionOk"),
+        };
       }
-      return { ok: false, message: data.error || "Test failed" };
+      return {
+        ok: false,
+        message:
+          data.error || message("settings:features.extra.modelTestFailed"),
+      };
     } catch (e: any) {
       const failureMessage = getErrorMessage(e);
       toast({
@@ -342,17 +362,23 @@ export default function ProvidersTab() {
   return (
     <div className="space-y-4">
       <div className="text-sm text-muted-foreground">
-        A <strong>provider</strong> is a connection (credentials + concurrency +
-        retry policy). Under each provider, list the models it exposes - LLM,
-        Vision, or OCR. Ranking and task assignment happens on the
-        <strong> Priority</strong> tab.
+        <FeatureTrans
+          ns="settings"
+          i18nKey="features.providersTab.aPart0ProviderPart0IsAConnectionCredentials"
+          components={{ part0: <strong />, part1: <strong /> }}
+          values={{}}
+        />
       </div>
 
       {credentials.length === 0 && (
         <div className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
           <KeyRound className="h-8 w-8 mx-auto mb-2 opacity-50" />
-          <p className="font-medium">No providers configured</p>
-          <p className="text-sm mt-1">Add a provider to get started.</p>
+          <p className="font-medium">
+            {tx("settings:features.providersTab.noProvidersConfigured")}
+          </p>
+          <p className="text-sm mt-1">
+            {tx("settings:features.providersTab.addAProviderToGetStarted")}
+          </p>
         </div>
       )}
 
@@ -392,7 +418,8 @@ export default function ProvidersTab() {
         onClick={() => setEditingCred({})}
         className="flex items-center gap-2 rounded-md border border-dashed px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors coarse:min-h-11"
       >
-        <Plus className="h-4 w-4" /> Add Provider
+        <Plus className="h-4 w-4" />{" "}
+        {tx("settings:features.providersTab.addProvider")}{" "}
       </button>
 
       {editingCred && (

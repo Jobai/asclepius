@@ -1,3 +1,5 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useRef, useState } from "react";
 import api from "@/api/client";
@@ -44,6 +46,16 @@ export default function ReportSlot({
   documentId,
   onChanged,
 }: ReportSlotProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const confirm = useConfirm();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -109,8 +121,9 @@ export default function ReportSlot({
   const handleDetach = async () => {
     const ok = await confirm({
       title: message("feedback.detachThisReport"),
-      description:
-        "The PDF document stays in the patient's documents list — only its link to this imaging study is removed. You can re-attach it (or a different one) anytime.",
+      description: tx(
+        "common:features.reportSlot.thePdfDocumentStaysInThePatientS",
+      ),
       variant: "destructive",
       confirmText: message("feedback.detach"),
     });
@@ -175,16 +188,23 @@ export default function ReportSlot({
 
   if (reportStatus === "attached" && documentId) {
     return (
-      <Section title="Radiology report" icon={FileText}>
+      <Section
+        title={tx("common:features.reportSlot.radiologyReport")}
+        icon={FileText}
+      >
         <div className="flex items-center gap-2 mb-2 flex-wrap">
           <button
             onClick={() => replaceInputRef.current?.click()}
             disabled={uploadBusy}
             className="flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs hover:bg-accent disabled:opacity-50"
-            title="Upload a different PDF and replace the current one"
+            title={tx(
+              "common:features.reportSlot.uploadADifferentPdfAndReplaceTheCurrent",
+            )}
           >
             <Upload className="h-3 w-3" />
-            {uploadBusy ? "Uploading..." : "Replace with PDF"}
+            {uploadBusy
+              ? tx("common:features.reportSlot.uploading")
+              : tx("common:features.reportSlot.replaceWithPdf")}
           </button>
           <input
             ref={replaceInputRef}
@@ -200,18 +220,20 @@ export default function ReportSlot({
           <button
             onClick={() => openPicker("replace")}
             className="flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs hover:bg-accent"
-            title="Pick a different existing PDF"
+            title={tx("common:features.reportSlot.pickADifferentExistingPdf")}
           >
             <Replace className="h-3 w-3" />
-            Pick different PDF
+            {tx("common:features.reportSlot.pickDifferentPdf")}{" "}
           </button>
           <button
             onClick={handleDetach}
             className="flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs hover:bg-destructive/10 hover:text-destructive ml-auto"
-            title="Remove the report from this study (the PDF stays in documents)"
+            title={tx(
+              "common:features.reportSlot.removeTheReportFromThisStudyThePdf",
+            )}
           >
             <Unlink className="h-3 w-3" />
-            Detach
+            {tx("common:feedback.detach")}{" "}
           </button>
         </div>
         <div className="rounded-lg border overflow-hidden h-[min(500px,calc(100dvh-8rem))]">
@@ -246,7 +268,9 @@ export default function ReportSlot({
                   value={pickerSearch}
                   onChange={(e) => setPickerSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && openPicker("replace")}
-                  placeholder="Search PDFs for this patient..."
+                  placeholder={tx(
+                    "common:features.reportSlot.searchPdfsForThisPatient",
+                  )}
                   className="w-full rounded-md border bg-background pl-7 pr-2 py-1.5 text-xs"
                 />
               </div>
@@ -254,7 +278,7 @@ export default function ReportSlot({
                 onClick={() => openPicker("replace")}
                 className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground"
               >
-                Search
+                {tx("common:nav.search")}
               </button>
               <button
                 onClick={() => setShowPicker(false)}
@@ -264,10 +288,12 @@ export default function ReportSlot({
               </button>
             </div>
             {pickerBusy ? (
-              <p className="text-xs text-muted-foreground">Loading...</p>
+              <p className="text-xs text-muted-foreground">
+                {tx("common:ui.loading")}
+              </p>
             ) : pickerResults.length === 0 ? (
               <p className="text-xs text-muted-foreground">
-                No PDFs found for this patient
+                {tx("common:features.reportSlot.noPdfsFoundForThisPatient")}
               </p>
             ) : (
               <div className="max-h-60 overflow-y-auto divide-y rounded-md border">
@@ -285,13 +311,16 @@ export default function ReportSlot({
                           {d.original_filename}
                         </span>
                         <span className="block text-muted-foreground">
-                          {d.doc_type?.replace(/_/g, " ") || "no type"} |{" "}
-                          {d.event_date || "no date"}
+                          {enumLabel("docType", d.doc_type) ||
+                            tx("common:features.reportSlot.noType")}{" "}
+                          |{" "}
+                          {d.event_date ||
+                            tx("common:features.reportSlot.noDate")}
                           {d.doctor_name && ` | ${d.doctor_name}`}
                         </span>
                       </div>
                       <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-primary text-[10px]">
-                        Use this
+                        {tx("common:features.reportSlot.useThis")}
                       </span>
                     </button>
                   ))}
@@ -304,14 +333,18 @@ export default function ReportSlot({
   }
 
   return (
-    <Section title="Radiology report" icon={FileX2}>
+    <Section
+      title={tx("common:features.reportSlot.radiologyReport")}
+      icon={FileX2}
+    >
       <div className="rounded-lg border-2 border-dashed bg-muted/20 p-8 text-center space-y-3">
         <FileX2 className="h-10 w-10 mx-auto text-muted-foreground" />
         <div>
-          <p className="text-sm font-medium">No report attached yet</p>
+          <p className="text-sm font-medium">
+            {tx("common:features.reportSlot.noReportAttachedYet")}
+          </p>
           <p className="text-xs text-muted-foreground mt-1">
-            Upload the doctor's PDF report or pick one from this patient's
-            existing documents.
+            {tx("common:features.reportSlot.uploadTheDoctorSPdfReportOrPick")}
           </p>
         </div>
         <div className="flex gap-2 justify-center flex-wrap">
@@ -321,7 +354,9 @@ export default function ReportSlot({
             className="flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground disabled:opacity-50"
           >
             <Upload className="h-4 w-4" />
-            {uploadBusy ? "Uploading..." : "Upload PDF"}
+            {uploadBusy
+              ? tx("common:features.reportSlot.uploading")
+              : tx("common:features.reportSlot.uploadPdf")}
           </button>
           <input
             ref={fileInputRef}
@@ -339,7 +374,7 @@ export default function ReportSlot({
             className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
           >
             <FileSearch className="h-4 w-4" />
-            Pick existing PDF
+            {tx("common:features.reportSlot.pickExistingPdf")}{" "}
           </button>
         </div>
       </div>
@@ -355,7 +390,9 @@ export default function ReportSlot({
                 value={pickerSearch}
                 onChange={(e) => setPickerSearch(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && openPicker("attach")}
-                placeholder="Search PDFs for this patient..."
+                placeholder={tx(
+                  "common:features.reportSlot.searchPdfsForThisPatient",
+                )}
                 className="w-full rounded-md border bg-background pl-7 pr-2 py-1.5 text-xs"
               />
             </div>
@@ -363,7 +400,7 @@ export default function ReportSlot({
               onClick={() => openPicker("attach")}
               className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground"
             >
-              Search
+              {tx("common:nav.search")}
             </button>
             <button
               onClick={() => setShowPicker(false)}
@@ -373,10 +410,12 @@ export default function ReportSlot({
             </button>
           </div>
           {pickerBusy ? (
-            <p className="text-xs text-muted-foreground">Loading...</p>
+            <p className="text-xs text-muted-foreground">
+              {tx("common:ui.loading")}
+            </p>
           ) : pickerResults.length === 0 ? (
             <p className="text-xs text-muted-foreground">
-              No PDFs found for this patient
+              {tx("common:features.reportSlot.noPdfsFoundForThisPatient")}
             </p>
           ) : (
             <div className="max-h-60 overflow-y-auto divide-y rounded-md border">
@@ -392,13 +431,15 @@ export default function ReportSlot({
                       {d.original_filename}
                     </span>
                     <span className="block text-muted-foreground">
-                      {d.doc_type?.replace(/_/g, " ") || "no type"} |{" "}
-                      {d.event_date || "no date"}
+                      {enumLabel("docType", d.doc_type) ||
+                        tx("common:features.reportSlot.noType")}{" "}
+                      |{" "}
+                      {d.event_date || tx("common:features.reportSlot.noDate")}
                       {d.doctor_name && ` | ${d.doctor_name}`}
                     </span>
                   </div>
                   <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-primary text-[10px]">
-                    Attach
+                    {tx("common:features.reportSlot.attach")}
                   </span>
                 </button>
               ))}

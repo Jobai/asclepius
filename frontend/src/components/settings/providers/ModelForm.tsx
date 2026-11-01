@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
 import { useState } from "react";
@@ -25,6 +26,16 @@ export default function ModelForm({
   onSubmit,
   onCancel,
 }: ModelFormProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const kinds = allowedKindsFor(cred.type);
   const isEdit = !!initial;
   const renderMessage = useMessage();
@@ -46,7 +57,7 @@ export default function ModelForm({
   const submit = async () => {
     setErr(null);
     if (needsModelField && !model.trim()) {
-      setErr("Model name is required");
+      setErr(message("settings:features.extra.modelNameRequired"));
       return;
     }
     setSaving(true);
@@ -82,7 +93,11 @@ export default function ModelForm({
             className="rounded-md border bg-background px-2 py-1 text-sm"
           >
             {kinds.includes("llm") && <option value="llm">LLM</option>}
-            {kinds.includes("vision") && <option value="vision">Vision</option>}
+            {kinds.includes("vision") && (
+              <option value="vision">
+                {tx("settings:features.modelForm.vision")}
+              </option>
+            )}
             {kinds.includes("ocr") && <option value="ocr">OCR</option>}
           </select>
         )}
@@ -90,7 +105,7 @@ export default function ModelForm({
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Display name (optional)"
+          placeholder={tx("settings:features.modelForm.displayNameOptional")}
           className="flex-1 min-w-[140px] rounded-md border bg-background px-2 py-1 text-sm"
         />
         {needsModelField && (
@@ -100,10 +115,10 @@ export default function ModelForm({
             onChange={(e) => setModel(e.target.value)}
             placeholder={
               kind === "vision"
-                ? "e.g. qwen2.5-vl"
+                ? tx("settings:features.modelForm.eGQwen25Vl")
                 : kind === "ocr"
-                  ? "e.g. llava-vision"
-                  : "e.g. llama3.1"
+                  ? tx("settings:features.modelForm.eGLlavaVision")
+                  : tx("settings:features.modelForm.eGLlama31")
             }
             className="flex-1 min-w-[160px] rounded-md border bg-background px-2 py-1 text-sm"
           />
@@ -117,7 +132,7 @@ export default function ModelForm({
           onChange={(e) =>
             setTimeout(Math.max(10, parseInt(e.target.value, 10) || 10))
           }
-          title="Timeout (s)"
+          title={tx("settings:features.modelForm.timeoutS")}
           className="w-20 rounded-md border bg-background px-2 py-1 text-sm"
         />
         <button
@@ -127,17 +142,17 @@ export default function ModelForm({
         >
           {saving
             ? isEdit
-              ? "Saving..."
-              : "Adding..."
+              ? tx("common:ui.saving")
+              : tx("settings:features.modelForm.adding")
             : isEdit
-              ? "Save"
-              : "Add"}
+              ? tx("common:actions.save")
+              : tx("settings:features.normalizationRow.add")}
         </button>
         <button
           onClick={onCancel}
           className="rounded-md border px-3 py-1 text-xs hover:bg-accent"
         >
-          Cancel
+          {tx("common:feedback.cancel")}
         </button>
       </div>
       {err && (

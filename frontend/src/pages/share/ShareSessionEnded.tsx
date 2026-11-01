@@ -1,15 +1,17 @@
+import type { MessageKey } from "@/i18n/messages";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { Clock } from "lucide-react";
 
 import type { ShareEndReason } from "@/api/shareClient";
 import ShareLogo from "@/components/share/ShareLogo";
 import Button from "@/components/ui/Button";
 
-const TITLES: Record<ShareEndReason, string> = {
-  logged_out: "You have logged out",
-  idle: "Session ended after inactivity",
-  expired: "Session expired",
-  unauthorized: "Session no longer active",
-  replaced: "Another share was opened in this browser",
+const TITLES: Record<ShareEndReason, MessageKey> = {
+  logged_out: "share:features.extra.sessionEnded.loggedOut",
+  idle: "share:features.extra.sessionEnded.idle",
+  expired: "share:features.extra.sessionEnded.expired",
+  unauthorized: "share:features.extra.sessionEnded.unauthorized",
+  replaced: "share:features.extra.sessionEnded.replaced",
 };
 
 /**
@@ -29,7 +31,19 @@ export default function ShareSessionEnded({
   reason: ShareEndReason | null;
   onRetry?: () => void;
 }) {
-  const title = reason ? TITLES[reason] : "Could not load this share";
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
+  const title = reason
+    ? tx(TITLES[reason])
+    : tx("share:features.extra.loadFailed");
   return (
     <div className="min-h-dvh flex items-center justify-center bg-muted/30 px-4">
       <div
@@ -45,14 +59,16 @@ export default function ShareSessionEnded({
         </div>
         {reason ? (
           <p className="text-sm text-muted-foreground">
-            To view the documents again, open the share link you received and
-            request a new access code.
+            {tx(
+              "share:features.shareSessionEnded.toViewTheDocumentsAgainOpenTheShare",
+            )}
           </p>
         ) : (
           <>
             <p className="text-sm text-muted-foreground">
-              The server could not be reached. Check your connection and try
-              again.
+              {tx(
+                "share:features.shareSessionEnded.theServerCouldNotBeReachedCheckYour",
+              )}
             </p>
             {onRetry && (
               <Button
@@ -61,7 +77,7 @@ export default function ShareSessionEnded({
                 className="w-full"
                 onClick={onRetry}
               >
-                Try again
+                {tx("share:features.shareSessionEnded.tryAgain")}
               </Button>
             )}
           </>

@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProvidersTab from "./ProvidersTab";
 import PriorityTab from "./PriorityTab";
@@ -5,10 +6,22 @@ import PromptsTab from "./PromptsTab";
 import NormalizationTab from "./NormalizationTab";
 
 const SUB_TABS = [
-  { key: "providers", label: "Providers" },
-  { key: "priority", label: "Priority" },
-  { key: "prompts", label: "Prompts" },
-  { key: "normalization", label: "Normalization" },
+  {
+    key: "providers",
+    labelKey: "settings:features.extra.analysisNavigation.providers",
+  },
+  {
+    key: "priority",
+    labelKey: "settings:features.extra.analysisNavigation.priority",
+  },
+  {
+    key: "prompts",
+    labelKey: "settings:features.extra.analysisNavigation.prompts",
+  },
+  {
+    key: "normalization",
+    labelKey: "settings:features.extra.analysisNavigation.normalization",
+  },
 ] as const;
 
 type SubTab = (typeof SUB_TABS)[number]["key"];
@@ -29,6 +42,16 @@ const LEGACY_SLUG_REWRITES: Record<string, SubTab> = {
 };
 
 export default function DocumentAnalysisTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const location = useLocation();
   const navigate = useNavigate();
   const segments = location.pathname.split("/").filter(Boolean); // ['settings', 'analysis', subtab?, ...]
@@ -53,7 +76,7 @@ export default function DocumentAnalysisTab() {
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
-            {t.label}
+            {tx(t.labelKey)}
           </button>
         ))}
       </div>

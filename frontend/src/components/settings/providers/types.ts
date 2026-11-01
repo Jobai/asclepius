@@ -10,7 +10,7 @@ export const CREDENTIAL_TYPES = [
   {
     value: "ollama",
     label: "Ollama",
-    description: "Local LLM via Ollama",
+    descriptionKey: "settings:features.extra.providers.descriptions.ollama",
     icon: HardDrive,
     needs_url: true,
     needs_key: false,
@@ -18,7 +18,7 @@ export const CREDENTIAL_TYPES = [
   {
     value: "vllm",
     label: "vLLM",
-    description: "vLLM (OpenAI-compatible)",
+    descriptionKey: "settings:features.extra.providers.descriptions.vllm",
     icon: Server,
     needs_url: true,
     needs_key: true,
@@ -26,7 +26,7 @@ export const CREDENTIAL_TYPES = [
   {
     value: "claude",
     label: "Anthropic (Claude)",
-    description: "Claude API",
+    descriptionKey: "settings:features.extra.providers.descriptions.claude",
     icon: Cloud,
     needs_url: false,
     needs_key: true,
@@ -34,7 +34,7 @@ export const CREDENTIAL_TYPES = [
   {
     value: "openai",
     label: "OpenAI",
-    description: "OpenAI-compatible API",
+    descriptionKey: "settings:features.extra.providers.descriptions.openai",
     icon: Cloud,
     needs_url: false,
     needs_key: true,
@@ -42,15 +42,16 @@ export const CREDENTIAL_TYPES = [
   {
     value: "google_vision",
     label: "Google Vision",
-    description: "Google Cloud Vision OCR",
+    descriptionKey:
+      "settings:features.extra.providers.descriptions.googleVision",
     icon: Cloud,
     needs_url: false,
     needs_key: true,
   },
   {
     value: "tesseract_remote",
-    label: "Tesseract (Remote)",
-    description: "Remote Tesseract OCR server",
+    labelKey: "settings:features.extra.remoteTesseract",
+    descriptionKey: "settings:features.extra.providers.descriptions.tesseract",
     icon: Server,
     needs_url: true,
     needs_key: false,

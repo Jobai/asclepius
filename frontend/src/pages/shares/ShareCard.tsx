@@ -1,3 +1,5 @@
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { useState } from "react";
 import {
@@ -84,6 +86,16 @@ export default function ShareCard({
   auditLoading,
   auditEvents,
 }: ShareCardProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { formatDateTime: formatLocal } = useUiFormat();
   const isRevoked = status === "revoked";
   const isExpired = status === "expired";
@@ -117,11 +129,23 @@ export default function ShareCard({
           />
         </div>
         <div className="mt-1.5 space-y-0.5 text-xs text-muted-foreground">
-          <div>expires {formatLocal(s.expires_at)}</div>
           <div>
-            {s.document_count} doc{s.document_count === 1 ? "" : "s"} ·{" "}
-            {s.access_count} access{s.access_count === 1 ? "" : "es"} · last{" "}
-            {s.last_accessed_at ? formatLocal(s.last_accessed_at) : "never"}
+            {tx("share:features.sessionsPanel.expires2", {
+              value0: formatLocal(s.expires_at),
+            })}
+          </div>
+          <div>
+            {tx("share:features.extra.shareUsage", {
+              documents: tx("common:features.extra.documentCount", {
+                count: s.document_count,
+              }),
+              accesses: tx("share:features.extra.accessCount", {
+                count: s.access_count,
+              }),
+              last: s.last_accessed_at
+                ? formatLocal(s.last_accessed_at)
+                : tx("share:features.extra.never"),
+            })}
           </div>
         </div>
       </button>
@@ -139,10 +163,14 @@ export default function ShareCard({
             // The OTP plaintext is never persisted for email shares — the
             // admin cannot read it back, so there is no Show button.
             <span className="min-w-0 text-xs italic text-muted-foreground">
-              Code emailed to{" "}
-              <span className="font-mono not-italic">
-                {s.recipient_contact}
-              </span>
+              <FeatureTrans
+                ns="share"
+                i18nKey="features.shareCard.codeEmailedToPart0Part0"
+                components={{
+                  part0: <span className="font-mono not-italic" />,
+                }}
+                values={{ value0: s.recipient_contact }}
+              />
             </span>
           ) : (
             <OtpCell
@@ -157,21 +185,26 @@ export default function ShareCard({
         <div className="ml-auto">
           <Menu>
             <MenuTrigger asChild>
-              <IconButton label="Share actions" size="sm">
+              <IconButton
+                label={tx("share:features.shareCard.shareActions")}
+                size="sm"
+              >
                 <MoreVertical className="h-4 w-4" />
               </IconButton>
             </MenuTrigger>
             <MenuContent align="end">
               {!isRevoked && (
                 <MenuItem destructive onSelect={onRevoke}>
-                  <Trash2 className="h-4 w-4" aria-hidden /> Revoke
+                  <Trash2 className="h-4 w-4" aria-hidden />{" "}
+                  {tx("common:feedback.revoke")}{" "}
                 </MenuItem>
               )}
               {/* Permanent delete — removes the row and all its history.
                   Offered for every status so old and legacy shares can be
                   cleaned out. */}
               <MenuItem destructive onSelect={onDelete}>
-                <Trash2 className="h-4 w-4" aria-hidden /> Delete
+                <Trash2 className="h-4 w-4" aria-hidden />{" "}
+                {tx("common:actions.delete")}{" "}
               </MenuItem>
             </MenuContent>
           </Menu>
@@ -203,6 +236,16 @@ function CopyLinkAction({
   token: string;
   shareUrl: string | null;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const [copied, setCopied] = useState(false);
   const onCopy = async () => {
     try {
@@ -220,7 +263,9 @@ function CopyLinkAction({
       ) : (
         <LinkIcon className="h-3.5 w-3.5" aria-hidden />
       )}
-      {copied ? "Copied" : "Copy link"}
+      {copied
+        ? tx("share:features.shareDialog.copied")
+        : tx("share:features.shareDialog.copyLink")}
     </Button>
   );
 }

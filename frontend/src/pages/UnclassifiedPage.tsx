@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
@@ -9,6 +10,16 @@ import Select from "@/components/ui/Select";
 import { getBestDate } from "@/lib/utils";
 
 export default function UnclassifiedPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { formatDocType, formatDate } = useUiFormat();
   useTranslation("common");
   const { user } = useAuth();
@@ -32,7 +43,10 @@ export default function UnclassifiedPage() {
     setDocuments((docs) => docs.filter((d) => d.id !== docId));
   };
 
-  if (loading) return <div className="text-muted-foreground">Loading...</div>;
+  if (loading)
+    return (
+      <div className="text-muted-foreground">{tx("common:ui.loading")}</div>
+    );
 
   return (
     <div className="space-y-4">
@@ -41,11 +55,15 @@ export default function UnclassifiedPage() {
         <span className="rounded-full bg-warning-soft px-2 py-0.5 text-xs text-warning">
           {documents.length}
         </span>
-        <span className="text-sm">unclassified</span>
+        <span className="text-sm">
+          {tx("common:features.unclassified.unclassified")}
+        </span>
       </div>
 
       {documents.length === 0 ? (
-        <p className="text-muted-foreground">All documents are classified.</p>
+        <p className="text-muted-foreground">
+          {tx("common:features.unclassified.allDocumentsAreClassified")}
+        </p>
       ) : (
         <div className="space-y-3">
           {documents.map((doc) => (
@@ -72,13 +90,15 @@ export default function UnclassifiedPage() {
               <Select
                 className="w-full shrink-0 md:w-56"
                 defaultValue=""
-                aria-label="Assign to patient"
+                aria-label={tx("common:features.unclassified.assignToPatient")}
                 onChange={(e) => {
                   if (e.target.value)
                     assignPatient(doc.id, Number(e.target.value));
                 }}
               >
-                <option value="">Assign to patient...</option>
+                <option value="">
+                  {tx("common:features.unclassified.assignToPatient2")}
+                </option>
                 {patients.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.display_name}

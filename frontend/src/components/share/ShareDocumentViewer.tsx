@@ -1,3 +1,5 @@
+import { Trans as FeatureTrans } from "react-i18next";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useMessage, type UiMessage } from "@/i18n/messages";
 import { message } from "@/i18n/messages";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -85,6 +87,16 @@ export default function ShareDocumentViewer({
   onSelectionConfirm,
   onSelectionCancel,
 }: ShareDocumentViewerProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const renderMessage = useMessage();
   const [pdfData, setPdfData] = useState<Uint8Array | null>(null);
   const [imageBlobUrl, setImageBlobUrl] = useState<string | null>(null);
@@ -399,7 +411,7 @@ export default function ShareDocumentViewer({
   if (loading) {
     return (
       <div className="rounded-lg border p-8 text-center text-muted-foreground text-sm">
-        Loading file...
+        {tx("share:features.shareDocumentViewer.loadingFile")}
       </div>
     );
   }
@@ -433,7 +445,7 @@ export default function ShareDocumentViewer({
         <div className="flex items-center justify-between gap-2 border-b bg-surface px-2 py-1">
           <div className="flex items-center gap-0.5">
             <IconButton
-              label="Previous page"
+              label={tx("share:features.shareDocumentViewer.previousPage")}
               size="md"
               onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
               disabled={pageNumber <= 1}
@@ -445,7 +457,7 @@ export default function ShareDocumentViewer({
               {pageNumber} / {numPages}
             </span>
             <IconButton
-              label="Next page"
+              label={tx("share:features.shareDocumentViewer.nextPage")}
               size="md"
               onClick={() => setPageNumber((p) => Math.min(numPages, p + 1))}
               disabled={pageNumber >= numPages}
@@ -456,7 +468,7 @@ export default function ShareDocumentViewer({
           </div>
           <div className="flex items-center gap-0.5">
             <IconButton
-              label="Zoom out"
+              label={tx("share:features.shareDocumentViewer.zoomOut")}
               size="md"
               onClick={() => stepZoom(-BUTTON_ZOOM_STEP)}
             >
@@ -465,12 +477,14 @@ export default function ShareDocumentViewer({
             <button
               onClick={resetToFit}
               className="min-w-[44px] rounded-md px-1 py-2 text-center text-sm text-muted-foreground transition-colors hover:text-foreground coarse:min-h-11"
-              title="Fit to width"
+              title={tx("share:features.shareDocumentViewer.fitToWidth")}
             >
-              {userZoomed ? `${Math.round(scale * 100)}%` : "Fit"}
+              {userZoomed
+                ? `${Math.round(scale * 100)}%`
+                : tx("share:features.shareDocumentViewer.fit")}
             </button>
             <IconButton
-              label="Zoom in"
+              label={tx("share:features.shareDocumentViewer.zoomIn")}
               size="md"
               onClick={() => stepZoom(BUTTON_ZOOM_STEP)}
             >
@@ -482,11 +496,15 @@ export default function ShareDocumentViewer({
         {selectionMode && (
           <div className="flex items-center justify-between gap-2 border-b border-warning/25 bg-warning-soft px-3 py-1.5 text-xs text-warning">
             <span>
-              Drag on page {pageNumber} to select a region.
-              <span className="hidden sm:inline"> Press Esc to cancel.</span>
+              <FeatureTrans
+                ns="share"
+                i18nKey="features.shareDocumentViewer.dragOnPageToSelectARegionPart0"
+                components={{ part0: <span className="hidden sm:inline" /> }}
+                values={{ value0: pageNumber }}
+              />
             </span>
             <IconButton
-              label="Cancel selection"
+              label={tx("share:features.shareDocumentViewer.cancelSelection")}
               size="sm"
               onClick={selection.cancel}
               className="text-warning hover:bg-warning/10"
@@ -525,7 +543,7 @@ export default function ShareDocumentViewer({
             onLoadError={() => setError(message("feedback.failedToRenderPdf"))}
             loading={
               <div className="py-8 text-sm text-muted-foreground">
-                Loading PDF...
+                {tx("share:features.shareDocumentViewer.loadingPdf")}
               </div>
             }
           >
@@ -549,7 +567,7 @@ export default function ShareDocumentViewer({
                 }}
                 loading={
                   <div className="py-8 text-sm text-muted-foreground">
-                    Rendering page...
+                    {tx("share:features.shareDocumentViewer.renderingPage")}
                   </div>
                 }
               />
@@ -564,7 +582,7 @@ export default function ShareDocumentViewer({
                 <SelectionActionBar
                   visible
                   variant="floating"
-                  confirmLabel="Translate this region"
+                  confirmLabel={tx("share:features.extra.translateRegionShare")}
                   onConfirm={confirmSelection}
                   onCancel={selection.cancel}
                   position={{
@@ -582,7 +600,7 @@ export default function ShareDocumentViewer({
           <SelectionActionBar
             visible={Boolean(selection.lockedRect)}
             variant="bar"
-            confirmLabel="Translate this region"
+            confirmLabel={tx("share:features.extra.translateRegionShare")}
             onConfirm={confirmSelection}
             onCancel={selection.cancel}
           />

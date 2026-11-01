@@ -1,3 +1,5 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useState } from "react";
 import api from "@/api/client";
@@ -17,6 +19,16 @@ export default function EventSelector({
   currentEventId: number | null;
   onUpdate: (eventId: number) => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const { data: eventsData, refetch: refetchEvents } = useEvents({
     patientId,
@@ -67,7 +79,7 @@ export default function EventSelector({
 
   return (
     <Section
-      title="Medical Event"
+      title={tx("documents:features.eventSelector.medicalEvent")}
       icon={Stethoscope}
       sectionId="medical-event"
       defaultOpen={!!currentEventId}
@@ -76,12 +88,12 @@ export default function EventSelector({
         <div className="flex items-center gap-2 text-sm">
           <span className="font-medium">{currentEvent.title}</span>
           <span className="rounded-full bg-muted px-2 py-0.5 text-[10px]">
-            {currentEvent.event_type?.replace(/_/g, " ")}
+            {enumLabel("eventType", currentEvent.event_type)}
           </span>
         </div>
       ) : (
         <p className="text-xs text-muted-foreground mb-2">
-          No medical event assigned.
+          {tx("documents:features.eventSelector.noMedicalEventAssigned")}
         </p>
       )}
 
@@ -94,9 +106,11 @@ export default function EventSelector({
           className="rounded-md border bg-background px-2 py-1.5 text-xs max-w-full truncate"
           style={{ maxWidth: "min(100%, 20rem)" }}
         >
-          <option value="">Assign to event...</option>
+          <option value="">
+            {tx("documents:features.eventSelector.assignToEvent")}
+          </option>
           {events.map((ev) => {
-            const label = `${ev.title} (${ev.event_type?.replace(/_/g, " ")})`;
+            const label = `${ev.title} (${enumLabel("eventType", ev.event_type)})`;
             const short =
               label.length > 60 ? label.slice(0, 57) + "..." : label;
             return (
@@ -112,7 +126,9 @@ export default function EventSelector({
           disabled={suggesting}
           className="flex items-center gap-1 rounded-md border border-primary/30 px-2 py-1.5 text-xs text-primary hover:bg-primary/10 disabled:opacity-50"
         >
-          {suggesting ? "Analyzing..." : "Suggest (AI)"}
+          {suggesting
+            ? tx("documents:features.eventSelector.analyzing")
+            : tx("documents:features.eventSelector.suggestAi")}
         </button>
       </div>
 
@@ -121,20 +137,24 @@ export default function EventSelector({
           {suggestion.existing_event_id && suggestion.matched_event ? (
             <div>
               <p className="font-medium">
-                Matches: {suggestion.matched_event.title}
+                {tx("documents:features.eventSelector.matches", {
+                  value0: suggestion.matched_event.title,
+                })}
               </p>
               <p className="text-muted-foreground">{suggestion.reason}</p>
               <button
                 onClick={() => handleAssign(suggestion.existing_event_id)}
                 className="mt-1 rounded bg-primary px-3 py-1 text-primary-foreground"
               >
-                Link to this event
+                {tx("documents:features.eventSelector.linkToThisEvent")}
               </button>
             </div>
           ) : suggestion.new_event_suggestion ? (
             <div>
               <p className="font-medium">
-                Suggest new event: {suggestion.new_event_suggestion.title}
+                {tx("documents:features.eventSelector.suggestNewEvent", {
+                  value0: suggestion.new_event_suggestion.title,
+                })}
               </p>
               <p className="text-muted-foreground">
                 {suggestion.new_event_suggestion.description}
@@ -145,11 +165,13 @@ export default function EventSelector({
                 }
                 className="mt-1 rounded bg-primary px-3 py-1 text-primary-foreground"
               >
-                Create & Link
+                {tx("documents:features.eventSelector.createLink")}
               </button>
             </div>
           ) : (
-            <p className="text-muted-foreground">No matching event found.</p>
+            <p className="text-muted-foreground">
+              {tx("documents:features.eventSelector.noMatchingEventFound")}
+            </p>
           )}
         </div>
       )}

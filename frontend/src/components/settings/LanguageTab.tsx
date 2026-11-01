@@ -1,3 +1,5 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { getErrorMessage } from "@/lib/errors";
 import { message as uiMessage } from "@/i18n/messages";
 import { useEffect, useMemo, useState } from "react";
@@ -21,6 +23,16 @@ const SUPPORTED_LANGUAGES = [
 type Language = (typeof SUPPORTED_LANGUAGES)[number];
 
 export default function LanguageTab() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const { data: settingsData, refetch } = useSettings();
 
@@ -99,17 +111,20 @@ export default function LanguageTab() {
       <div className="rounded-md border p-4 space-y-4">
         <div className="flex items-center gap-2">
           <Languages className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium">Translation languages</span>
+          <span className="text-sm font-medium">
+            {tx("settings:features.languageTab.translationLanguages")}
+          </span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Controls the on-demand translation feature on shared documents.
-          Doctors viewing a share link see a dropdown listing the allowed
-          languages with the default pre-selected. Changing these settings does
-          not retranslate documents that have already been translated.
+          {tx(
+            "settings:features.languageTab.controlsTheOnDemandTranslationFeatureOnShared",
+          )}
         </p>
 
         <div className="space-y-2">
-          <label className="block text-xs font-medium">Default language</label>
+          <label className="block text-xs font-medium">
+            {tx("settings:features.languageTab.defaultLanguage")}
+          </label>
           <select
             value={defaultLanguage}
             onChange={(e) => setDefaultLanguage(e.target.value as Language)}
@@ -117,18 +132,21 @@ export default function LanguageTab() {
           >
             {allowed.map((lang) => (
               <option key={lang} value={lang}>
-                {lang}
+                {enumLabel("language", lang)}
               </option>
             ))}
           </select>
           <p className="text-xs text-muted-foreground">
-            The starting selection for the doctor's translation picker. Must be
-            one of the allowed languages below.
+            {tx(
+              "settings:features.languageTab.theStartingSelectionForTheDoctorSTranslation",
+            )}
           </p>
         </div>
 
         <div className="space-y-2">
-          <label className="block text-xs font-medium">Allowed languages</label>
+          <label className="block text-xs font-medium">
+            {tx("settings:features.languageTab.allowedLanguages")}
+          </label>
           <div className="grid gap-2 sm:grid-cols-2">
             {SUPPORTED_LANGUAGES.map((lang) => {
               const checked = isAllowed.has(lang);
@@ -148,15 +166,15 @@ export default function LanguageTab() {
                     onChange={() => toggleLanguage(lang)}
                     className="h-4 w-4 rounded border-muted-foreground coarse:h-5 coarse:w-5"
                   />
-                  <span>{lang}</span>
+                  <span>{enumLabel("language", lang)}</span>
                 </label>
               );
             })}
           </div>
           <p className="text-xs text-muted-foreground">
-            Pick the languages doctors can choose from. At least one must be
-            allowed; the current default cannot be removed without first picking
-            a different default.
+            {tx(
+              "settings:features.languageTab.pickTheLanguagesDoctorsCanChooseFromAt",
+            )}
           </p>
         </div>
 
@@ -171,11 +189,17 @@ export default function LanguageTab() {
             ) : (
               <Save className="h-3.5 w-3.5" />
             )}
-            {saved ? "Saved" : saving ? "Saving..." : "Save"}
+            {saved
+              ? tx("common:messages.saved")
+              : saving
+                ? tx("common:ui.saving")
+                : tx("common:actions.save")}
           </button>
           {!canSave && (
             <span className="text-xs text-muted-foreground">
-              Pick at least one allowed language and a valid default.
+              {tx(
+                "settings:features.languageTab.pickAtLeastOneAllowedLanguageAndA",
+              )}
             </span>
           )}
         </div>

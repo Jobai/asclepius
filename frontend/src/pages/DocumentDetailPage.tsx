@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
 import { message } from "@/i18n/messages";
 import { useTranslation } from "react-i18next";
@@ -76,6 +77,16 @@ function DetailSkeleton() {
 }
 
 export default function DocumentDetailPage() {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { formatDocType, formatDate } = useUiFormat();
   useTranslation("common");
   const { id } = useParams();
@@ -246,8 +257,9 @@ export default function DocumentDetailPage() {
     if (!studyId) return;
     const ok = await confirm({
       title: message("feedback.unlinkThisReportFromTheImagingStudy"),
-      description:
-        "The PDF stays in the patient's documents and the DICOM study stays in /imaging — only the link between them is removed. The study will fall back to a placeholder report; you can re-attach this (or any other PDF) from the imaging view.",
+      description: tx(
+        "documents:features.documentDetail.thePdfStaysInThePatientSDocuments",
+      ),
       variant: "destructive",
       confirmText: message("feedback.unlink"),
     });
@@ -295,8 +307,9 @@ export default function DocumentDetailPage() {
   const handleReplaceFile = async () => {
     const ok = await confirm({
       title: message("feedback.replaceThisFile"),
-      description:
-        "Pick a new file (e.g. the original PDF for a scan). The stored file is swapped and the old one deleted, but the extracted data — OCR text, fields, lab results — is kept. It is not reprocessed.",
+      description: tx(
+        "documents:features.documentDetail.pickANewFileEGTheOriginal",
+      ),
       confirmText: message("feedback.chooseFile"),
     });
     if (!ok) return;
@@ -322,7 +335,12 @@ export default function DocumentDetailPage() {
   };
 
   if (loading) return <DetailSkeleton />;
-  if (!doc) return <div className="text-destructive">Document not found</div>;
+  if (!doc)
+    return (
+      <div className="text-destructive">
+        {tx("documents:features.documentDetail.documentNotFound")}
+      </div>
+    );
 
   const docBusy =
     doc.status === "processing" || doc.status === "pending" || inPipeline;
@@ -347,7 +365,7 @@ export default function DocumentDetailPage() {
           />
           <p className="text-sm text-muted-foreground">
             {formatDocType(doc.doc_type)} | {formatDate(getBestDate(doc))} |{" "}
-            {doc.patient_name || "Unclassified"}
+            {doc.patient_name || tx("common:nav.unclassified")}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -356,8 +374,8 @@ export default function DocumentDetailPage() {
               href={`/api/documents/${id}/file`}
               target="_blank"
               rel="noreferrer"
-              aria-label="View file"
-              title="View file"
+              aria-label={tx("documents:features.documentDetail.viewFile")}
+              title={tx("documents:features.documentDetail.viewFile")}
               className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border transition-colors duration-fast hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background coarse:h-11 coarse:w-11"
             >
               <FileText className="h-4 w-4" />
@@ -369,7 +387,7 @@ export default function DocumentDetailPage() {
                 onClick={handleCancel}
                 className="flex items-center gap-1 rounded-md border border-warning/40 px-3 py-1.5 text-sm text-warning hover:bg-warning-soft coarse:min-h-11"
               >
-                <X className="h-4 w-4" /> Cancel
+                <X className="h-4 w-4" /> {tx("common:feedback.cancel")}{" "}
               </button>
               <DocumentQueueStatus docId={Number(id)} />
             </>
@@ -381,10 +399,14 @@ export default function DocumentDetailPage() {
             onReprocess={() => setReprocessOpen(true)}
             onTranslate={() => setTranslateOpen(true)}
             translateDisabled={!hasOcrText && !canSelectRegion}
-            translateDisabledReason="No OCR text and no PDF file to translate."
+            translateDisabledReason={tx(
+              "documents:features.extra.translateUnavailable",
+            )}
             onShare={() => setShareOpen(true)}
             shareDisabled={!doc.patient_id}
-            shareDisabledReason="Assign this document to a patient before sharing"
+            shareDisabledReason={tx(
+              "documents:features.extra.shareNeedsPatient",
+            )}
             onReplace={handleReplaceFile}
             onDelete={handleDelete}
           />
@@ -428,7 +450,9 @@ export default function DocumentDetailPage() {
         documentIds={[doc.id]}
         patientName={doc.patient_name}
         selectionLabel={
-          doc.original_filename || doc.doc_type || `Document #${doc.id}`
+          doc.original_filename ||
+          doc.doc_type ||
+          tx("documents:features.extra.detailDocumentId", { id: doc.id })
         }
       />
 

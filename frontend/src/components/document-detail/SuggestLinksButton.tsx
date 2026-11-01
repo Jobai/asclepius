@@ -1,3 +1,5 @@
+import { enumLabel } from "@/lib/labels";
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { message } from "@/i18n/messages";
 import { useState } from "react";
 import api from "@/api/client";
@@ -11,6 +13,16 @@ export default function SuggestLinksButton({
   docId: number;
   onLink: (newLink?: any) => void;
 }) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<any[] | null>(null);
@@ -60,11 +72,12 @@ export default function SuggestLinksButton({
         {loading ? (
           <>
             <div className="animate-spin h-3 w-3 border border-primary border-t-transparent rounded-full" />
-            Analyzing...
+            {tx("documents:features.eventSelector.analyzing")}{" "}
           </>
         ) : (
           <>
-            <Stethoscope className="h-3 w-3" /> Suggest links (AI)
+            <Stethoscope className="h-3 w-3" />{" "}
+            {tx("documents:features.suggestLinksButton.suggestLinksAi")}{" "}
           </>
         )}
       </button>
@@ -73,7 +86,9 @@ export default function SuggestLinksButton({
         <div className="mt-2 space-y-2">
           {suggestions.length === 0 ? (
             <p className="text-xs text-muted-foreground">
-              No related documents found
+              {tx(
+                "documents:features.suggestLinksButton.noRelatedDocumentsFound",
+              )}
             </p>
           ) : (
             suggestions.map((sg: any) => (
@@ -87,12 +102,15 @@ export default function SuggestLinksButton({
                       href={`/documents/${sg.document_id}`}
                       className="font-medium text-primary hover:underline block truncate"
                     >
-                      {sg.filename || `Document #${sg.document_id}`}
+                      {sg.filename ||
+                        tx("documents:features.linksSection.document", {
+                          value0: sg.document_id,
+                        })}
                     </a>
                     <div className="flex flex-wrap gap-2 mt-1 text-muted-foreground">
                       {sg.doc_type && (
                         <span className="rounded bg-muted px-1.5 py-0.5">
-                          {sg.doc_type.replace(/_/g, " ")}
+                          {enumLabel("docType", sg.doc_type)}
                         </span>
                       )}
                       {sg.event_date && <span>{sg.event_date}</span>}
@@ -106,7 +124,7 @@ export default function SuggestLinksButton({
                     )}
                   </div>
                   <span className="rounded bg-primary/10 px-1.5 py-0.5 text-primary text-[10px] whitespace-nowrap">
-                    {sg.link_type?.replace(/_/g, " ")}
+                    {enumLabel("linkType", sg.link_type)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -117,7 +135,7 @@ export default function SuggestLinksButton({
                     onClick={() => handleAccept(sg.document_id, sg.link_type)}
                     className="rounded bg-primary px-3 py-1 text-primary-foreground hover:bg-primary/90"
                   >
-                    Link
+                    {tx("documents:features.linksSection.link")}
                   </button>
                   <button
                     onClick={() =>
@@ -129,7 +147,7 @@ export default function SuggestLinksButton({
                     }
                     className="rounded border px-3 py-1 hover:bg-accent"
                   >
-                    Skip
+                    {tx("documents:features.suggestLinksButton.skip")}
                   </button>
                 </div>
               </div>

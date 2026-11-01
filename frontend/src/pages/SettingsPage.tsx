@@ -33,18 +33,58 @@ import { useTranslation } from "react-i18next";
 const TABS = [
   {
     key: "analysis",
-    label: "Document Analysis",
+    labelKey: "settings:features.extra.navigation.analysis",
     icon: FileSearch,
     adminOnly: true,
   },
-  { key: "pipeline", label: "Pipeline", icon: Workflow, adminOnly: true },
-  { key: "columns", label: "Table columns", icon: Columns3, adminOnly: false },
-  { key: "appearance", label: "Appearance", icon: Languages, adminOnly: false },
-  { key: "language", label: "Language", icon: Languages, adminOnly: true },
-  { key: "access", label: "Access & Identity", icon: Shield, adminOnly: true },
-  { key: "email", label: "Email", icon: Mail, adminOnly: true },
-  { key: "backup", label: "Backup", icon: Download, adminOnly: true },
-  { key: "logs", label: "Logs", icon: ScrollText, adminOnly: true },
+  {
+    key: "pipeline",
+    labelKey: "settings:features.extra.navigation.pipeline",
+    icon: Workflow,
+    adminOnly: true,
+  },
+  {
+    key: "columns",
+    labelKey: "settings:features.extra.navigation.columns",
+    icon: Columns3,
+    adminOnly: false,
+  },
+  {
+    key: "appearance",
+    labelKey: "settings:features.extra.navigation.appearance",
+    icon: Languages,
+    adminOnly: false,
+  },
+  {
+    key: "language",
+    labelKey: "settings:features.extra.navigation.language",
+    icon: Languages,
+    adminOnly: true,
+  },
+  {
+    key: "access",
+    labelKey: "settings:features.extra.navigation.access",
+    icon: Shield,
+    adminOnly: true,
+  },
+  {
+    key: "email",
+    labelKey: "settings:features.extra.navigation.email",
+    icon: Mail,
+    adminOnly: true,
+  },
+  {
+    key: "backup",
+    labelKey: "settings:features.extra.navigation.backup",
+    icon: Download,
+    adminOnly: true,
+  },
+  {
+    key: "logs",
+    labelKey: "settings:features.extra.navigation.logs",
+    icon: ScrollText,
+    adminOnly: true,
+  },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -91,7 +131,7 @@ function TabPane({ tab }: { tab: TabKey }) {
 }
 
 export default function SettingsPage() {
-  const { t: ui } = useTranslation("common");
+  const { t: ui } = useTranslation(["common", "settings"]);
   const { t } = useTranslation("settings");
   // URL-driven active tab so refresh / copy-paste / back-nav all land on the
   // correct page. Nested panes (Document Analysis sub-tabs, Access sub-tabs,
@@ -111,14 +151,12 @@ export default function SettingsPage() {
     }
   }, [slug, navigate]);
 
-  const tabLabel = (key: TabKey, label: string) =>
-    key === "appearance"
-      ? t("appearance")
-      : key === "language"
-        ? t("documentTranslation")
-        : label;
+  const tabLabel = (
+    key: TabKey,
+    labelKey: (typeof TABS)[number]["labelKey"],
+  ) => (key === "language" ? t("documentTranslation") : ui(labelKey));
   const visibleTabs = TABS.filter((tab) => isAdmin || !tab.adminOnly).map(
-    (tab) => ({ ...tab, label: tabLabel(tab.key, tab.label) }),
+    (tab) => ({ ...tab, label: tabLabel(tab.key, tab.labelKey) }),
   );
   const defaultTab: TabKey = isAdmin
     ? ADMIN_DEFAULT_TAB
@@ -167,7 +205,7 @@ export default function SettingsPage() {
               <ArrowLeft className="h-5 w-5" />
             </IconButton>
             <h1 className="text-lg font-semibold">
-              {tabLabel(activeMeta.key, activeMeta.label)}
+              {tabLabel(activeMeta.key, activeMeta.labelKey)}
             </h1>
           </div>
         </div>

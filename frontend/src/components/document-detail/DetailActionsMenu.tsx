@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -76,6 +77,16 @@ export default function DetailActionsMenu({
   onReplace,
   onDelete,
 }: DetailActionsMenuProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   const navigate = useNavigate();
   const { isMobile } = useBreakpoint();
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -85,17 +96,20 @@ export default function DetailActionsMenu({
       ? [
           {
             key: "imaging-view",
-            label: "Imaging view",
+            label: tx("documents:features.detailActionsMenu.imagingView"),
             icon: ImageIcon,
-            title: "Open the DICOM viewer for this report's imaging study",
+            title: tx(
+              "documents:features.detailActionsMenu.openTheDicomViewerForThisReportS",
+            ),
             onSelect: () => navigate(`/imaging/${imagingStudyId}`),
           },
           {
             key: "unlink-imaging",
-            label: "Unlink imaging",
+            label: tx("documents:features.detailActionsMenu.unlinkImaging"),
             icon: Unlink,
-            title:
-              "Detach this PDF from its imaging study (the PDF stays in documents)",
+            title: tx(
+              "documents:features.detailActionsMenu.detachThisPdfFromItsImagingStudyThe",
+            ),
             onSelect: onUnlinkImaging,
           },
         ]
@@ -104,13 +118,13 @@ export default function DetailActionsMenu({
       ? [
           {
             key: "reprocess",
-            label: "Reprocess...",
+            label: tx("documents:features.detailActionsMenu.reprocess"),
             icon: RefreshCw,
             onSelect: onReprocess,
           },
           {
             key: "translate",
-            label: "Translate...",
+            label: tx("documents:features.detailActionsMenu.translate"),
             icon: Languages,
             disabled: translateDisabled,
             title: translateDisabled ? translateDisabledReason : undefined,
@@ -120,7 +134,7 @@ export default function DetailActionsMenu({
       : []),
     {
       key: "share",
-      label: "Share with doctor...",
+      label: tx("documents:features.detailActionsMenu.shareWithDoctor"),
       icon: Share2,
       disabled: shareDisabled,
       title: shareDisabled ? shareDisabledReason : undefined,
@@ -128,15 +142,16 @@ export default function DetailActionsMenu({
     },
     {
       key: "replace-file",
-      label: "Replace file...",
+      label: tx("documents:features.detailActionsMenu.replaceFile"),
       icon: Upload,
-      title:
-        "Swap the stored file for a new one (e.g. a scan for the original PDF) — keeps the extracted data, no reprocessing",
+      title: tx(
+        "documents:features.detailActionsMenu.swapTheStoredFileForANewOne",
+      ),
       onSelect: onReplace,
     },
     {
       key: "delete",
-      label: "Delete",
+      label: tx("common:actions.delete"),
       icon: Trash2,
       destructive: true,
       separated: true,
@@ -148,7 +163,7 @@ export default function DetailActionsMenu({
     return (
       <>
         <IconButton
-          label="More actions"
+          label={tx("documents:features.detailActionsMenu.moreActions")}
           variant="secondary"
           onClick={() => setSheetOpen(true)}
         >
@@ -157,11 +172,14 @@ export default function DetailActionsMenu({
         <Sheet
           open={sheetOpen}
           onOpenChange={setSheetOpen}
-          title="Document actions"
+          title={tx("documents:features.detailActionsMenu.documentActions")}
         >
           <div className="space-y-0.5 pb-1">
             {items.map((item) => (
-              <div key={item.key} className={item.separated ? "mt-1 border-t pt-1" : undefined}>
+              <div
+                key={item.key}
+                className={item.separated ? "mt-1 border-t pt-1" : undefined}
+              >
                 <button
                   type="button"
                   disabled={item.disabled}
@@ -191,7 +209,10 @@ export default function DetailActionsMenu({
   return (
     <Menu>
       <MenuTrigger asChild>
-        <IconButton label="More actions" variant="secondary">
+        <IconButton
+          label={tx("documents:features.detailActionsMenu.moreActions")}
+          variant="secondary"
+        >
           <MoreVertical className="h-4 w-4" />
         </IconButton>
       </MenuTrigger>

@@ -1,5 +1,23 @@
 {
   "title": "Patienten",
   "select": "Patient auswählen",
-  "all": "Alle Patienten"
+  "all": "Alle Patienten",
+  "features": {
+    "patients": {
+      "newPatient": "Neuer Patient",
+      "createNewPatient": "Neuen Patienten anlegen",
+      "fullName": "Vollständiger Name *",
+      "dateOfBirth": "Geburtsdatum",
+      "sex": "Geschlecht",
+      "male": "Männlich",
+      "female": "Weiblich",
+      "other": "Andere",
+      "creating": "Wird erstellt...",
+      "createPatient": "Patient anlegen",
+      "name": "Name",
+      "noPatientsFound": "Keine Patienten gefunden",
+      "createAPatientToStartFilingDocumentsAnd": "Legen Sie einen Patienten an, um ihm Dokumente und Laborwerte zuzuordnen.",
+      "fullName2": "Vollständiger Name"
+    }
+  }
 }

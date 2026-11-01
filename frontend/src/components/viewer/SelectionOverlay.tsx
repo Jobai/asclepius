@@ -1,3 +1,4 @@
+import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
@@ -12,8 +13,16 @@ const CORNERS: {
 }[] = [
   { corner: "nw", className: "-left-5 -top-5", cursor: "cursor-nwse-resize" },
   { corner: "ne", className: "-right-5 -top-5", cursor: "cursor-nesw-resize" },
-  { corner: "sw", className: "-left-5 -bottom-5", cursor: "cursor-nesw-resize" },
-  { corner: "se", className: "-right-5 -bottom-5", cursor: "cursor-nwse-resize" },
+  {
+    corner: "sw",
+    className: "-left-5 -bottom-5",
+    cursor: "cursor-nesw-resize",
+  },
+  {
+    corner: "se",
+    className: "-right-5 -bottom-5",
+    cursor: "cursor-nwse-resize",
+  },
 ];
 
 export interface SelectionOverlayProps {
@@ -36,6 +45,16 @@ export default function SelectionOverlay({
   locked,
   onStartResize,
 }: SelectionOverlayProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   if (!rect) return null;
   return (
     <div
@@ -50,7 +69,9 @@ export default function SelectionOverlay({
           <button
             key={corner}
             type="button"
-            aria-label={`Resize selection (${corner})`}
+            aria-label={tx("common:features.selectionOverlay.resizeSelection", {
+              value0: corner,
+            })}
             onPointerDown={(e) => onStartResize(corner, e)}
             className={cn(
               "absolute flex h-10 w-10 touch-none items-center justify-center bg-transparent",
@@ -86,6 +107,16 @@ export function SelectionActionBar({
   variant,
   position,
 }: SelectionActionBarProps) {
+  const { t: tx } = useFeatureTranslation([
+    "common",
+    "auth",
+    "documents",
+    "patients",
+    "clinical",
+    "settings",
+    "share",
+    "errors",
+  ]);
   if (!visible) return null;
 
   if (variant === "floating") {
@@ -114,7 +145,7 @@ export function SelectionActionBar({
           onPointerDown={(e) => e.stopPropagation()}
           className="flex items-center gap-1 rounded-md border bg-background px-2.5 py-1 text-xs shadow-overlay hover:bg-accent"
         >
-          <X className="h-3 w-3" /> Cancel
+          <X className="h-3 w-3" /> {tx("common:feedback.cancel")}{" "}
         </button>
       </div>
     );
@@ -128,7 +159,7 @@ export function SelectionActionBar({
         onPointerDown={(e) => e.stopPropagation()}
         className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-md border bg-background text-sm hover:bg-accent"
       >
-        <X className="h-4 w-4" /> Cancel
+        <X className="h-4 w-4" /> {tx("common:feedback.cancel")}{" "}
       </button>
       <button
         type="button"
