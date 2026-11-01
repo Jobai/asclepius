@@ -55,6 +55,7 @@
     "encounterDetails": {
       "title": "Behandlungsinformationen",
       "entry": "Behandlungseintrag {{number}}",
+      "associatedDiagnoses": "Zugehörige Diagnosen",
       "encounterDate": "Behandlungsdatum",
       "admissionDate": "Aufnahmedatum",
       "dischargeDate": "Entlassungsdatum",

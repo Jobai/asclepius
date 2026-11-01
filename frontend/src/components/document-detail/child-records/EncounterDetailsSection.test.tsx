@@ -60,6 +60,7 @@ describe("document diagnoses and encounter details", () => {
       removeItem: (key: string) => storage.delete(key),
     });
     vi.clearAllMocks();
+    vi.mocked(api.patch).mockReset();
   });
 
   it.each([
@@ -103,6 +104,52 @@ describe("document diagnoses and encounter details", () => {
     expect(screen.getByText("Different findings")).toBeInTheDocument();
   });
 
+  it.each([
+    ["en", "Associated diagnoses"],
+    ["de", "Zugehörige Diagnosen"],
+  ])("shows identical contact details once with all diagnoses in %s", async (language, label) => {
+    await i18n.changeLanguage(language);
+    renderSections([
+      encounter,
+      {
+        ...encounter,
+        id: 13,
+        norm_diagnosis_id: 8,
+        diagnosis_original: "Second diagnosis",
+        diagnosis_canonical_display: "Second diagnosis",
+        diagnosis_code: "K21.9",
+      },
+    ]);
+
+    expect(screen.getAllByRole("heading", { level: 4 })).toHaveLength(1);
+    expect(screen.getByText(label)).toBeInTheDocument();
+    expect(screen.getByText("Document summary")).toBeInTheDocument();
+    expect(screen.getByText(/First finding/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Canonical diagnosis" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Second diagnosis" })).toBeInTheDocument();
+    const diagnoses = screen.getByRole("list", { name: label });
+    expect(diagnoses).toHaveTextContent("Canonical diagnosis");
+    expect(diagnoses).toHaveTextContent("Second diagnosis");
+  });
+
+  it.each<Partial<Encounter>>([
+    { encounter_date: "2026-10-09" },
+    { admission_date: "2026-10-09" },
+    { discharge_date: "2026-10-09" },
+    { doctor_id: 99 },
+    { facility_id: 99 },
+    { norm_specialty_id: 99 },
+    { findings: "Different findings" },
+    { follow_up_date: "2026-10-09" },
+    { follow_up_instructions: "Different instructions" },
+    { notes: "Different notes" },
+    { document_id: 99 },
+    { patient_id: 99 },
+  ])("keeps different contact details separate: %j", (difference) => {
+    renderSections([encounter, { ...encounter, ...difference, id: 13 }]);
+    expect(screen.getAllByRole("heading", { level: 4 })).toHaveLength(2);
+  });
+
   it("still saves notes to the matching encounter from the new section", async () => {
     vi.mocked(api.patch).mockResolvedValue({ data: { status: "updated" } });
     const onUpdated = vi.fn();
@@ -114,6 +161,46 @@ describe("document diagnoses and encounter details", () => {
 
     await waitFor(() => expect(api.patch).toHaveBeenCalledWith("/encounters/12", { notes: "Reviewed notes" }));
     expect(onUpdated).toHaveBeenCalledOnce();
+  });
+
+  it.each([
+    ["Save", "Reviewed shared notes"],
+    ["Delete", null],
+  ])("updates all grouped source rows when notes use %s", async (action, value) => {
+    vi.mocked(api.patch).mockResolvedValue({ data: { status: "updated" } });
+    const onUpdated = vi.fn();
+    renderSections([
+      encounter,
+      { ...encounter, id: 13, diagnosis_original: "Second diagnosis" },
+      { ...encounter, id: 14, findings: "Different findings", notes: "Independent notes" },
+    ], onUpdated);
+
+    fireEvent.click(screen.getByText("Document summary"));
+    if (value) {
+      fireEvent.change(screen.getByRole("textbox"), { target: { value } });
+    }
+    fireEvent.click(screen.getByRole("button", { name: action }));
+
+    await waitFor(() => expect(onUpdated).toHaveBeenCalledOnce());
+    expect(api.patch).toHaveBeenCalledTimes(2);
+    expect(api.patch).toHaveBeenCalledWith("/encounters/12", { notes: value });
+    expect(api.patch).toHaveBeenCalledWith("/encounters/13", { notes: value });
+  });
+
+  it("reports partial note-save failures and refreshes completed writes", async () => {
+    vi.mocked(api.patch)
+      .mockResolvedValueOnce({ data: { status: "updated" } })
+      .mockRejectedValueOnce(new Error("Save failed"));
+    const onUpdated = vi.fn();
+    renderSections([encounter, { ...encounter, id: 13 }], onUpdated);
+
+    fireEvent.click(screen.getByText("Document summary"));
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "Updated notes" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(await screen.findByText("Failed to save")).toBeInTheDocument();
+    expect(onUpdated).toHaveBeenCalledOnce();
+    expect(api.patch).toHaveBeenCalledTimes(2);
   });
 
   it("hides both sections when the document has no encounter records", () => {

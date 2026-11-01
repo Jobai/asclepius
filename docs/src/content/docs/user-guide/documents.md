@@ -157,6 +157,10 @@ in localStorage so the layout you set up stays put.
 and follow-up dates, doctor, facility, specialty, findings, follow-up instructions,
 and editable summary/notes. Missing clinical fields are labelled **Not documented**.
 Both sections use the existing extracted records; no reprocessing is needed.
+Identical contact details repeated across diagnosis records are displayed once,
+with their associated diagnoses. Entries with different dates, providers, findings,
+follow-up information, or notes remain separate. Editing shared notes updates all
+records in the displayed group.
 
 ### PDF viewer interactions
 

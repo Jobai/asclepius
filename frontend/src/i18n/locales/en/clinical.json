@@ -55,6 +55,7 @@
     "encounterDetails": {
       "title": "Encounter details",
       "entry": "Encounter {{number}}",
+      "associatedDiagnoses": "Associated diagnoses",
       "encounterDate": "Encounter date",
       "admissionDate": "Admission date",
       "dischargeDate": "Discharge date",

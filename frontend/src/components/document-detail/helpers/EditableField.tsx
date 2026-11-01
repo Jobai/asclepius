@@ -15,6 +15,7 @@ export function EditableField({
   type = "text",
   multiline = false,
   apiPath,
+  onSaveValue,
   formatDisplay,
 }: {
   label: string;
@@ -29,6 +30,8 @@ export function EditableField({
    * page passes ``/imaging/{studyId}/metadata`` so modality, body_part,
    * etc. save against ``imaging_studies`` instead. */
   apiPath?: string;
+  /** Custom persistence for a field shared by multiple underlying records. */
+  onSaveValue?: (value: string | null) => Promise<void>;
   /** Optional read-only formatter for the displayed value. The raw
    * value is still used for editing and saving — the formatter only
    * affects how it appears in the row. Used to title-case DICOM-source
@@ -41,11 +44,18 @@ export function EditableField({
   const [val, setVal] = useState(value || "");
   const [saving, setSaving] = useState(false);
 
+  const persistValue = async (next: string | null) => {
+    if (onSaveValue) {
+      await onSaveValue(next);
+      return { data: undefined };
+    }
+    return api.patch(apiPath || `/documents/${docId}`, { [field]: next });
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
-      const path = apiPath || `/documents/${docId}`;
-      const res = await api.patch(path, { [field]: val || null });
+      const res = await persistValue(val || null);
       setEditing(false);
       // Pass updated doc back so parent can update state without full reload
       onSave(res.data);
@@ -58,8 +68,7 @@ export function EditableField({
   const handleDelete = async () => {
     setSaving(true);
     try {
-      const path = apiPath || `/documents/${docId}`;
-      const res = await api.patch(path, { [field]: null });
+      const res = await persistValue(null);
       setEditing(false);
       setVal("");
       onSave(res.data);
