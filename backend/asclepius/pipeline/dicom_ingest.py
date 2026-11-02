@@ -423,6 +423,11 @@ async def process_zip_member(
     original_name = meta.get("original_name") or path.stem
     zip_stem = meta.get("zip_stem") or "bundle"
 
+    if meta.get("image_study_key"):
+        from asclepius.pipeline.image_ingest import process_image_frame
+
+        return await process_image_frame(path, meta, config, db)
+
     # Patient hint sidecar (written by upload route, same format used by the
     # standard pipeline path).
     patient_hint_path = Path(str(path) + ".patient_hint")

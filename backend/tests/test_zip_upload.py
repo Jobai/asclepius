@@ -114,6 +114,7 @@ def test_extract_zip_renames_dicom_and_tags_other(tmp_path: Path):
         meta = json.loads(sidecar.read_text())
         assert "original_name" in meta
         assert meta["zip_stem"]  # non-empty
+        assert "image_study_key" not in meta  # DICOM previews stay auxiliary
 
     # Patient hint should be next to every member (DICOM and bin alike).
     hint_files = [p for p in inbox.rglob("*.patient_hint")]
@@ -219,7 +220,7 @@ async def test_upload_zip_endpoint_extracts(client, db_path, tmp_vault, _patch_m
         user_cur = await db.execute("SELECT id FROM users WHERE username = 'admin'")
         user = await user_cur.fetchone()
         await db.execute(
-            "INSERT INTO user_patient_access (user_id, patient_id, role) " "VALUES (?, ?, 'owner')",
+            "INSERT INTO user_patient_access (user_id, patient_id, role) VALUES (?, ?, 'owner')",
             (user[0], patient_id),
         )
         await db.commit()
@@ -270,7 +271,7 @@ async def test_upload_zip_dedupe_on_resubmit(client, db_path, tmp_vault, _patch_
         user_cur = await db.execute("SELECT id FROM users WHERE username = 'admin'")
         user = await user_cur.fetchone()
         await db.execute(
-            "INSERT INTO user_patient_access (user_id, patient_id, role) " "VALUES (?, ?, 'owner')",
+            "INSERT INTO user_patient_access (user_id, patient_id, role) VALUES (?, ?, 'owner')",
             (user[0], patient_id),
         )
         await db.commit()
@@ -288,3 +289,118 @@ async def test_upload_zip_dedupe_on_resubmit(client, db_path, tmp_vault, _patch_
     inbox = Path(tmp_vault) / "inbox"
     dcm_files = list(inbox.rglob("*.dcm"))
     assert len(dcm_files) == 2
+
+
+def _jpeg_bytes(color=(50, 100, 150)):
+    from PIL import Image
+
+    buf = io.BytesIO()
+    Image.new("RGB", (12, 8), color).save(buf, "JPEG")
+    return buf.getvalue()
+
+
+@pytest.mark.asyncio
+async def test_jpeg_archive_creates_viewable_study(
+    client, db_path, tmp_vault, _patch_mime, monkeypatch, make_user_client
+):
+    from PIL import Image
+    from asclepius.config import get_config
+    from asclepius.pipeline.processor import process_file
+
+    async def no_ocr(*args, **kwargs):
+        pytest.fail("Imaging frames must not go through OCR")
+
+    monkeypatch.setattr("asclepius.pipeline.processor.extract_text", no_ocr)
+    async with aiosqlite.connect(db_path) as db:
+        cursor = await db.execute(
+            "INSERT INTO patients (slug, display_name) VALUES ('jpg-pat', 'JPEG Patient')"
+        )
+        patient_id = cursor.lastrowid
+        await db.execute(
+            "INSERT INTO user_patient_access (user_id, patient_id, role) "
+            "SELECT id, ?, 'owner' FROM users WHERE username = 'admin'",
+            (patient_id,),
+        )
+        cursor = await db.execute(
+            "INSERT INTO medical_events (patient_id, title, event_type) "
+            "VALUES (?, 'Imaging visit', 'other')",
+            (patient_id,),
+        )
+        event_id = cursor.lastrowid
+        await db.commit()
+
+    jpeg = _jpeg_bytes()
+    archive = _make_zip(
+        {"series-a/001.JPG": jpeg, "series-a/002.jpeg": jpeg, "series-b/001.jpg": jpeg}
+    )
+    for _ in range(2):  # Re-upload must preserve both series and exact counts.
+        response = await client.post(
+            f"/api/documents/upload?patient_id={patient_id}&event_id={event_id}",
+            files={"file": ("ultrasound.zip", archive, "application/zip")},
+        )
+        assert response.status_code == 201, response.text
+        assert response.json()["extracted"] == 3
+        for member in list((tmp_vault / "inbox").rglob("*.bin")):
+            await process_file(str(member), get_config())
+
+    response = await client.get("/api/imaging", params={"patient_id": patient_id})
+    assert response.status_code == 200, response.text
+    assert response.json()["total"] == 1
+    study = response.json()["items"][0]
+    assert study["num_series"] == 2
+    assert study["num_images"] == 3
+    study_id = study["id"]
+    detail = (await client.get(f"/api/imaging/{study_id}")).json()
+    assert len(detail["series"]) == 2
+    series_id = detail["series"][0]["id"]
+    prefix = f"/api/imaging/{study_id}/series/{series_id}"
+    frames = await client.get(f"{prefix}/frames")
+    assert frames.status_code == 200
+    assert frames.json()["count"] in (1, 2)
+    frame = await client.get(f"{prefix}/frame/0")
+    assert frame.status_code == 200
+    assert frame.headers["content-type"] == "image/png"
+    with Image.open(io.BytesIO(frame.content)) as image:
+        assert image.size == (12, 8)
+        with Image.open(io.BytesIO(jpeg)) as original:
+            assert image.tobytes() == original.convert("RGB").tobytes()
+    original = await client.get(f"{prefix}/frame/0?format=dicom")
+    assert original.content == jpeg
+    assert original.headers["content-type"] == "image/jpeg"
+    assert (await client.get(f"{prefix}/frame/0/metadata")).status_code == 200
+    assert (await client.get(f"{prefix}/frame/0/window")).json()["window_width"] == 255
+    assert (await client.get(f"{prefix}/frame/99")).status_code == 404
+    viewer, _ = await make_user_client("other-patient-viewer")
+    assert (await viewer.get(f"{prefix}/frames")).status_code == 403
+    assert (await viewer.get(f"{prefix}/frame/0")).status_code == 403
+    async with aiosqlite.connect(db_path) as db:
+        row = await (
+            await db.execute("SELECT event_id FROM documents WHERE id = ?", (study["document_id"],))
+        ).fetchone()
+        assert row[0] == event_id
+    assert not list((tmp_vault / "inbox").rglob("*.bin"))
+    assert not list((tmp_vault / "inbox").rglob("*.patient_hint"))
+
+
+def test_image_archive_requires_patient(tmp_path):
+    from fastapi import HTTPException
+
+    archive = tmp_path / "images.zip"
+    archive.write_bytes(_make_zip({"image.jpg": _jpeg_bytes()}))
+    inbox = tmp_path / "inbox"
+    with pytest.raises(HTTPException) as exc:
+        _extract_zip(zip_path=archive, inbox=inbox, config=_Cfg(), patient_id=None, event_id=None)
+    assert exc.value.status_code == 400
+    assert not list(inbox.rglob("*.bin"))
+
+
+def test_corrupt_image_archive_is_rejected_before_queueing(tmp_path):
+    from fastapi import HTTPException
+
+    archive = tmp_path / "images.zip"
+    archive.write_bytes(_make_zip({"good.jpg": _jpeg_bytes(), "bad.jpg": b"not a jpeg"}))
+    inbox = tmp_path / "inbox"
+    with pytest.raises(HTTPException) as exc:
+        _extract_zip(zip_path=archive, inbox=inbox, config=_Cfg(), patient_id=42, event_id=None)
+    assert exc.value.status_code == 400
+    assert not list(inbox.rglob("*.bin"))

@@ -16,6 +16,13 @@ title: "Medical Imaging"
 - **Radiology reports** (.pdf), the doctor's narrative for a study.
   Uploaded separately or auto-attached to a study via the imaging detail
   page (see *Radiology reports* below).
+- **Image-only zip exports** (.zip containing JPEG, PNG, TIFF, or BMP),
+  such as ultrasound exports. Select a patient before uploading. Each archive
+  becomes one study, with a series for each image subfolder. Original images
+  are preserved and displayed in the viewer without OCR. Corrupt images are
+  rejected during upload. Re-uploading an identical archive for the same patient
+  does not duplicate the study or inflate its image counts. JPEG previews in
+  archives containing DICOM frames remain auxiliary bundle files.
 
 The default upload cap is 1 GB so a realistic CT/MRI exam fits in one
 request. Both ``application/zip`` and ``application/x-zip-compressed``

@@ -149,6 +149,10 @@ async def _bundle_file_already_copied(
     except Exception:
         return False
     original_name = meta.get("original_name") or path.stem
+    if meta.get("image_study_key"):
+        # These are study frames, not auxiliary bundle files. Let the
+        # idempotent image ingester replay them and repair database counts.
+        return False
     # ``zip_stem`` is part of the destination path that
     # ``process_zip_member`` builds, but the per-patient bundle root
     # already namespaces by zip stem so we only need the original

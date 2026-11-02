@@ -48,6 +48,15 @@ _DICOM_FORCE_READ_BYTES = 4096
 _IMAGE_FRAME_EXTS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp"}
 
 
+def _is_dicom_member(name: str, head: bytes) -> bool:
+    ext = Path(name).suffix.lower()
+    return Path(name).name.lower() != "dicomdir" and (
+        ext in {".dcm", ".dicom"}
+        or head[_DICM_OFFSET : _DICM_OFFSET + 4] == _DICM_MAGIC
+        or (ext not in _IMAGE_FRAME_EXTS and _looks_like_dicom_via_pydicom(head))
+    )
+
+
 def _looks_like_dicom_via_pydicom(head: bytes) -> bool:
     """Force-read fallback: parse a small head buffer with pydicom.
 
@@ -126,6 +135,7 @@ def _extract_zip(
     For each member:
     - sanitise the name (Zip Slip safe via ``safe_vault_join``);
     - peek bytes 128–132 to detect the DICOM magic and rename to ``.dcm``;
+    - image exports without DICOM siblings become study frames via sidecars;
     - everything else is renamed to ``<name>.bin`` and gets a ``.zip_member``
       sidecar so the pipeline can restore the original filename when it
       files the bundle next to the imaging study;
@@ -170,6 +180,56 @@ def _extract_zip(
             raise ApiError(
                 code=ErrorCode.INVALID_ARCHIVE, status_code=400, detail=f"Corrupt zip member: {bad}"
             )
+
+        # Classify the whole archive before publishing any watched files.
+        # JPEG previews in a DICOM exam remain auxiliary files; an image-only
+        # export needs its own study instead. Write that decision into each
+        # sidecar before the watcher can start processing the member.
+        members = [info for info in zf.infolist() if not info.is_dir()]
+        if sum(info.file_size for info in members) > max_uncompressed:
+            raise ApiError(
+                code=ErrorCode.UPLOAD_TOO_LARGE,
+                status_code=413,
+                params={"max_bytes": max_uncompressed},
+                detail=f"Zip uncompressed size exceeds {max_uncompressed} bytes",
+            )
+        has_dicom = False
+        for info in members:
+            with zf.open(info) as src:
+                if _is_dicom_member(
+                    info.filename.replace("\\", "/"), src.read(_DICOM_FORCE_READ_BYTES)
+                ):
+                    has_dicom = True
+                    break
+        image_study_key = None
+        if not has_dicom and any(
+            Path(i.filename).suffix.lower() in _IMAGE_FRAME_EXTS for i in members
+        ):
+            if not patient_id:
+                raise ApiError(
+                    code=ErrorCode.INVALID_REQUEST,
+                    status_code=400,
+                    detail="Select a patient before uploading an image archive",
+                )
+            import hashlib
+
+            image_study_key = hashlib.sha256(
+                f"image-archive:{patient_id}:{compute_file_hash(str(zip_path))}".encode()
+            ).hexdigest()
+            from PIL import Image
+
+            for info in members:
+                if Path(info.filename).suffix.lower() not in _IMAGE_FRAME_EXTS:
+                    continue
+                try:
+                    with zf.open(info) as src, Image.open(src) as image:
+                        image.load()
+                except Exception as exc:
+                    raise ApiError(
+                        code=ErrorCode.INVALID_ARCHIVE,
+                        status_code=400,
+                        detail=f"Could not read image in archive: {info.filename}",
+                    ) from exc
 
         for info in zf.infolist():
             if info.is_dir():
@@ -226,25 +286,7 @@ def _extract_zip(
                 # produces noise. Park it as a bundle file instead.
                 is_dicomdir = lower_name == "dicomdir"
 
-                # JPG/PNG/TIFF *inside* a zip get the imaging-image
-                # treatment further down (see _image_frame_kind below). For
-                # the per-member loop they're tagged as "other" so the
-                # bundle path stores them; the post-extract pass promotes
-                # all-image folders to a synthesized imaging study.
-                is_image_frame = ext in _IMAGE_FRAME_EXTS
-
-                preamble_match = (
-                    len(head) >= _DICM_OFFSET + 4
-                    and head[_DICM_OFFSET : _DICM_OFFSET + 4] == _DICM_MAGIC
-                )
-                is_dicom = not is_dicomdir and (
-                    ext in {".dcm", ".dicom"}
-                    or preamble_match
-                    # Force-read fallback for preamble-less DICOM —
-                    # only checked when neither extension nor preamble
-                    # gave us a hit, so the common path stays cheap.
-                    or (not is_image_frame and _looks_like_dicom_via_pydicom(head))
-                )
+                is_dicom = not is_dicomdir and _is_dicom_member(original_name, head)
 
                 # Final on-disk name. DICOM frames keep ``.dcm``; everything
                 # else gets ``.bin`` so the watcher's ``SUPPORTED_EXTENSIONS``
@@ -270,6 +312,9 @@ def _extract_zip(
                 # appears under a watched extension the worker will queue it.
                 if final_kind == "other":
                     meta = {"original_name": original_name, "zip_stem": zip_stem}
+                    if image_study_key and ext in _IMAGE_FRAME_EXTS:
+                        meta["image_study_key"] = image_study_key
+                        meta["image_series"] = "/".join(sanitised_parts[:-1])
                     (member_parent / f"{final_name}.zip_member").write_text(json.dumps(meta))
                 if patient_id:
                     (member_parent / f"{final_name}.patient_hint").write_text(str(patient_id))

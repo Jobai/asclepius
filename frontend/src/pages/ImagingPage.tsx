@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/api/client";
 import { usePatient } from "@/contexts/PatientContext";
+import { usePipelineStatus } from "@/contexts/PipelineStatusContext";
 import {
   Image as ImageIcon,
   Search,
@@ -99,6 +100,7 @@ export default function ImagingPage() {
     "errors",
   ]);
   const { selectedPatient } = usePatient();
+  const { status: pipeline } = usePipelineStatus();
   const navigate = useNavigate();
   const [items, setItems] = useState<Study[]>([]);
   const [total, setTotal] = useState(0);
@@ -159,7 +161,7 @@ export default function ImagingPage() {
 
   useEffect(() => {
     reload();
-  }, [reload]);
+  }, [reload, pipeline?.total_processed]);
 
   // Reset to first page when filters change.
   useEffect(() => {
@@ -232,7 +234,6 @@ export default function ImagingPage() {
       {showUpload && (
         <FileUpload
           onUploadComplete={() => {
-            setShowUpload(false);
             reload();
           }}
         />

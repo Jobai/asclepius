@@ -15,6 +15,7 @@ from asclepius.config import get_config
 
 # DICOM file extensions used when scanning a series folder for frames.
 DICOM_EXTS = {".dcm", ".dicom"}
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp"}
 
 
 async def _series_folder_with_access(
@@ -47,8 +48,12 @@ async def _series_folder_with_access(
 
 
 def _sorted_frames(series_path: Path) -> list[Path]:
-    """Return the series folder's DICOM frame files, sorted by name."""
-    return sorted([f for f in series_path.iterdir() if f.suffix.lower() in DICOM_EXTS])
+    """Return the series folder's DICOM or raster frames, sorted by name."""
+    return sorted(
+        f
+        for f in series_path.iterdir()
+        if f.is_file() and f.suffix.lower() in DICOM_EXTS | IMAGE_EXTS
+    )
 
 
 async def _resolve_frame(

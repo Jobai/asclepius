@@ -24,9 +24,10 @@ from asclepius.config import get_config
 from asclepius.db.connection import get_db
 from asclepius.imaging.bundles import _bundle_root_for_study, _kind_for_extension
 from asclepius.imaging.frames import (
-    DICOM_EXTS,
+    IMAGE_EXTS,
     _resolve_frame,
     _series_folder_with_access,
+    _sorted_frames,
 )
 from asclepius.imaging.reports import swap_study_document
 from asclepius.imaging.service import _study_with_access, list_imaging_studies_query
@@ -125,9 +126,7 @@ async def list_frames(
     if not series_path.exists():
         return {"frames": [], "count": 0}
 
-    frames = sorted(
-        [f.name for f in series_path.iterdir() if f.suffix.lower() in DICOM_EXTS]
-    )
+    frames = [f.name for f in _sorted_frames(series_path)]
     return {"frames": frames, "count": len(frames)}
 
 
@@ -158,6 +157,32 @@ async def get_frame(
     the canvas-scale fallback no longer pixelates.
     """
     frame_path = await _resolve_frame(study_id, series_id, index, current_user, db)
+
+    if frame_path.suffix.lower() in IMAGE_EXTS:
+        if format == "dicom":
+            # Download the original image with its real content type.
+            return FileResponse(str(frame_path))
+        import io
+        import numpy as np
+        from PIL import Image, ImageOps
+        from fastapi.responses import StreamingResponse
+
+        with Image.open(frame_path) as source:
+            image = ImageOps.exif_transpose(source).convert("RGB")
+        if wc is not None and ww is not None and ww > 0:
+            pixels = np.asarray(image, dtype=float)
+            pixels = np.clip((pixels - (wc - ww / 2)) / ww * 255, 0, 255)
+            image = Image.fromarray(pixels.astype(np.uint8))
+        if invert:
+            image = ImageOps.invert(image)
+        if upscale > 1:
+            image = image.resize(
+                (image.width * upscale, image.height * upscale), Image.Resampling.BICUBIC
+            )
+        buf = io.BytesIO()
+        image.save(buf, format="PNG")
+        buf.seek(0)
+        return StreamingResponse(buf, media_type="image/png")
 
     if format == "dicom":
         return FileResponse(
@@ -263,6 +288,17 @@ async def get_frame_metadata(
     """
     frame_path = await _resolve_frame(study_id, series_id, index, current_user, db)
 
+    if frame_path.suffix.lower() in IMAGE_EXTS:
+        from PIL import Image
+
+        with Image.open(frame_path) as image:
+            values = {"Format": image.format, "Width": image.width, "Height": image.height}
+        items = [
+            {"tag": key, "keyword": key, "vr": "", "name": key, "value": value}
+            for key, value in values.items()
+        ]
+        return {"items": items, "count": len(items)}
+
     try:
         ds = pydicom.dcmread(str(frame_path), stop_before_pixels=True)
     except Exception:
@@ -325,6 +361,9 @@ async def get_frame_window(
     to a min/max stretch in that case).
     """
     frame_path = await _resolve_frame(study_id, series_id, index, current_user, db)
+
+    if frame_path.suffix.lower() in IMAGE_EXTS:
+        return {"window_center": 127.5, "window_width": 255}
 
     try:
         ds = pydicom.dcmread(str(frame_path), stop_before_pixels=True)
@@ -462,7 +501,7 @@ async def list_imaging_links(
     # entry to the document detail.
     if document_id:
         cursor = await db.execute(
-            "SELECT id, original_filename, doc_type, event_date " "FROM documents WHERE id = ?",
+            "SELECT id, original_filename, doc_type, event_date FROM documents WHERE id = ?",
             (document_id,),
         )
         report_row = await cursor.fetchone()
@@ -622,7 +661,7 @@ async def remove_imaging_link(
     """Remove a document_links row. Validates the link belongs to this study."""
     study = await _study_with_access(study_id, current_user, db)
     cursor = await db.execute(
-        "SELECT source_document_id, target_document_id FROM document_links " "WHERE id = ?",
+        "SELECT source_document_id, target_document_id FROM document_links WHERE id = ?",
         (link_id,),
     )
     row = await cursor.fetchone()
