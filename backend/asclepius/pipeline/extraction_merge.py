@@ -84,6 +84,21 @@ ARRAY_DEDUP_KEYS: dict[str, tuple[str, ...]] = {
 # at the top level. It shares the ``invoice_items`` dedup contract.
 COST_LINE_ITEM_KEYS: tuple[str, ...] = ARRAY_DEDUP_KEYS["invoice_items"]
 
+_DETAIL_NARRATIVES = {
+    "requested_service",
+    "clinical_question",
+    "indication",
+    "service",
+    "instructions",
+    "method",
+    "findings",
+    "assessment",
+    "recommendations",
+    "subject",
+    "coverage",
+    "conditions",
+}
+
 # Top-level array fields the canonical merge concatenates+dedups. Excludes
 # ``invoice_items`` because in the extraction dict that data is carried as
 # ``cost.line_items`` (handled separately); a literal top-level
@@ -168,6 +183,33 @@ def merge_extraction_dicts(
             continue
 
         for key, val in ext.items():
+            if key == "document_details":
+                # Type details survive chunk and section paths even with scalar
+                # fill disabled. Fill missing fields from later pages.
+                if isinstance(val, dict):
+                    details = result.setdefault(key, {})
+                    for kind, fields in val.items():
+                        if isinstance(fields, dict):
+                            target = details.setdefault(kind, {})
+                            for field, value in fields.items():
+                                if (
+                                    value is not None
+                                    and value != ""
+                                    and target.get(field) in (None, "")
+                                ):
+                                    target[field] = value
+                                elif (
+                                    field in _DETAIL_NARRATIVES
+                                    and isinstance(value, str)
+                                    and isinstance(target.get(field), str)
+                                    and value not in target[field]
+                                ):
+                                    target[field] += "\n\n" + value
+                                elif (
+                                    field == "decision" and target.get(field) == "unknown" and value
+                                ):
+                                    target[field] = value
+                continue
             if key in _TOP_LEVEL_ARRAYS:
                 if isinstance(val, list):
                     array_buckets[key].extend(val)
@@ -253,9 +295,7 @@ def merge_section_extractions(extractions: list[dict]) -> dict:
     code that reads ``merged["lab_results"]`` etc. unconditionally keeps
     working.
     """
-    merged = merge_extraction_dicts(
-        extractions, fill_scalars=False, encounter_requires_date=True
-    )
+    merged = merge_extraction_dicts(extractions, fill_scalars=False, encounter_requires_date=True)
     skeleton = empty_section_skeleton()
     for key in ("lab_results", "diagnoses", "medications", "vaccinations"):
         if key in merged:
@@ -266,6 +306,8 @@ def merge_section_extractions(extractions: list[dict]) -> dict:
         cost = merged["cost"]
         cost.setdefault("line_items", [])
         skeleton["cost"] = cost
+    if "document_details" in merged:
+        skeleton["document_details"] = merged["document_details"]
     return skeleton
 
 
@@ -281,6 +323,20 @@ def merge_pair(base: dict, additional: dict) -> dict:
     ``additional``'s non-array data. Mutates and returns ``base``.
     """
     merged = merge_extraction_dicts([base, additional], fill_scalars=False)
+    if "document_details" in merged:
+        base["document_details"] = merged["document_details"]
+        if "examination_report" in merged["document_details"]:
+            encounter = base.get("encounter")
+            if not isinstance(encounter, dict):
+                encounter = base["encounter"] = {}
+            if isinstance(additional.get("encounter"), dict):
+                for key, value in additional["encounter"].items():
+                    if not encounter.get(key):
+                        encounter[key] = value
+            # The full findings can span several chunks even when the
+            # encounter metadata is only present in the first one.
+            findings = merged["document_details"]["examination_report"].get("findings")
+            encounter["findings"] = findings or encounter.get("findings")
     for name in _TOP_LEVEL_ARRAYS:
         if name in merged:
             base[name] = merged[name]

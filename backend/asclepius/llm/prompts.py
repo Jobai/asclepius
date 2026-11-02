@@ -142,7 +142,7 @@ def chunk_context_preamble(
 
 DB_SCHEMA_FOR_CHAT = """
 Tables:
-- documents(id, patient_id, file_path, original_filename, doc_type, event_date, issued_date, doctor_id, facility_id, date_received, summary_en, summary_original, norm_specialty_id, specialty_original, insurance_company, insurance_policy, notes, tags, ocr_text, raw_extraction, status)
+- documents(id, patient_id, file_path, original_filename, doc_type, document_details, event_date, issued_date, doctor_id, facility_id, date_received, summary_en, summary_original, norm_specialty_id, specialty_original, insurance_company, insurance_policy, notes, tags, ocr_text, raw_extraction, status)
 - patients(id, slug, display_name, date_of_birth, sex)
 - facilities(id, name, slug, type, address, city, country, phone, email, website)
 - doctors(id, name, slug, title, norm_specialty_id, specialty_original, facility_id, phone, email)

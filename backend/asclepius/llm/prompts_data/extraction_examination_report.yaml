@@ -1,0 +1,35 @@
+description: "Phase 2: Extract completed diagnostic examination findings"
+
+default: |-
+  Parse a completed non-imaging diagnostic examination report (endoscopy, ECG, EEG, pulmonary function). Extract the method, findings, assessment, and recommendations into document_details.examination_report.
+  Extract only confirmed diagnoses in their ORIGINAL wording, not suspected diagnoses, rule-out indications, or clinical questions. Use diagnoses: [] if none. Do not turn peri-procedural drugs into ongoing medications. Never invent codes or dates. Use null for missing values. encounter.findings includes the findings and assessment; encounter_date is the actual examination date, not the printing date. Respond in JSON only using this schema:
+
+  {{
+    "document_details": {{
+      "examination_report": {{
+        "examination": null,
+        "body_region": null,
+        "method": null,
+        "findings": null,
+        "assessment": null,
+        "recommendations": null
+      }}
+    }},
+    "diagnoses": [
+      {{
+        "diagnosis_original": "confirmed diagnosis as written, or omit this entry",
+        "icd10_code": null
+      }}
+    ],
+    "encounter": {{
+      "encounter_date": null,
+      "findings": null,
+      "follow_up_date": null,
+      "follow_up_instructions": null
+    }}
+  }}
+
+  OCR text:
+  ---
+  {ocr_text}
+  ---

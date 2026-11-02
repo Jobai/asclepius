@@ -5,6 +5,14 @@ const keys = {
   title: {
     classification:
       "settings:features.extra.promptMetadata.titles.classification",
+    extraction_referral:
+      "settings:features.extra.promptMetadata.titles.extraction_referral",
+    extraction_medical_order:
+      "settings:features.extra.promptMetadata.titles.extraction_medical_order",
+    extraction_examination_report:
+      "settings:features.extra.promptMetadata.titles.extraction_examination_report",
+    extraction_insurance_document:
+      "settings:features.extra.promptMetadata.titles.extraction_insurance_document",
     vision_extraction:
       "settings:features.extra.promptMetadata.titles.vision_extraction",
     extraction_lab_test:
@@ -37,6 +45,14 @@ const keys = {
   description: {
     classification:
       "settings:features.extra.promptMetadata.descriptions.classification",
+    extraction_referral:
+      "settings:features.extra.promptMetadata.descriptions.extraction_referral",
+    extraction_medical_order:
+      "settings:features.extra.promptMetadata.descriptions.extraction_medical_order",
+    extraction_examination_report:
+      "settings:features.extra.promptMetadata.descriptions.extraction_examination_report",
+    extraction_insurance_document:
+      "settings:features.extra.promptMetadata.descriptions.extraction_insurance_document",
     vision_extraction:
       "settings:features.extra.promptMetadata.descriptions.vision_extraction",
     extraction_lab_test:

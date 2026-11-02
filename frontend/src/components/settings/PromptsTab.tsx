@@ -185,6 +185,13 @@ export default function PromptsTab() {
                   {tx("settings:features.promptsTab.customized")}
                 </span>
               )}
+              {p.missing_doc_types?.length > 0 && (
+                <p className="text-xs text-warning" role="status">
+                  {tx("settings:features.promptsTab.missingDocumentTypes", {
+                    types: p.missing_doc_types.join(", "),
+                  })}
+                </p>
+              )}
               <p className="text-xs text-muted-foreground">
                 {renderMessage(
                   promptMessage("description", p.key, p.description),

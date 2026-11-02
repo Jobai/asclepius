@@ -72,6 +72,11 @@ async def _run_migrations(db: aiosqlite.Connection) -> None:
 
     The compat view ``documents_with_names`` is rebuilt every init.
     """
+    cursor = await db.execute("PRAGMA table_info(documents)")
+    if "document_details" not in {row[1] for row in await cursor.fetchall()}:
+        await db.execute("ALTER TABLE documents ADD COLUMN document_details TEXT")
+        await db.commit()
+
     # ── triggers: keep imaging_studies / encounters in lockstep with
     # the parent documents row. Idempotent via CREATE TRIGGER IF NOT EXISTS.
     for table in ("encounters", "imaging_studies"):
@@ -292,7 +297,8 @@ async def _migration_consolidate_doc_types(db: aiosqlite.Connection) -> None:
       - medical_cert, sick_leave -> medical_certificate (renamed + merged)
       - radiology_report, imaging_dicom, imaging_other -> imaging_report
       - receipt -> invoice (financial doc family)
-      - referral -> prescription (per project decision)
+      - referral is preserved as a distinct type. Older installations
+        already mapped it to prescription; that lossy mapping is not reversed.
       - pathology_report, er_report, physio_report, dental,
         ophthalmology, mental_health -> specialist_report (specialty
         values dropped from doc_type, format reverts to specialist report)
@@ -308,7 +314,6 @@ async def _migration_consolidate_doc_types(db: aiosqlite.Connection) -> None:
         ("imaging_dicom", "imaging_report"),
         ("imaging_other", "imaging_report"),
         ("receipt", "invoice"),
-        ("referral", "prescription"),
         ("pathology_report", "specialist_report"),
         ("er_report", "specialist_report"),
         ("physio_report", "specialist_report"),

@@ -251,7 +251,8 @@
       "availableVariables": "Available variables",
       "clickToCopy": "{{value0}}{{value1}} Click to copy",
       "clickAChipToCopyThePlaceholderVariables": "Click a chip to copy the placeholder. Variables marked with <part0>?</part0> are optional — substituted only if the placeholder actually appears in the template. Using an unknown placeholder will break extraction.",
-      "resetToDefault": "Reset to default"
+      "resetToDefault": "Reset to default",
+      "missingDocumentTypes": "This custom prompt does not yet include the new document types: {{types}}. Update it or reset it to the default."
     },
     "attachedModelRow": {
       "enabledClickToDisable": "Enabled, click to disable",
@@ -494,7 +495,11 @@
           "chat_system": "Chat system prompt",
           "link_suggestion": "Link suggestions",
           "page_classification": "Page classification",
-          "translation": "Document translation"
+          "translation": "Document translation",
+          "extraction_referral": "Referral extraction",
+          "extraction_medical_order": "Medical order extraction",
+          "extraction_examination_report": "Examination report extraction",
+          "extraction_insurance_document": "Insurance correspondence extraction"
         },
         "descriptions": {
           "classification": "Phase 1: Document classification and basic metadata extraction",
@@ -512,7 +517,11 @@
           "chat_system": "Chat: System prompt for the medical records assistant",
           "link_suggestion": "Suggest related documents for linking",
           "page_classification": "Classify pages of multi-page documents into content types",
-          "translation": "On-demand translation of a document body into a configurable target language"
+          "translation": "On-demand translation of a document body into a configurable target language",
+          "extraction_referral": "Phase 2: Extract structured details: Referral",
+          "extraction_medical_order": "Phase 2: Extract structured details: Medical order",
+          "extraction_examination_report": "Phase 2: Extract structured details: Examination report",
+          "extraction_insurance_document": "Phase 2: Extract structured details: Insurance correspondence"
         },
         "variables": {
           "ocr_text": "Full OCR-extracted text of the document.",

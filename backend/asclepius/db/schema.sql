@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS documents (
     file_path TEXT NOT NULL,
     original_filename TEXT NOT NULL,
     doc_type TEXT,
+    document_details TEXT,  -- validated JSON, namespaced by document type
     event_date DATE,  -- canonical timeline anchor (date the medical event happened)
     doctor_id INTEGER REFERENCES doctors(id),
     facility_id INTEGER REFERENCES facilities(id),

@@ -93,7 +93,11 @@
     "medical_certificate": "medical certificate",
     "imaging_report": "imaging report",
     "other": "other",
-    "unknown": "Unknown type"
+    "unknown": "Unknown type",
+    "referral": "Referral",
+    "medical_order": "Medical order",
+    "examination_report": "Examination report",
+    "insurance_document": "Insurance correspondence"
   },
   "dates": {
     "noDate": "No date",
@@ -618,7 +622,11 @@
           "discharge_summary": "Discharge summary",
           "imaging_report": "Imaging report",
           "correspondence": "Correspondence",
-          "invoice_page": "Invoice page"
+          "invoice_page": "Invoice page",
+          "referral": "Referral",
+          "medical_order": "Medical order",
+          "examination_report": "Examination report",
+          "insurance_document": "Insurance correspondence"
         }
       },
       "documentCount_one": "{{count, number}} document",

@@ -92,15 +92,4 @@ export function loadVisibleColumns(): Set<ColumnKey> {
   return new Set(COLUMNS.filter((c) => c.defaultVisible).map((c) => c.key));
 }
 
-export const DOC_TYPES = [
-  "invoice",
-  "prescription",
-  "specialist_report",
-  "surgical_report",
-  "discharge",
-  "lab_test",
-  "vaccination",
-  "medical_certificate",
-  "imaging_report",
-  "other",
-];
+export { DOC_TYPES } from "@/lib/docTypes";

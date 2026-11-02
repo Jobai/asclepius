@@ -340,5 +340,48 @@
         "dateAdded": "Hinzugefügt am"
       }
     }
+  },
+  "typeDetails": {
+    "title": "{{type}}: Details",
+    "fields": {
+      "target_specialty": "Ziel-Fachrichtung",
+      "recipient": "Empfänger",
+      "requested_service": "Auftrag",
+      "clinical_question": "Fragestellung",
+      "indication": "Indikation / Begründung",
+      "urgency": "Dringlichkeit",
+      "order_kind": "Art der Verordnung",
+      "service": "Verordnete Leistung",
+      "quantity": "Anzahl / Menge",
+      "frequency": "Häufigkeit",
+      "valid_from": "Gültig ab",
+      "valid_until": "Gültig bis",
+      "instructions": "Anweisungen",
+      "examination": "Untersuchung",
+      "body_region": "Körperregion",
+      "method": "Methode",
+      "findings": "Befund",
+      "assessment": "Beurteilung",
+      "recommendations": "Empfehlungen",
+      "insurer": "Versicherung / Krankenkasse",
+      "reference_number": "Aktenzeichen",
+      "subject": "Betroffene Leistung / Anliegen",
+      "decision": "Entscheidung / Bearbeitungsstand",
+      "coverage": "Umfang der Kostenübernahme",
+      "conditions": "Bedingungen / Einschränkungen"
+    },
+    "options": {
+      "approved": "Genehmigt",
+      "partially_approved": "Teilweise genehmigt",
+      "denied": "Abgelehnt",
+      "pending": "Ausstehend / beantragt",
+      "unknown": "Nicht angegeben",
+      "therapeutic_service": "Heilmittel",
+      "medical_aid": "Hilfsmittel",
+      "nursing_care": "Pflege",
+      "transport": "Krankenbeförderung",
+      "hospital_admission": "Krankenhauseinweisung",
+      "other": "Sonstige Leistung"
+    }
   }
 }

@@ -93,7 +93,11 @@
     "medical_certificate": "Ärztliche Bescheinigung",
     "imaging_report": "Bildgebungsbefund",
     "other": "Sonstiges",
-    "unknown": "Unbekannter Typ"
+    "unknown": "Unbekannter Typ",
+    "referral": "Überweisung",
+    "medical_order": "Verordnung",
+    "examination_report": "Untersuchungsbericht",
+    "insurance_document": "Versicherungsschreiben"
   },
   "dates": {
     "noDate": "Kein Datum",
@@ -618,7 +622,11 @@
           "discharge_summary": "Entlassungszusammenfassung",
           "imaging_report": "Bildgebender Befund",
           "correspondence": "Korrespondenz",
-          "invoice_page": "Rechnungsseite"
+          "invoice_page": "Rechnungsseite",
+          "referral": "Überweisung",
+          "medical_order": "Verordnung",
+          "examination_report": "Untersuchungsbericht",
+          "insurance_document": "Versicherungsschreiben"
         }
       },
       "documentCount_one": "{{count, number}} Dokument",

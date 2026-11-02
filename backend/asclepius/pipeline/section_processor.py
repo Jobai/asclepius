@@ -174,6 +174,10 @@ async def process_with_sections(
         "operative_notes": "surgical_report",
         "discharge_summary": "discharge",
         "imaging_report": "imaging_report",
+        "referral": "referral",
+        "medical_order": "medical_order",
+        "examination_report": "examination_report",
+        "insurance_document": "insurance_document",
         "medication_chart": "prescription",
         "vital_signs": "specialist_report",
         "invoice_page": "invoice",
@@ -184,6 +188,7 @@ async def process_with_sections(
     }
 
     all_extractions = []
+    has_clinical_sections = False
 
     for idx, section in enumerate(sections):
         section_type = section["type"]
@@ -250,9 +255,26 @@ async def process_with_sections(
         await db.commit()
 
         all_extractions.append(section_extraction)
+        if (
+            extraction_type
+            in (
+                "specialist_report",
+                "examination_report",
+                "imaging_report",
+                "lab_test",
+                "discharge",
+                "surgical_report",
+                "prescription",
+            )
+            and section_extraction
+            and "error" not in section_extraction
+        ):
+            has_clinical_sections = True
 
     # Step 4: Aggregate all extractions into one merged result
     merged = _merge_section_extractions(all_extractions)
+    if has_clinical_sections:
+        merged["_has_clinical_sections"] = True
 
     return merged
 

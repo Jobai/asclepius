@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Referral, non-drug medical order, examination report and insurance document
+  types, including purpose-based classification for text, vision and PDF pages,
+  structured extraction, editable details, filters, bilingual labels and search.
+  Administrative requests no longer create clinical records. Custom classifiers
+  missing the new types show an update notice; existing documents are preserved.
+
 - Configurable synonym matching languages under Document Analysis → Normalization.
   German and English are selected by default; Dutch and other stored languages
   can be enabled. Disabled-language synonyms remain stored and visible. The

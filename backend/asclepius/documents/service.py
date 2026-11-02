@@ -7,6 +7,7 @@ import aiosqlite
 
 from asclepius.normalization.display_names import attach_display_names
 from asclepius.util.dates import BEST_DATE_SQL, BEST_DATE_SQL_WITH_CREATED
+from asclepius.documents.details import parse_document_details
 
 # ``require_document_access`` now lives in :mod:`asclepius.authz` (the single
 # source of truth for access control). It is intentionally NOT re-exported
@@ -43,6 +44,7 @@ async def get_document(db: aiosqlite.Connection, doc_id: int) -> dict | None:
     if not row:
         return None
     item = dict(row)
+    item["document_details"] = parse_document_details(item.get("document_details"))
     await attach_display_names(
         db, [item], "specialties", "norm_specialty_id", "specialty_display_names"
     )
@@ -199,6 +201,7 @@ async def list_documents(
                 OR unicode_casefold(d.summary_original) LIKE ? COLLATE NOCASE
                 OR unicode_casefold(d.specialty_original) LIKE ? COLLATE NOCASE
                 OR unicode_casefold(d.ocr_text) LIKE ? COLLATE NOCASE
+                OR unicode_casefold(d.document_details) LIKE ? COLLATE NOCASE
                 OR unicode_casefold(p.display_name) LIKE ? COLLATE NOCASE
                 OR unicode_casefold(ns.canonical_display) LIKE ? COLLATE NOCASE
                 OR EXISTS (SELECT 1 FROM norm_specialty_labels l
@@ -206,7 +209,7 @@ async def list_documents(
                 OR EXISTS (SELECT 1 FROM norm_specialty_aliases a
                            WHERE a.norm_specialty_id = d.norm_specialty_id AND unicode_casefold(a.alias) LIKE ?))"""
         )
-        params.extend([search_term] * 12)
+        params.extend([search_term] * 13)
 
     where = "WHERE " + " AND ".join(conditions) if conditions else ""
 
@@ -247,6 +250,8 @@ async def list_documents(
 
     rows = await cursor.fetchall()
     items = [dict(r) for r in rows]
+    for item in items:
+        item["document_details"] = parse_document_details(item.get("document_details"))
     await attach_display_names(
         db, items, "specialties", "norm_specialty_id", "specialty_display_names"
     )
@@ -308,6 +313,16 @@ async def update_document_fields(db: aiosqlite.Connection, doc_id: int, updates:
         f"UPDATE documents SET {set_clause}, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
         values,
     )
+    if "document_details" in updates:
+        cursor = await db.execute("SELECT doc_type FROM documents WHERE id = ?", (doc_id,))
+        row = await cursor.fetchone()
+        if row and row[0] == "examination_report":
+            exam = parse_document_details(updates["document_details"]).get("examination_report")
+            if isinstance(exam, dict) and "findings" in exam:
+                await db.execute(
+                    "UPDATE encounters SET findings = ? WHERE document_id = ?",
+                    (exam["findings"], doc_id),
+                )
     # Cascade date changes to lab_results. When the document's event_date
     # shifts, every lab row attached to the document moves with it. Per-row
     # manual overrides are overwritten on purpose - the user edited the

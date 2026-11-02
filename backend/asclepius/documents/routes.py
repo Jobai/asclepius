@@ -3,6 +3,7 @@
 Sub-routers handle upload, file ops, linking, and AI features.
 """
 
+import json
 import logging
 import re
 import shutil
@@ -33,6 +34,7 @@ from asclepius.documents.service import (
     move_child_records,
 )
 from asclepius.patients.service import check_patient_access
+from asclepius.documents.details import DocumentDetails, parse_document_details
 
 # Sub-routers
 from asclepius.documents.upload_routes import router as upload_router
@@ -59,6 +61,7 @@ class DocumentUpdate(BaseModel):
 
     patient_id: int | None = None
     doc_type: str | None = Field(default=None, max_length=120)
+    document_details: DocumentDetails | None = None
     event_date: str | None = Field(default=None, max_length=40)
     issued_date: str | None = Field(default=None, max_length=40)
     doctor_id: int | None = None
@@ -330,6 +333,14 @@ async def update_doc(
                 raise ApiError(
                     code=ErrorCode.FORBIDDEN, status_code=403, detail="No access to target patient"
                 )
+        if field_name == "document_details" and value is not None:
+            details = parse_document_details(doc.get("document_details"))
+            for kind, fields in value.model_dump(mode="json", exclude_unset=True).items():
+                if fields is None:
+                    details.pop(kind, None)
+                else:
+                    details[kind] = {**details.get(kind, {}), **fields}
+            value = json.dumps(details, ensure_ascii=False)
         updates[field_name] = value
 
     if not updates:

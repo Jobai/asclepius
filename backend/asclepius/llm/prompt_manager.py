@@ -40,6 +40,10 @@ PROMPT_VARIABLES: dict[str, str] = {
 # Per-prompt placeholder lists. Suffix "?" marks an optional placeholder —
 # it is substituted only if it actually appears in the (custom) template.
 PROMPT_VARIABLE_KEYS: dict[str, list[str]] = {
+    "extraction_referral": ["ocr_text"],
+    "extraction_medical_order": ["ocr_text"],
+    "extraction_examination_report": ["ocr_text"],
+    "extraction_insurance_document": ["ocr_text"],
     "classification": [
         "patient_list",
         "facility_list",
@@ -101,6 +105,22 @@ def _variables_for(key: str) -> list[dict]:
 
 
 PROMPT_REGISTRY = {
+    "extraction_referral": {
+        "description": "Phase 2: Extract referral destination and clinical question",
+        "default_key": "referral",
+    },
+    "extraction_medical_order": {
+        "description": "Phase 2: Extract non-drug care orders",
+        "default_key": "medical_order",
+    },
+    "extraction_examination_report": {
+        "description": "Phase 2: Extract completed diagnostic examination findings",
+        "default_key": "examination_report",
+    },
+    "extraction_insurance_document": {
+        "description": "Phase 2: Extract insurance decisions and correspondence",
+        "default_key": "insurance_document",
+    },
     "classification": {
         "description": "Phase 1: Document classification and basic metadata extraction",
         "default_attr": "CLASSIFICATION_PROMPT",
@@ -218,12 +238,25 @@ async def get_all_prompts(db_path: str) -> list[dict]:
     for key, info in PROMPT_REGISTRY.items():
         default_text = get_default_prompt(key)
         custom_data = custom.get(key)
+        missing_doc_types = []
+        if custom_data and key in ("classification", "vision_extraction", "page_classification"):
+            missing_doc_types = [
+                kind
+                for kind in (
+                    "referral",
+                    "medical_order",
+                    "examination_report",
+                    "insurance_document",
+                )
+                if kind not in custom_data["text"]
+            ]
         result.append(
             {
                 "key": key,
                 "description": info["description"],
                 "text": custom_data["text"] if custom_data else default_text,
                 "is_custom": key in custom,
+                "missing_doc_types": missing_doc_types,
                 "updated_at": custom_data["updated_at"] if custom_data else None,
                 "default_length": len(default_text),
                 "variables": _variables_for(key),

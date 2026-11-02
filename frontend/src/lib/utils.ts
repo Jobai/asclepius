@@ -1,3 +1,4 @@
+import { DOC_TYPES } from "./docTypes";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { DocumentStatus } from "@/types";
@@ -57,19 +58,7 @@ export function formatDocType(
 }
 
 const DOC_TYPE_KEYS: Record<string, CommonKey> = Object.fromEntries(
-  [
-    "invoice",
-    "prescription",
-    "specialist_report",
-    "surgical_report",
-    "discharge",
-    "lab_test",
-    "lab_report",
-    "vaccination",
-    "medical_certificate",
-    "imaging_report",
-    "other",
-  ].map((id) => [id, `docTypes.${id}` as CommonKey]),
+  [...DOC_TYPES, "lab_report"].map((id) => [id, `docTypes.${id}` as CommonKey]),
 );
 
 export const STATUS_KEYS: Record<string, CommonKey> = {

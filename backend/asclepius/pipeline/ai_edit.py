@@ -64,6 +64,22 @@ def _resolve_llm(config: AppConfig, llm_provider_id: str | None):
 # is allowed to wipe + re-insert, so a "labs" edit doesn't clobber the
 # document's medications / encounters / vaccinations.
 _INTENTS: list[tuple[str, set[str], tuple[str, ...]]] = [
+    ("referral", {"document_details"}, ("referral", "überweisung", "ueberweisung")),
+    (
+        "medical_order",
+        {"document_details"},
+        ("medical order", "verordnung", "heilmittel", "hilfsmittel"),
+    ),
+    (
+        "insurance_document",
+        {"document_details"},
+        ("insurance", "versicherung", "kostenübernahme", "genehmigung"),
+    ),
+    (
+        "examination_report",
+        {"encounters", "document_details"},
+        ("examination report", "untersuchungsbericht", "koloskopie", "gastroskopie", "endoscopy"),
+    ),
     (
         "lab_test",
         {"lab_results"},
@@ -394,7 +410,7 @@ async def ai_edit_document(
                         # response shape so the user can decide.
                         scope_keys = list(scope or [])
                         if scope_keys and not any(
-                            isinstance(type_extraction.get(k), list)
+                            isinstance(type_extraction.get(k), (list, dict))
                             and len(type_extraction.get(k) or [])
                             for k in scope_keys
                         ):

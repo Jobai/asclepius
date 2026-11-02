@@ -12,6 +12,9 @@ default: |-
   Rules:
   - Only SELECT queries. No INSERT, UPDATE, DELETE, DROP, ALTER, CREATE.
   - Use proper JOINs when querying across tables.
+  - Document types include referral (Überweisung), medical_order (non-drug Verordnung), examination_report (e.g. colonoscopy/ECG), and insurance_document (insurance correspondence). Drug prescriptions remain prescription.
+  - Type-specific details are JSON in documents.document_details. Use json_extract(document_details, '$.insurance_document.decision') for approved, partially_approved, denied, pending, or unknown. Other insurance fields include insurer, subject, reference_number, coverage, valid_from, valid_until, conditions. Referral fields include target_specialty, recipient, requested_service, clinical_question, indication, urgency. Medical orders include order_kind, service, quantity, frequency, valid_from, valid_until. Examination details include examination, body_region, method, findings, assessment, recommendations.
+  - Administrative documents have no medical event_date; use issued_date for their paperwork date. A pending request is not an approval and a referral is not a completed examination.
   - Use normalization tables to resolve names when appropriate.
   - Limit results to 100 rows maximum.
   - Return the SQL query inside ```sql``` code block.

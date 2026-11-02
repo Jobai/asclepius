@@ -251,7 +251,8 @@
       "availableVariables": "Verfügbare Variablen",
       "clickToCopy": "{{value0}}{{value1}} Zum Kopieren klicken",
       "clickAChipToCopyThePlaceholderVariables": "Klicken Sie auf eine Variable, um den Platzhalter zu kopieren. Mit <part0>?</part0> markierte Variablen sind optional und werden nur ersetzt, wenn ihr Platzhalter in der Vorlage vorkommt. Unbekannte Platzhalter führen zu Fehlern bei der Extraktion.",
-      "resetToDefault": "Auf Vorgabe zurücksetzen"
+      "resetToDefault": "Auf Vorgabe zurücksetzen",
+      "missingDocumentTypes": "Dieser angepasste Prompt enthält die neuen Dokumenttypen noch nicht: {{types}}. Bitte aktualisieren oder auf den Standard zurücksetzen."
     },
     "attachedModelRow": {
       "enabledClickToDisable": "Aktiviert, zum Deaktivieren klicken",
@@ -494,7 +495,11 @@
           "chat_system": "Chat-Systemprompt",
           "link_suggestion": "Verknüpfungsvorschläge",
           "page_classification": "Seitenklassifizierung",
-          "translation": "Dokumentübersetzung"
+          "translation": "Dokumentübersetzung",
+          "extraction_referral": "Überweisung extrahieren",
+          "extraction_medical_order": "Verordnung extrahieren",
+          "extraction_examination_report": "Untersuchungsbericht extrahieren",
+          "extraction_insurance_document": "Versicherungsschreiben extrahieren"
         },
         "descriptions": {
           "classification": "Phase 1: Dokumentklassifizierung und Extraktion grundlegender Metadaten",
@@ -512,7 +517,11 @@
           "chat_system": "Chat: Systemprompt für den Assistenten für medizinische Unterlagen",
           "link_suggestion": "Zugehörige Dokumente zum Verknüpfen vorschlagen",
           "page_classification": "Seiten mehrseitiger Dokumente nach Inhaltstyp klassifizieren",
-          "translation": "Dokumenttext bei Bedarf in eine konfigurierbare Zielsprache übersetzen"
+          "translation": "Dokumenttext bei Bedarf in eine konfigurierbare Zielsprache übersetzen",
+          "extraction_referral": "Phase 2: Strukturierte Angaben extrahieren: Überweisung",
+          "extraction_medical_order": "Phase 2: Strukturierte Angaben extrahieren: Verordnung",
+          "extraction_examination_report": "Phase 2: Strukturierte Angaben extrahieren: Untersuchungsbericht",
+          "extraction_insurance_document": "Phase 2: Strukturierte Angaben extrahieren: Versicherungsschreiben"
         },
         "variables": {
           "ocr_text": "Vollständiger per OCR erkannter Dokumenttext.",

@@ -22,6 +22,7 @@ import ReprocessSheet from "@/components/document-detail/ReprocessMenu";
 import TranslateSheet from "@/components/document-detail/TranslateMenu";
 import DetailActionsMenu from "@/components/document-detail/DetailActionsMenu";
 import DocumentQueueStatus from "@/components/document-detail/DocumentQueueStatus";
+import TypeSpecificDetails from "@/components/document-detail/TypeSpecificDetails";
 import MetadataEditor from "@/components/document-detail/MetadataEditor";
 import {
   DiagnosesSection,
@@ -500,6 +501,7 @@ export default function DocumentDetailPage() {
 
         <div className="space-y-4 min-w-0">
           <MetadataEditor doc={doc} onSave={updateDocFields} />
+          <TypeSpecificDetails doc={doc} onSave={() => loadDoc(false)} />
 
           <EventSelector
             docId={doc.id}

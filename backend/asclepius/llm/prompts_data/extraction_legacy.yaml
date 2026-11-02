@@ -1,4 +1,5 @@
-description: Legacy monolithic single-prompt extraction (fallback/back-compat)
+description: "Legacy monolithic single-prompt extraction (fallback/back-compat)"
+
 default: |-
   You are a medical document parser. Extract structured information from the following OCR text of a medical document.
 
@@ -11,21 +12,55 @@ default: |-
      - If known patients are listed below, MATCH against them. Use the known patient name if it appears anywhere in the document.
      - NEVER confuse the doctor's name, clinic name, or letterhead with the patient name.
 
-  2. DOCUMENT CLASSIFICATION (doc_type):
-     - "specialist_report" = any visit report, consultation, checkup, follow-up, "visita di controllo", "referto", "Befund". This is the MOST COMMON type.
-     - "lab_test" = ONLY if the document contains a table/list of lab test values with numbers and units (blood tests, urinalysis, microbiology, etc.)
-     - "prescription" = a prescription/recipe for medications ("ricetta", "Rezept") or a referral letter to another specialist
-     - "invoice" = ONLY if the document contains prices, amounts, payment details, billing codes, TARMED, tariff points (also receipts / "Quittung" / "ricevuta")
-     - "discharge" = hospital discharge letter ("lettera di dimissione", "Austrittsbrief")
-     - "imaging_report" = radiology/imaging report with findings from X-ray, CT, MRI, ultrasound
-     - "surgical_report" = operative notes, surgical procedure descriptions
-     - "vaccination" = vaccination records, immunization certificates
-     - "medical_certificate" = sick leave, fitness statements, medical certificates ("certificato", "Zeugnis")
-     - "other" = anything that doesn't fit the categories above (consent forms, insurance docs, correspondence, etc.)
-     - Look for the document TITLE or HEADING first — it usually tells you the type directly.
-     - When in doubt, use "specialist_report" rather than "prescription" or "other".
+  Classify by the PRIMARY PURPOSE of the document, not isolated keywords,
+  letterhead, insurance identifiers, historical diagnoses, or planned examinations.
+  - referral: request to another clinician/facility for examination or co-treatment;
+    includes Überweisung, Überweisungsschein, referral letter.
+  - prescription: prescription for medicinal products (Rezept, ricetta).
+  - medical_order: order for non-drug care: Heilmittel, Hilfsmittel, nursing care,
+    transport, or inpatient admission (Krankenhauseinweisung). A recommendation
+    inside a report does not by itself turn the report into an order.
+  - examination_report: report primarily documenting a COMPLETED non-imaging
+    diagnostic examination: colonoscopy/Koloskopie, gastroscopy/Gastroskopie,
+    ECG/EKG, EEG, pulmonary function testing. Endoscopic photos, biopsies, and
+    polyp removal alone do not make an endoscopy report imaging_report or surgical_report.
+  - insurance_document: correspondence primarily about insurance coverage,
+    authorization, reimbursement, or benefits: Genehmigung, Kostenübernahme,
+    Ablehnung, Leistungsabrechnung, requests and follow-up letters.
+    An insurance name or policy number on another form is insufficient.
+  - specialist_report: clinical consultation, assessment, checkup, or follow-up
+    (visita, controllo, referto, Befund), rather than one specific diagnostic exam.
+  - imaging_report: findings of COMPLETED diagnostic imaging (MRI/MRT, CT,
+    X-ray/Röntgen, ultrasound/Sonografie, including echocardiography).
+  - surgical_report: a report primarily documenting an operation/OP-Bericht.
+  - lab_test: laboratory results, e.g. blood/urine tests with measured values.
+  - discharge: hospital discharge letter (DIMISSIONE, Austritt, Entlassungsbrief).
+  - invoice: provider bill or receipt for services (Rechnung, FATTURA, RICEVUTA,
+    Quittung, TARMED). An insurer's reimbursement statement is insurance_document.
+  - vaccination: vaccination/immunization record (Impfung, VACCINAZIONE).
+  - medical_certificate: sick note, fitness statement, medical certificate.
+  - other: no defined category fits. Do not default administrative letters to specialist_report.
 
-  3. INVOICES/BILLS:
+  Boundary examples:
+  - Überweisung Gastroenterologie, bitte Koloskopie -> referral
+  - Überweisung zum MRT wegen Knieschmerzen -> referral
+  - Koloskopiebericht: Zökum erreicht; Polyp abgetragen -> examination_report
+  - EKG-Befund: Sinusrhythmus -> examination_report
+  - Heilmittelverordnung: 6 Einheiten Krankengymnastik -> medical_order
+  - Rezept: Amoxicillin 500 mg -> prescription
+  - Wir genehmigen die beantragte Physiotherapie -> insurance_document
+  - MRT Knie: Befund und Beurteilung -> imaging_report
+
+  For referral, medical_order, and insurance_document, event_date must be null:
+  these documents do not establish that care took place. Use issued_date for the
+  paperwork date; keep planned dates/validity in document_details if requested.
+  For insurance_document, doctor and facility must contain null values: a case
+  worker is not a treating doctor and an insurer is not a medical facility.
+  For other types, identify the signing/examining doctor, not a department head.
+  Summaries of administrative documents describe the request/order/decision and
+  its subject; do not present planned care as completed or indications as new diagnoses.
+
+    3. INVOICES/BILLS:
      - The "doctor" field should be the treating doctor if mentioned, or null if not applicable.
      - The "facility" field should be the billing entity (clinic, hospital, practice).
      - Extract ALL line items with amounts, tariff codes, and categories.
@@ -40,11 +75,21 @@ default: |-
   invent canonical codes or English translations; a downstream step matches
   each term against the canonical tables deterministically.
 
+  For the classified type, populate its document_details namespace using these fields:
+  - referral: target_specialty, recipient, requested_service, clinical_question, indication, urgency
+  - medical_order: order_kind (therapeutic_service|medical_aid|nursing_care|transport|hospital_admission|other|unknown), service, indication, quantity, frequency, valid_from, valid_until, instructions
+  - examination_report: examination, body_region, method, findings, assessment, recommendations
+  - insurance_document: insurer, reference_number, subject, decision (approved|partially_approved|denied|pending|unknown), coverage, valid_from, valid_until, conditions
+  Values are strings or null; validity dates are YYYY-MM-DD. For other types use an empty document_details object.
+  For referral, medical_order, and insurance_document, emit empty clinical arrays and an empty encounter object.
+  Applications are not approvals. Use pending only if explicitly pending; otherwise unknown.
+
   Respond in JSON only. No markdown, no explanation.
 
   {{
+    "document_details": {{"referral": null, "medical_order": null, "examination_report": null, "insurance_document": null}},
     "patient_name": "string or null",
-    "doc_type": "one of: invoice, prescription, specialist_report, surgical_report, discharge, lab_test, vaccination, medical_certificate, imaging_report, other",
+    "doc_type": "one of: invoice, prescription, referral, medical_order, examination_report, insurance_document, specialist_report, surgical_report, discharge, lab_test, vaccination, medical_certificate, imaging_report, other",
     "event_date": "YYYY-MM-DD or null (when the medical event/visit actually happened; canonical timeline anchor)",
     "issued_date": "YYYY-MM-DD or null (when the document was issued/printed)",
     "language_detected": "ISO 639-1 code",

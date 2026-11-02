@@ -2,6 +2,40 @@
 title: "Documents"
 ---
 
+## Document types
+
+The type describes the document's purpose. German forms and letters have
+four additional categories:
+
+| Type | Examples |
+| --- | --- |
+| Referral (Überweisung) | Request for a specialist consultation, MRI or colonoscopy |
+| Medical order (Verordnung) | Physiotherapy, medical aids, nursing care, transport or hospital admission |
+| Examination report (Untersuchungsbericht) | Completed colonoscopy, gastroscopy, ECG, EEG or pulmonary function test |
+| Insurance correspondence (Versicherungsschreiben) | Authorization, denial, reimbursement or a coverage request |
+
+Drug prescriptions remain **Prescription**. A referral for an MRI is a
+referral; the completed MRI findings are an imaging report. Endoscopy reports
+remain examination reports even when they contain photographs, biopsies or
+polyp removal. A general specialist consultation remains a specialist report.
+
+Each new type has an editable details card. For insurance correspondence,
+the decision can be approved, partially approved, denied, pending or unknown.
+An application alone is not an approval. Requested services and supporting
+indications from administrative documents do not create clinical encounters,
+medications or confirmed diagnoses. Their paperwork date is the issued date;
+the medical event date is left empty.
+
+Details from different sections of mixed PDFs are kept separately and can
+be edited on the same document. The type-specific fields are searchable.
+
+Standard classification prompts cover text, document images and individual
+PDF pages. Existing custom prompts are preserved. Settings → Document
+Analysis → Prompts shows a notice if a custom classifier lacks the new type
+codes; review the prompt or reset it to the updated default. Existing records
+are not automatically reclassified. A previous prescription may therefore
+need a manual type correction or explicit reprocessing to become a referral.
+
 ## Uploading documents
 
 Two ingestion paths:

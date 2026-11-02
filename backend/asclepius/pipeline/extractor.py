@@ -21,6 +21,12 @@ against the historic ``asclepius.pipeline.extractor`` paths:
 import json
 import logging
 
+from asclepius.documents.details import (
+    ADMINISTRATIVE_DOC_TYPES,
+    parse_document_details,
+    sanitize_document_details,
+)
+
 import aiosqlite
 
 from asclepius.config import AppConfig
@@ -203,7 +209,22 @@ async def _extract_type_specific(
     # Use the LLM's internal generate + parse (works for both Ollama and Claude)
     if hasattr(llm, "_generate"):
         response_text = await llm._generate(prompt)
-        return llm._parse_json(response_text)
+        result = llm._parse_json(response_text)
+        if "document_details" in result:
+            result["document_details"] = sanitize_document_details(result["document_details"])
+        if doc_type in ADMINISTRATIVE_DOC_TYPES:
+            # Indications and requested care belong in document details, not
+            # records of completed care or confirmed diagnoses/medications.
+            for key in (
+                "diagnoses",
+                "encounter",
+                "encounters",
+                "medications",
+                "lab_results",
+                "vaccinations",
+            ):
+                result.pop(key, None)
+        return result
     else:
         # Fallback: use extract with the formatted prompt as ocr_text
         # This shouldn't normally happen since both providers have _generate
@@ -331,9 +352,44 @@ async def extract_and_store(
     else:
         extraction = await llm.extract(ocr_text, context)
 
+    cursor = await db.execute(
+        "SELECT doc_type, document_details FROM documents WHERE id = ?", (doc_id,)
+    )
+    current = await cursor.fetchone()
+    effective_type = _normalize_doc_type(
+        extraction.get("doc_type") or (current[0] if current else None)
+    )
+    if extraction.get("doc_type"):
+        extraction["doc_type"] = effective_type
+
     # Salvage common key-name drift (e.g. "results" → "lab_results") before we
     # sanitize types, so the rename doesn't get wiped out.
     _salvage_array_keys(extraction)
+
+    if "document_details" in extraction:
+        extraction["document_details"] = sanitize_document_details(extraction["document_details"])
+    if effective_type == "examination_report":
+        exam = extraction.get("document_details", {}).get("examination_report", {})
+        if exam.get("findings"):
+            encounter = extraction.get("encounter")
+            if not isinstance(encounter, dict):
+                encounter = extraction["encounter"] = {}
+            encounter["findings"] = exam["findings"]
+    if effective_type in ADMINISTRATIVE_DOC_TYPES and not extraction.get("_has_clinical_sections"):
+        for key in (
+            "diagnoses",
+            "encounter",
+            "encounters",
+            "medications",
+            "lab_results",
+            "vaccinations",
+        ):
+            extraction.pop(key, None)
+        # These dates describe paperwork or planned care, not completed care.
+        extraction["event_date"] = None
+        if effective_type == "insurance_document":
+            extraction["doctor"] = {}
+            extraction["facility"] = {}
 
     # Sanitize extraction — LLMs sometimes return strings instead of dicts/lists
     for key in ("doctor", "facility", "specialty", "insurance", "encounter", "cost"):
@@ -393,6 +449,21 @@ async def extract_and_store(
     # of appending duplicates. In ``scope``-restricted runs (e.g. AI edit
     # for "labs only"), only the in-scope tables get cleared so the rest
     # of the document's data survives.
+    details = extraction.get("document_details", {})
+    if _scoped_run:
+        if "document_details" in _scope and "document_details" in extraction:
+            stored = parse_document_details(current[1] if current else None)
+            stored.update(details)
+            await db.execute(
+                "UPDATE documents SET document_details = ? WHERE id = ?",
+                (json.dumps(stored, ensure_ascii=False), doc_id),
+            )
+    else:
+        await db.execute(
+            "UPDATE documents SET document_details = ? WHERE id = ?",
+            (json.dumps(details, ensure_ascii=False), doc_id),
+        )
+
     for _child in _all_children:
         if _child in _scope:
             await db.execute(f"DELETE FROM {_child} WHERE document_id = ?", (doc_id,))
@@ -457,7 +528,10 @@ async def extract_and_store(
             or extraction.get("date_issued")
             or extraction.get("doc_date")
         )
-        if event_date_val:
+        if effective_type in ADMINISTRATIVE_DOC_TYPES:
+            event_date_val = None
+            updates["event_date"] = None
+        elif event_date_val:
             updates["event_date"] = event_date_val
         issued_date_val = extraction.get("issued_date") or extraction.get("date_issued")
         if issued_date_val:
@@ -502,6 +576,10 @@ async def extract_and_store(
 
         # Upsert facility
         facility_data = extraction.get("facility", {})
+        if effective_type == "insurance_document":
+            await db.execute(
+                "UPDATE documents SET doctor_id = NULL, facility_id = NULL WHERE id = ?", (doc_id,)
+            )
         if facility_data.get("name"):
             facility_id = await _upsert_facility(db, facility_data)
             await db.execute(

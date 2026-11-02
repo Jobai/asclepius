@@ -1,4 +1,5 @@
-description: Classify pages of multi-page documents into content types
+description: "Classify pages of multi-page documents into content types"
+
 default: |-
   Classify each page of this multi-page medical document.
   For each page, determine what type of content it contains.
@@ -11,12 +12,69 @@ default: |-
   - consent_form: consent forms, privacy documents, signatures
   - cover_page: front page with patient info, admission details
   - medication_chart: medication administration records
-  - operative_notes: surgical/procedure descriptions
+  - operative_notes: operation reports (not routine endoscopy reports)
   - discharge_summary: discharge letter/summary
   - imaging_report: radiology findings, imaging descriptions
-  - correspondence: letters, referrals
+  - correspondence: other clinical letters
+  - referral: referral/request for examination or co-treatment
+  - medical_order: non-drug care order, e.g. Heilmittelverordnung
+  - examination_report: completed endoscopy, ECG, EEG, pulmonary function test
+  - insurance_document: insurance authorization, denial, reimbursement, or correspondence
   - invoice_page: billing, costs, prices
   - other: anything that doesn't fit above
+
+  Classify by the PRIMARY PURPOSE of the document, not isolated keywords,
+  letterhead, insurance identifiers, historical diagnoses, or planned examinations.
+  - referral: request to another clinician/facility for examination or co-treatment;
+    includes Überweisung, Überweisungsschein, referral letter.
+  - prescription: prescription for medicinal products (Rezept, ricetta).
+  - medical_order: order for non-drug care: Heilmittel, Hilfsmittel, nursing care,
+    transport, or inpatient admission (Krankenhauseinweisung). A recommendation
+    inside a report does not by itself turn the report into an order.
+  - examination_report: report primarily documenting a COMPLETED non-imaging
+    diagnostic examination: colonoscopy/Koloskopie, gastroscopy/Gastroskopie,
+    ECG/EKG, EEG, pulmonary function testing. Endoscopic photos, biopsies, and
+    polyp removal alone do not make an endoscopy report imaging_report or surgical_report.
+  - insurance_document: correspondence primarily about insurance coverage,
+    authorization, reimbursement, or benefits: Genehmigung, Kostenübernahme,
+    Ablehnung, Leistungsabrechnung, requests and follow-up letters.
+    An insurance name or policy number on another form is insufficient.
+  - specialist_report: clinical consultation, assessment, checkup, or follow-up
+    (visita, controllo, referto, Befund), rather than one specific diagnostic exam.
+  - imaging_report: findings of COMPLETED diagnostic imaging (MRI/MRT, CT,
+    X-ray/Röntgen, ultrasound/Sonografie, including echocardiography).
+  - surgical_report: a report primarily documenting an operation/OP-Bericht.
+  - lab_test: laboratory results, e.g. blood/urine tests with measured values.
+  - discharge: hospital discharge letter (DIMISSIONE, Austritt, Entlassungsbrief).
+  - invoice: provider bill or receipt for services (Rechnung, FATTURA, RICEVUTA,
+    Quittung, TARMED). An insurer's reimbursement statement is insurance_document.
+  - vaccination: vaccination/immunization record (Impfung, VACCINAZIONE).
+  - medical_certificate: sick note, fitness statement, medical certificate.
+  - other: no defined category fits. Do not default administrative letters to specialist_report.
+
+  Boundary examples:
+  - Überweisung Gastroenterologie, bitte Koloskopie -> referral
+  - Überweisung zum MRT wegen Knieschmerzen -> referral
+  - Koloskopiebericht: Zökum erreicht; Polyp abgetragen -> examination_report
+  - EKG-Befund: Sinusrhythmus -> examination_report
+  - Heilmittelverordnung: 6 Einheiten Krankengymnastik -> medical_order
+  - Rezept: Amoxicillin 500 mg -> prescription
+  - Wir genehmigen die beantragte Physiotherapie -> insurance_document
+  - MRT Knie: Befund und Beurteilung -> imaging_report
+
+  For referral, medical_order, and insurance_document, event_date must be null:
+  these documents do not establish that care took place. Use issued_date for the
+  paperwork date; keep planned dates/validity in document_details if requested.
+  For insurance_document, doctor and facility must contain null values: a case
+  worker is not a treating doctor and an insurer is not a medical facility.
+  For other types, identify the signing/examining doctor, not a department head.
+  Summaries of administrative documents describe the request/order/decision and
+  its subject; do not present planned care as completed or indications as new diagnoses.
+
+  For page labels, use the Page types above: invoice becomes invoice_page,
+  lab_test becomes lab_results_page, surgical_report becomes operative_notes,
+  discharge becomes discharge_summary, and specialist_report becomes clinical_notes.
+  Continuation pages keep the content type of their section; use surrounding pages.
 
   I will give you the OCR text for multiple pages separated by "--- PAGE X ---" markers.
 

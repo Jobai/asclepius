@@ -93,6 +93,12 @@ const labelKeys = {
     unknown: "common:features.extra.enums.modality.unknown",
   },
   sectionType: {
+    referral: "common:features.extra.enums.sectionType.referral",
+    medical_order: "common:features.extra.enums.sectionType.medical_order",
+    examination_report:
+      "common:features.extra.enums.sectionType.examination_report",
+    insurance_document:
+      "common:features.extra.enums.sectionType.insurance_document",
     lab_results_page:
       "common:features.extra.enums.sectionType.lab_results_page",
     clinical_notes: "common:features.extra.enums.sectionType.clinical_notes",

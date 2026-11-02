@@ -9087,6 +9087,53 @@
         ],
         "title": "CurrentUserResponse"
       },
+      "DocumentDetails": {
+        "properties": {
+          "referral": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReferralDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "medical_order": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MedicalOrderDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "examination_report": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExaminationDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "insurance_document": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InsuranceDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "DocumentDetails"
+      },
       "DocumentEditRequest": {
         "properties": {
           "instruction": {
@@ -9175,6 +9222,16 @@
               }
             ],
             "title": "Doc Type"
+          },
+          "document_details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DocumentDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "event_date": {
             "anyOf": [
@@ -9792,6 +9849,85 @@
         "type": "object",
         "title": "EventUpdate"
       },
+      "ExaminationDetails": {
+        "properties": {
+          "examination": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examination"
+          },
+          "body_region": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body Region"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method"
+          },
+          "findings": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Findings"
+          },
+          "assessment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assessment"
+          },
+          "recommendations": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommendations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ExaminationDetails"
+      },
       "GeneralLlmUpdate": {
         "properties": {
           "credential_id": {
@@ -9890,6 +10026,115 @@
         },
         "type": "object",
         "title": "ImagingMetadataPatch"
+      },
+      "InsuranceDetails": {
+        "properties": {
+          "insurer": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Insurer"
+          },
+          "reference_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Number"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "approved",
+                  "partially_approved",
+                  "denied",
+                  "pending",
+                  "unknown"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision"
+          },
+          "coverage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage"
+          },
+          "valid_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid From"
+          },
+          "valid_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Until"
+          },
+          "conditions": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conditions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "InsuranceDetails"
       },
       "LabResultCreate": {
         "properties": {
@@ -10657,6 +10902,117 @@
         "required": ["id", "patient_id", "title", "event_type"],
         "title": "MedicalEventDetail"
       },
+      "MedicalOrderDetails": {
+        "properties": {
+          "order_kind": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "therapeutic_service",
+                  "medical_aid",
+                  "nursing_care",
+                  "transport",
+                  "hospital_admission",
+                  "other",
+                  "unknown"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Kind"
+          },
+          "service": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service"
+          },
+          "indication": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Indication"
+          },
+          "quantity": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantity"
+          },
+          "frequency": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency"
+          },
+          "valid_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid From"
+          },
+          "valid_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Until"
+          },
+          "instructions": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instructions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "MedicalOrderDetails"
+      },
       "MedicationPatch": {
         "properties": {
           "active_ingredient_original": {
@@ -11197,6 +11553,85 @@
         "type": "object",
         "required": ["text"],
         "title": "PromptUpdate"
+      },
+      "ReferralDetails": {
+        "properties": {
+          "target_specialty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Specialty"
+          },
+          "recipient": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient"
+          },
+          "requested_service": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Service"
+          },
+          "clinical_question": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clinical Question"
+          },
+          "indication": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Indication"
+          },
+          "urgency": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Urgency"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ReferralDetails"
       },
       "RegionBbox": {
         "properties": {

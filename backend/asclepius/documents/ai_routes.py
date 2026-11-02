@@ -156,6 +156,7 @@ async def edit_document_with_ai(
         for k, v in {
             "patient_name": doc.get("patient_name"),
             "doc_type": doc.get("doc_type"),
+            "document_details": doc.get("document_details"),
             "event_date": doc.get("event_date"),
             "issued_date": doc.get("issued_date"),
             "doctor_name": doc.get("doctor_name"),
@@ -178,6 +179,18 @@ async def edit_document_with_ai(
         '- facility_name (string, e.g. "Ospedale Civico")\n'
         "- specialty_original\n"
         "- summary_en, summary_original\n\n"
+        "- doc_type codes: invoice, prescription (drug recipe), referral (Überweisung), "
+        "medical_order (non-drug Verordnung), examination_report (e.g. colonoscopy/ECG), "
+        "insurance_document, specialist_report, surgical_report, discharge, lab_test, "
+        "vaccination, medical_certificate, imaging_report, other\n"
+        "- document_details: nested object with a namespace for the relevant type. "
+        "referral fields: target_specialty, recipient, requested_service, clinical_question, indication, urgency. "
+        "medical_order fields: order_kind, service, indication, quantity, frequency, valid_from, valid_until, instructions. "
+        "examination_report fields: examination, body_region, method, findings, assessment, recommendations. "
+        "insurance_document fields: insurer, reference_number, subject, decision, coverage, valid_from, valid_until, conditions. "
+        "decision must be approved, partially_approved, denied, pending, or unknown. "
+        "order_kind must be therapeutic_service, medical_aid, nursing_care, transport, hospital_admission, other, or unknown. "
+        "Validity dates must be YYYY-MM-DD or null. Do not turn applications into approvals.\n\n"
         "Only include fields the user mentioned. JSON only, no explanation."
     )
 
@@ -211,7 +224,28 @@ async def edit_document_with_ai(
     # Apply changes directly to the documents table
     updates = {}
     if "doc_type" in changes:
-        updates["doc_type"] = changes["doc_type"]
+        from asclepius.pipeline.doc_types import _normalize_doc_type
+
+        updates["doc_type"] = _normalize_doc_type(changes["doc_type"])
+    if "document_details" in changes:
+        from pydantic import ValidationError
+        from asclepius.documents.details import DocumentDetails, parse_document_details
+
+        try:
+            delta = DocumentDetails.model_validate(changes["document_details"])
+        except ValidationError as exc:
+            raise ApiError(
+                code=ErrorCode.INVALID_REQUEST,
+                status_code=422,
+                detail="The generated document details are invalid. Please revise the instruction.",
+            ) from exc
+        details = parse_document_details(doc.get("document_details"))
+        for kind, fields in delta.model_dump(mode="json", exclude_unset=True).items():
+            if fields is None:
+                details.pop(kind, None)
+            else:
+                details[kind] = {**details.get(kind, {}), **fields}
+        updates["document_details"] = _json.dumps(details, ensure_ascii=False)
     # Accept both new (event_date/issued_date) and legacy (doc_date/date_visit/
     # date_issued) LLM outputs, collapsing the three-field schema with the
     # historic priority rule: date_visit > date_issued > doc_date.

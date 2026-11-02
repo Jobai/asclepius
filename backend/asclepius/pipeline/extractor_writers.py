@@ -136,7 +136,9 @@ async def write_encounters(
         )
 
     # If no diagnoses but encounter data exists, still create encounter
-    if not extraction.get("diagnoses") and encounter.get("encounter_date"):
+    if not extraction.get("diagnoses") and (
+        encounter.get("encounter_date") or encounter.get("findings")
+    ):
         await db.execute(
             """INSERT INTO encounters
                (document_id, patient_id, doctor_id, facility_id, encounter_date,

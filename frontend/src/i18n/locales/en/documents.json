@@ -340,5 +340,48 @@
         "dateAdded": "Date added"
       }
     }
+  },
+  "typeDetails": {
+    "title": "{{type}} details",
+    "fields": {
+      "target_specialty": "Target specialty",
+      "recipient": "Recipient",
+      "requested_service": "Requested service",
+      "clinical_question": "Clinical question",
+      "indication": "Indication / reason",
+      "urgency": "Urgency",
+      "order_kind": "Order category",
+      "service": "Ordered service",
+      "quantity": "Quantity",
+      "frequency": "Frequency",
+      "valid_from": "Valid from",
+      "valid_until": "Valid until",
+      "instructions": "Instructions",
+      "examination": "Examination",
+      "body_region": "Body region",
+      "method": "Method",
+      "findings": "Findings",
+      "assessment": "Assessment",
+      "recommendations": "Recommendations",
+      "insurer": "Insurer",
+      "reference_number": "Reference number",
+      "subject": "Service / subject",
+      "decision": "Decision / status",
+      "coverage": "Coverage",
+      "conditions": "Conditions / limitations"
+    },
+    "options": {
+      "approved": "Approved",
+      "partially_approved": "Partially approved",
+      "denied": "Denied",
+      "pending": "Pending / requested",
+      "unknown": "Not stated",
+      "therapeutic_service": "Therapeutic service",
+      "medical_aid": "Medical aid",
+      "nursing_care": "Nursing care",
+      "transport": "Medical transport",
+      "hospital_admission": "Hospital admission",
+      "other": "Other service"
+    }
   }
 }

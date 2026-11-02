@@ -26,6 +26,22 @@ interface TimelineDoc {
 }
 
 const TYPE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
+  referral: { bg: "bg-warning/10", text: "text-warning", dot: "bg-warning" },
+  medical_order: {
+    bg: "bg-warning/10",
+    text: "text-warning",
+    dot: "bg-warning",
+  },
+  examination_report: {
+    bg: "bg-warning/10",
+    text: "text-warning",
+    dot: "bg-warning",
+  },
+  insurance_document: {
+    bg: "bg-warning/10",
+    text: "text-warning",
+    dot: "bg-warning",
+  },
   specialist_report: {
     bg: "bg-primary/10",
     text: "text-primary",

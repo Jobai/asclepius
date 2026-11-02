@@ -1,0 +1,27 @@
+description: "Phase 2: Extract referral destination, request and clinical question"
+
+default: |-
+  Extract referral destination, request and clinical question.
+
+  Extract only explicitly documented facts. Use null for missing values. Do not
+  infer dates, diagnoses, approval, or completed care. Respond in JSON only.
+  Keep indications in the details; do not emit diagnoses, medications, or encounters.
+
+  Return this shape, replacing null values with facts from the document:
+  {{
+    "document_details": {{
+      "referral": {{
+        "target_specialty": null,
+        "recipient": null,
+        "requested_service": null,
+        "clinical_question": null,
+        "indication": null,
+        "urgency": null
+      }}
+    }}
+  }}
+
+  OCR text:
+  ---
+  {ocr_text}
+  ---

@@ -1,3 +1,4 @@
+import { DOC_TYPES } from "@/lib/docTypes";
 import { specialtyLabel } from "@/lib/terminology";
 import { useTranslation as useFeatureTranslation } from "react-i18next";
 import { useUiFormat } from "@/lib/formatting";
@@ -20,19 +21,6 @@ export interface MetadataEditorProps {
   doc: any;
   onSave: (updated?: any) => void;
 }
-
-const DOC_TYPE_OPTIONS = [
-  "invoice",
-  "prescription",
-  "specialist_report",
-  "surgical_report",
-  "discharge",
-  "lab_test",
-  "vaccination",
-  "medical_certificate",
-  "imaging_report",
-  "other",
-];
 
 /**
  * Document Info card on the Document Detail page: status / error block,
@@ -145,7 +133,7 @@ export default function MetadataEditor({ doc, onSave }: MetadataEditorProps) {
         field="doc_type"
         docId={doc.id}
         onSave={onSave}
-        options={DOC_TYPE_OPTIONS}
+        options={DOC_TYPES}
         formatLabel={formatDocType}
         placeholder={tx("documents:features.metadataEditor.searchType")}
       />

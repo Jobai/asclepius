@@ -3006,6 +3006,13 @@ export interface components {
       /** Ui Language */
       ui_language: ("auto" | "en" | "de") | null;
     };
+    /** DocumentDetails */
+    DocumentDetails: {
+      referral?: components["schemas"]["ReferralDetails"] | null;
+      medical_order?: components["schemas"]["MedicalOrderDetails"] | null;
+      examination_report?: components["schemas"]["ExaminationDetails"] | null;
+      insurance_document?: components["schemas"]["InsuranceDetails"] | null;
+    };
     /** DocumentEditRequest */
     DocumentEditRequest: {
       /** Instruction */
@@ -3041,6 +3048,7 @@ export interface components {
       patient_id?: number | null;
       /** Doc Type */
       doc_type?: string | null;
+      document_details?: components["schemas"]["DocumentDetails"] | null;
       /** Event Date */
       event_date?: string | null;
       /** Issued Date */
@@ -3204,6 +3212,21 @@ export interface components {
       /** Color */
       color?: string | null;
     };
+    /** ExaminationDetails */
+    ExaminationDetails: {
+      /** Examination */
+      examination?: string | null;
+      /** Body Region */
+      body_region?: string | null;
+      /** Method */
+      method?: string | null;
+      /** Findings */
+      findings?: string | null;
+      /** Assessment */
+      assessment?: string | null;
+      /** Recommendations */
+      recommendations?: string | null;
+    };
     /** GeneralLlmUpdate */
     GeneralLlmUpdate: {
       /**
@@ -3243,6 +3266,27 @@ export interface components {
       study_description?: string | null;
       /** Accession Number */
       accession_number?: string | null;
+    };
+    /** InsuranceDetails */
+    InsuranceDetails: {
+      /** Insurer */
+      insurer?: string | null;
+      /** Reference Number */
+      reference_number?: string | null;
+      /** Subject */
+      subject?: string | null;
+      /** Decision */
+      decision?:
+        | ("approved" | "partially_approved" | "denied" | "pending" | "unknown")
+        | null;
+      /** Coverage */
+      coverage?: string | null;
+      /** Valid From */
+      valid_from?: string | null;
+      /** Valid Until */
+      valid_until?: string | null;
+      /** Conditions */
+      conditions?: string | null;
     };
     /** LabResultCreate */
     LabResultCreate: {
@@ -3442,6 +3486,35 @@ export interface components {
        */
       documents: components["schemas"]["LinkedDocument"][];
     };
+    /** MedicalOrderDetails */
+    MedicalOrderDetails: {
+      /** Order Kind */
+      order_kind?:
+        | (
+            | "therapeutic_service"
+            | "medical_aid"
+            | "nursing_care"
+            | "transport"
+            | "hospital_admission"
+            | "other"
+            | "unknown"
+          )
+        | null;
+      /** Service */
+      service?: string | null;
+      /** Indication */
+      indication?: string | null;
+      /** Quantity */
+      quantity?: string | null;
+      /** Frequency */
+      frequency?: string | null;
+      /** Valid From */
+      valid_from?: string | null;
+      /** Valid Until */
+      valid_until?: string | null;
+      /** Instructions */
+      instructions?: string | null;
+    };
     /** MedicationPatch */
     MedicationPatch: {
       /** Active Ingredient Original */
@@ -3599,6 +3672,21 @@ export interface components {
     PromptUpdate: {
       /** Text */
       text: string;
+    };
+    /** ReferralDetails */
+    ReferralDetails: {
+      /** Target Specialty */
+      target_specialty?: string | null;
+      /** Recipient */
+      recipient?: string | null;
+      /** Requested Service */
+      requested_service?: string | null;
+      /** Clinical Question */
+      clinical_question?: string | null;
+      /** Indication */
+      indication?: string | null;
+      /** Urgency */
+      urgency?: string | null;
     };
     /** RegionBbox */
     RegionBbox: {

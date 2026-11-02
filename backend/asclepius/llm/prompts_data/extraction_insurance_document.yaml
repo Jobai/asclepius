@@ -1,0 +1,29 @@
+description: "Phase 2: Extract insurance correspondence"
+
+default: |-
+  Extract insurance correspondence. decision must be approved, partially_approved, denied, pending, or unknown. Use pending for an explicit pending application, and unknown when no decision/status is stated. An application or physician recommendation is NOT an approval. coverage describes only the explicitly stated extent, units, amount, or limitations. Dates are YYYY-MM-DD or null; never calculate a legal deadline.
+
+  Extract only explicitly documented facts. Use null for missing values. Do not
+  infer dates, diagnoses, approval, or completed care. Respond in JSON only.
+  Keep indications in the details; do not emit diagnoses, medications, or encounters.
+
+  Return this shape, replacing null values with facts from the document:
+  {{
+    "document_details": {{
+      "insurance_document": {{
+        "insurer": null,
+        "reference_number": null,
+        "subject": null,
+        "decision": "unknown",
+        "coverage": null,
+        "valid_from": null,
+        "valid_until": null,
+        "conditions": null
+      }}
+    }}
+  }}
+
+  OCR text:
+  ---
+  {ocr_text}
+  ---

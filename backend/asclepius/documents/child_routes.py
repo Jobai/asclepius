@@ -7,6 +7,7 @@ recorded in ``extraction_corrections`` so the few-shot retrieval picks up the
 correction next time we re-process a similar doc.
 """
 
+import json
 import logging
 
 from fastapi import APIRouter, Depends, Request
@@ -154,6 +155,21 @@ async def update_encounter(
         f"UPDATE encounters SET {', '.join(set_parts)} WHERE id = ?",
         params,
     )
+    if doc.get("doc_type") == "examination_report" and "findings" in body.model_fields_set:
+        # A diagnostic report may have one encounter row per diagnosis.
+        # Its findings remain one shared source text across those rows.
+        details = doc.get("document_details") or {}
+        details.setdefault("examination_report", {})["findings"] = (
+            body.findings.strip() or None if body.findings is not None else None
+        )
+        await db.execute(
+            "UPDATE documents SET document_details = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            (json.dumps(details, ensure_ascii=False), rec["document_id"]),
+        )
+        await db.execute(
+            "UPDATE encounters SET findings = ? WHERE document_id = ?",
+            (details["examination_report"]["findings"], rec["document_id"]),
+        )
     for field, old_val, new_val in corrections:
         await db.execute(
             """INSERT INTO extraction_corrections

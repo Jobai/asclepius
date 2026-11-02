@@ -44,12 +44,7 @@ export interface ListResponse<T> {
 // ─── Document ──────────────────────────────────────────
 
 export type DocumentStatus =
-  | "pending"
-  | "processing"
-  | "done"
-  | "failed"
-  | "needs_review"
-  | "cancelled";
+  "pending" | "processing" | "done" | "failed" | "needs_review" | "cancelled";
 
 export interface Document {
   id: number;
@@ -59,6 +54,7 @@ export interface Document {
   file_path: string;
   original_filename: string;
   doc_type: string | null;
+  document_details?: Record<string, Record<string, string | null>> | null;
   event_date: string | null;
   issued_date: string | null;
   date_received: string | null;
@@ -133,11 +129,7 @@ export interface DocumentSection {
 // ─── Pipeline ──────────────────────────────────────────
 
 export type PipelineJobKind =
-  | "upload"
-  | "reprocess"
-  | "translate"
-  | "translate_region"
-  | "ai_edit";
+  "upload" | "reprocess" | "translate" | "translate_region" | "ai_edit";
 
 export interface PipelineProviders {
   ocr?: string | null;
@@ -198,11 +190,7 @@ export interface PipelineStatus {
 }
 
 export type DocumentStageStatus =
-  | "started"
-  | "completed"
-  | "failed"
-  | "skipped"
-  | "cancelled";
+  "started" | "completed" | "failed" | "skipped" | "cancelled";
 
 export interface DocumentStageEvent {
   id: number;

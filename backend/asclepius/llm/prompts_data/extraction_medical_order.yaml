@@ -1,0 +1,29 @@
+description: "Phase 2: Extract a non-drug care order"
+
+default: |-
+  Extract a non-drug care order. order_kind must be therapeutic_service, medical_aid, nursing_care, transport, hospital_admission, other, or unknown. quantity and frequency are strings. Dates are YYYY-MM-DD or null.
+
+  Extract only explicitly documented facts. Use null for missing values. Do not
+  infer dates, diagnoses, approval, or completed care. Respond in JSON only.
+  Keep indications in the details; do not emit diagnoses, medications, or encounters.
+
+  Return this shape, replacing null values with facts from the document:
+  {{
+    "document_details": {{
+      "medical_order": {{
+        "order_kind": "unknown",
+        "service": null,
+        "indication": null,
+        "quantity": null,
+        "frequency": null,
+        "valid_from": null,
+        "valid_until": null,
+        "instructions": null
+      }}
+    }}
+  }}
+
+  OCR text:
+  ---
+  {ocr_text}
+  ---

@@ -1,9 +1,8 @@
 """Centralized date-selection helpers.
 
-Post-Phase-2 documents expose two dates: ``event_date`` (canonical timeline
-anchor) and ``issued_date`` (administrative). ``event_date`` is the single
-"best date" — sort orders, timeline anchors, and child-row fallbacks all use
-it directly.
+Documents expose ``event_date`` for completed medical care and ``issued_date``
+for paperwork. Administrative document types fall back to the issue date for
+sorting and filing; clinical child-row dates still use event_date directly.
 """
 
 from __future__ import annotations
@@ -30,15 +29,18 @@ def _row_get(row: Any, key: str) -> Any:
         return None
 
 
-BEST_DATE_SQL = "d.event_date"
-"""SQL fragment for the best document date, assuming `documents AS d`."""
+BEST_DATE_SQL = (
+    "CASE WHEN d.doc_type IN ('referral', 'medical_order', 'insurance_document') "
+    "THEN COALESCE(d.event_date, d.issued_date) ELSE d.event_date END"
+)
+"""Display/sort date, with issue-date fallback for administrative types only."""
 
-BEST_DATE_SQL_WITH_CREATED = "COALESCE(d.event_date, d.created_at)"
+BEST_DATE_SQL_WITH_CREATED = f"COALESCE({BEST_DATE_SQL}, d.created_at)"
 """Same as BEST_DATE_SQL with `created_at` as a last-resort fallback."""
 
 
 def best_date(row: Any) -> str | None:
-    """Return the canonical event date from a document-like row.
+    """Return the filing date from a document-like row.
 
     Accepts dicts and aiosqlite.Row objects. Missing keys and empty strings
     are both treated as absent.
@@ -46,6 +48,12 @@ def best_date(row: Any) -> str | None:
     if row is None:
         return None
     value = _row_get(row, "event_date")
+    if not value and _row_get(row, "doc_type") in (
+        "referral",
+        "medical_order",
+        "insurance_document",
+    ):
+        value = _row_get(row, "issued_date")
     return value or None
 
 

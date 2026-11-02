@@ -14,6 +14,10 @@ logger = logging.getLogger(__name__)
 VALID_DOC_TYPES = {
     "invoice",
     "prescription",
+    "referral",
+    "medical_order",
+    "examination_report",
+    "insurance_document",
     "specialist_report",
     "surgical_report",
     "discharge",
@@ -25,7 +29,7 @@ VALID_DOC_TYPES = {
 }
 
 # Fuzzy mapping for common LLM mistakes and legacy values. Maps any
-# old/aliased value to one of the canonical 10 codes in VALID_DOC_TYPES.
+# old/aliased value to one of the canonical codes in VALID_DOC_TYPES.
 _DOC_TYPE_ALIASES = {
     # Lab tests
     "bloodtest": "lab_test",
@@ -91,13 +95,26 @@ _DOC_TYPE_ALIASES = {
     "payment": "invoice",
     "ricevuta": "invoice",
     "quittung": "invoice",
-    # Prescriptions (incl. referrals)
+    # Drug prescriptions
     "ricetta": "prescription",
     "rezept": "prescription",
-    "referral": "prescription",
-    "referral_letter": "prescription",
-    "ueberweisung": "prescription",
-    "uberweisung": "prescription",
+    "referral_letter": "referral",
+    "überweisung": "referral",
+    "ueberweisung": "referral",
+    "uberweisung": "referral",
+    "überweisungsschein": "referral",
+    "verordnung": "medical_order",
+    "heilmittelverordnung": "medical_order",
+    "hilfsmittelverordnung": "medical_order",
+    "krankenhauseinweisung": "medical_order",
+    "untersuchungsbericht": "examination_report",
+    "endoscopy_report": "examination_report",
+    "colonoscopy_report": "examination_report",
+    "koloskopie": "examination_report",
+    "versicherungsdokument": "insurance_document",
+    "versicherungsschreiben": "insurance_document",
+    "insurance_approval": "insurance_document",
+    "insurance_correspondence": "insurance_document",
     # Discharge
     "discharge_letter": "discharge",
     "discharge_summary": "discharge",
@@ -114,8 +131,8 @@ _DOC_TYPE_ALIASES = {
     "arbeitsunfaehigkeit": "medical_certificate",
     # Catch-all for retired types
     "allergy": "other",
-    "insurance_claim": "other",
-    "insurance_doc": "other",
+    "insurance_claim": "insurance_document",
+    "insurance_doc": "insurance_document",
     "consent": "other",
     "advance_directive": "other",
     "correspondence": "other",
