@@ -154,7 +154,7 @@ this resolver, including during partial extraction and reprocessing.
    without a normalized assignment.
 
 Contradictions block matches even when the spelling is close: examples include
-Vitamin B1/B12, T3/T4, Anti-HBs/Anti-HBc, hypo/hyper, left/right, and recognized
+Marker X1/B12, T3/T4, Anti-HBs/Anti-HBc, hypo/hyper, left/right, and recognized
 negation, suspected or historical diagnoses. A supplied ICD-10 code must not
 contradict the candidate's stored code. The resolver does not invent medical
 synonyms; a semantic equivalent or abbreviation needs a reviewed reference alias.
